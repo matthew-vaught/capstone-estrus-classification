@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "capstone-estrus-classification"
+version = "0.1.0"
+description = "Collaborative, mouse-grouped estrus-day classification from CBT and activity"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26,<3", "pandas>=2.2,<4", "scipy>=1.12,<2",
+  "scikit-learn>=1.8,<2", "matplotlib>=3.8,<4", "PyWavelets>=1.6,<2",
+  "joblib>=1.3,<2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+notebooks = ["jupyterlab>=4,<5", "ipywidgets>=8,<9"]
+
+[project.scripts]
+estrus = "estrus.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

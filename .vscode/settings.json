@@ -1,0 +1,25 @@
+{
+  "files.exclude": {
+    "**/.git": true,
+    "**/.github": true,
+    "**/.gitignore": true,
+    "**/.gitkeep": true,
+    "**/.venv": true,
+    "**/.vscode": true,
+    "**/.agents": true,
+    "**/.aws": true,
+    "**/.codex": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true,
+    "**/.ipynb_checkpoints": true,
+    "**/*.pyc": true,
+    "**/*.pyo": true,
+    "**/*.egg-info": true,
+    "**/.DS_Store": true,
+    "requirements-lock.txt": true,
+    "pyproject.toml": true,
+    "CONTRIBUTING.md": true
+  }
+}

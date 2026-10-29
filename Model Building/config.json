@@ -1,0 +1,7 @@
+{
+  "seed": 190,
+  "test_mice": 3,
+  "cv_folds": 3,
+  "trees": 100,
+  "jobs": 1
+}

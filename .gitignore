@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+data/outputs/*
+!data/outputs/.gitkeep
+Model Building/results/*
+!Model Building/results/.gitkeep
+# Local exports can be committed deliberately inside each owner's folder.
+**/outputs/*.tmp

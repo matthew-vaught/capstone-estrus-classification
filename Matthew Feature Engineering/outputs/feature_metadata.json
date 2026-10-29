@@ -1,0 +1,109 @@
+{
+  "owner": "Matthew",
+  "input_policy": "retrospective_complete_recording",
+  "information_cutoff": "Complete 14-day recording required; not end-of-day or online prediction",
+  "day_anchor": "1-based consecutive 1440-row segments; clock/light alignment unconfirmed",
+  "sample_minutes": 1,
+  "analysis_days": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13
+  ],
+  "transform": "analytic generalized Morse CWT, beta=5, gamma=3, peak response=2",
+  "detrending": "linear, separately within each mouse's complete recording",
+  "boundary": "periodic; endpoints are joined",
+  "quantity": "absolute coefficient amplitude abs(W), not squared power",
+  "aggregation": "maximum across sampled band periods at each minute, then time mean",
+  "circadian_periods_hours": [
+    23.0,
+    23.623267980838676,
+    24.0,
+    24.552064994038158,
+    25.0
+  ],
+  "ultradian_periods_hours": [
+    1.0,
+    1.0393170417383764,
+    1.0801799132478098,
+    1.1226493919819298,
+    1.166788644984046,
+    1.2126633228387473,
+    1.2603416573173964,
+    1.309894562862759,
+    1.3613957420637064,
+    1.414921795276873,
+    1.470552334558312,
+    1.528370102074608,
+    1.588461093169562,
+    1.6509146842694964,
+    1.7158237658174187,
+    1.7832848804337602,
+    1.8533983665091898,
+    1.9262685074430699,
+    2.002003686749529,
+    2.080716549261844,
+    2.162524168674902,
+    2.2475482216749403,
+    2.3359151689155477,
+    2.4277564431091068,
+    2.5232086445134394,
+    2.6224137441044064,
+    2.725519294736651,
+    2.832678650606562,
+    2.9440511953438677,
+    3.0
+  ],
+  "circadian_comparison": "A[d+1] - A[d] for days 2-12; day 13 delta is NaN",
+  "buffer_policy": "Transform all 14 days; export days 2-13. Day 14 provides wavelet context, never a model comparison amplitude",
+  "edge_effects": "Exclude day 13 LA delta because day 14 amplitude is endpoint-sensitive; residual wavelet edge effects remain",
+  "missingness": "Day 13 LA delta is missing for each mouse and uses fitting-fold median imputation in the model; reject nonfinite wavelet recordings and negative LA; fractions require 80% window coverage",
+  "missing_values_per_feature": {
+    "matthew__circadian_la_amplitude_next_day_delta": 13,
+    "matthew__cbt_ultradian_amplitude_h0_12": 0,
+    "matthew__cbt_fraction_above_37_2_h6_12": 0,
+    "matthew__la_fraction_above_15_h6_12": 0
+  },
+  "feature_units": {
+    "circadian_la_amplitude_next_day_delta": "counts/minute",
+    "cbt_ultradian_amplitude_h0_12": "degrees C",
+    "cbt_fraction_above_37_2_h6_12": "fraction",
+    "la_fraction_above_15_h6_12": "fraction"
+  },
+  "thresholds": {
+    "cbt_degrees_C": 37.2,
+    "la_counts_per_minute": 15.0
+  },
+  "threshold_provenance": "Frozen from exploratory analysis.ipynb on development mice; supervised exploratory choices, not fitted again here",
+  "evaluation": "Group all days and wavelet context by mouse; validation scores are exploratory after feature design",
+  "input_sha256": {
+    "data/inputs/fem_act.csv": "5398fd74dc21d4fb22af7948057651605e8e8187eb0b796a95a816d98e32447c",
+    "data/inputs/fem_temp.csv": "bd66f8633f8773e44a1d765cdaa0c52f927f002d8f02ef5288416c78bc80f68e"
+  },
+  "source_sha256": {
+    "Matthew Feature Engineering/features.py": "bb7593c643f10baab26d085d7ca4abeec7aaa6bbcb5e756bc2319fdfe754dbe9",
+    "src/estrus/wavelets.py": "03526dac65f4a87ce39745135a3df03c0975f9d3ec0f8ce3db2b19bd61e2f5c3",
+    "Matthew Feature Engineering/exploratory analysis.ipynb": "5a3fee93997472eb3c200cea40f68a1fd3bfdc0b719f264a14cdcd254b7e3b2a",
+    "data/Important Data Files/CIRCADIAN_LA_FEATURE_HANDOFF.md": "f92d719d42fbbd281ea8cbbc2bc3f15ffdc6d565933ff94b96515f09859a62cf"
+  },
+  "feature_columns": [
+    "matthew__circadian_la_amplitude_next_day_delta",
+    "matthew__cbt_ultradian_amplitude_h0_12",
+    "matthew__cbt_fraction_above_37_2_h6_12",
+    "matthew__la_fraction_above_15_h6_12"
+  ],
+  "versions": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "pandas": "3.1.0"
+  },
+  "feature_csv_sha256": "2108151636b34f8c2495439a66627ecc86c41b50b186e1e0283bb63f787b7e18"
+}
