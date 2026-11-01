@@ -1,5 +1,16 @@
 # Model building
 
+The notebook dependencies are isolated in `.venv`. Create or refresh the
+environment with:
+
+```powershell
+python -m venv ".\Model Building\.venv"
+& ".\Model Building\.venv\Scripts\python.exe" -m pip install -r ".\Model Building\requirements.txt"
+```
+
+Select `Model Building/.venv` as the notebook's Python kernel before running
+`model.ipynb`.
+
 Run from the repository root:
 
 ```bash
