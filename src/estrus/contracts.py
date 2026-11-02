@@ -14,9 +14,14 @@ OWNERS = ("Matthew", "Vivian", "Brandon", "Alisha")
 
 
 def input_requirements(columns):
-    """Keep Matthew's recording context and design provenance with trained models."""
+    """Keep contributors' recording context and design provenance with models."""
     columns = set(columns)
     notes = []
+    if any(column.startswith("alisha__dtw_shift_") for column in columns):
+        notes.append("Alisha's DTW inputs compare each day with the same mouse's other 13 recording days, "
+                     "including future days and buffers 1 and 14. They require the complete 14-day recording "
+                     "for retrospective classification; an isolated day's signal is insufficient. "
+                     "These comparisons use no labels or other mice.")
     if columns & {
         "matthew__circadian_la_amplitude_next_day_delta",
         "matthew__cbt_ultradian_amplitude_h0_12",

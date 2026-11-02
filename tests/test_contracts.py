@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from estrus.contracts import (collect_features, export_features, feature_path,
-                              read_features, validate_features)
+                              read_features, validate_features, input_requirements)
 from estrus.data import canonical_keys
 
 
@@ -98,3 +98,12 @@ def test_duplicate_csv_headers_rejected(tmp_path):
     path.write_text("mouse_id,day_index,vivian__x,vivian__x\nf1,2,1,2\n")
     with pytest.raises(ValueError, match="Duplicate CSV"):
         read_features(path, "Vivian")
+
+
+def test_alisha_recording_requirements_are_preserved_without_other_contributors():
+    notes = input_requirements(["alisha__dtw_shift_whole_temp"])
+    assert len(notes) == 1
+    assert "other 13 recording days" in notes[0]
+    assert "complete 14-day recording" in notes[0]
+    assert "no labels or other mice" in notes[0]
+    assert input_requirements(["baseline__cbt_mean"]) == []
