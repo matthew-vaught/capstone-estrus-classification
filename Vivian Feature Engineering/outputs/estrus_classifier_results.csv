@@ -1,0 +1,5 @@
+feature set,AUC,AUC shuffled (mean),AUC shuffled (max),accuracy,balanced acc,precision,recall,specificity,F1,TP,FP,FN,TN
+adjusted wavelet,0.638,0.475,0.6,0.596,0.62,0.342,0.667,0.573,0.452,26,50,13,67
+adjusted summaries,0.94,0.485,0.619,0.859,0.863,0.667,0.872,0.855,0.756,34,17,5,100
+coupling,0.518,0.506,0.631,0.564,0.538,0.284,0.487,0.59,0.358,19,48,20,69
+all six,0.966,0.493,0.624,0.929,0.927,0.818,0.923,0.932,0.867,36,8,3,109
