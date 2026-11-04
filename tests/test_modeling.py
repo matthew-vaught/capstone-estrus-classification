@@ -6,7 +6,8 @@ import pandas as pd
 import pytest
 
 from estrus.modeling import (evaluate, grouped_splits, metric_values, predict,
-                             selected_feature_names, split_mice, SelectPercentileAtLeastOne)
+                             selected_feature_names, split_mice, SelectPercentileAtLeastOne,
+                             compare_models)
 
 
 def synthetic():
@@ -108,3 +109,18 @@ def test_feature_selection_keeps_one_feature_for_small_exports(percentile):
     X = np.arange(16, dtype=float).reshape(-1, 1)
     y = np.tile([0, 0, 0, 1], 4)
     assert selector.fit_transform(X, y).shape == (16, 1)
+
+
+def test_experiment_config_controls_search_grid():
+    features, labels = synthetic()
+    X = features.drop(columns=["mouse_id", "day_index"])
+    y = labels.is_estrus.to_numpy()
+    cv = grouped_splits(y, features.mouse_id.to_numpy(), 2)
+    settings = {**config(), "quick": False, "feature_percentiles": [50],
+                "regularization": [.25], "forest_max_depth": [2],
+                "forest_min_samples_leaf": 2}
+    _, candidates = compare_models(X, y, cv, settings)
+    assert len(candidates) == 6
+    assert set(candidates.feature_set) == {"All usable features", "Top 50% of features"}
+    assert candidates[candidates.family.eq("logistic")].settings.str.contains("0.25", regex=False).all()
+    assert candidates[candidates.family.eq("random_forest")].settings.str.contains("2", regex=False).all()

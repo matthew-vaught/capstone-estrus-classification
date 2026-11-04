@@ -20,7 +20,7 @@ def morse_cwt(values, periods_hours, *, sample_minutes=1, beta=5, gamma=3,
     """Return period × time coefficients; a matching cosine has |W| ≈ amplitude.
 
     Frequency responses peak at 2. Periods refer to the response peak, not a
-    package's default scale convention. This follows the convention in README.md,
+    package's default scale convention. This follows docs/features/matthew.md,
     without claiming equivalence to the paper's unavailable MATLAB transform.
     """
     values = np.asarray(values, dtype=float)

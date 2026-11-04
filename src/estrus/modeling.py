@@ -42,6 +42,7 @@ class SelectPercentileAtLeastOne(SelectPercentile):
 
 
 def grouped_splits(y, groups, n_splits):
+    """Return mouse-disjoint validation folds, each containing both classes."""
     if n_splits < 2 or len(np.unique(groups)) < n_splits:
         raise ValueError(f"Need at least {n_splits} training mice for validation.")
     splits = list(GroupKFold(n_splits=n_splits).split(np.zeros(len(y)), y, groups))
@@ -73,6 +74,7 @@ def family_of(pipeline):
 
 
 def selected_feature_names(pipeline, columns):
+    """Map fitted variance/selection masks back to the original input names."""
     names = np.asarray(columns)[pipeline.named_steps["variance"].get_support()]
     selector = pipeline.named_steps["select"]
     if selector != "passthrough":
@@ -90,11 +92,14 @@ def compare_models(X, y, cv, config):
         ("select", "passthrough"),
         ("model", LogisticRegression()),
     ])
-    selectors = ["passthrough", SelectPercentileAtLeastOne(f_classif, percentile=35), SelectPercentileAtLeastOne(f_classif, percentile=70)]
-    regularization = [1.] if config.get("quick") else [.1, 1., 10.]
+    selectors = ["passthrough", *[
+        SelectPercentileAtLeastOne(f_classif, percentile=p)
+        for p in config.get("feature_percentiles", [35, 70])
+    ]]
+    regularization = config.get("quick_regularization", [1.]) if config.get("quick") else config.get("regularization", [.1, 1., 10.])
     grid = [
         {"model": [LogisticRegression(class_weight="balanced", max_iter=3000, random_state=seed)], "model__C": regularization, "select": selectors},
-        {"model": [RandomForestClassifier(n_estimators=config["trees"], class_weight="balanced", min_samples_leaf=3, random_state=seed, n_jobs=1)], "model__max_depth": [3, None], "select": selectors},
+        {"model": [RandomForestClassifier(n_estimators=config["trees"], class_weight="balanced", min_samples_leaf=config.get("forest_min_samples_leaf", 3), random_state=seed, n_jobs=1)], "model__max_depth": config.get("forest_max_depth", [3, None]), "select": selectors},
         {"model": [SVC(class_weight="balanced", random_state=seed)], "model__C": regularization, "select": selectors},
     ]
     search = GridSearchCV(pipeline, grid, scoring="average_precision", cv=cv, n_jobs=config["jobs"], error_score="raise", refit=True)
@@ -115,7 +120,7 @@ def feature_assessment(X, y, cv, chosen_pipeline, final_pipeline, config):
     permutation_drops = []
     for fold, (train, validation) in enumerate(cv):
         fitted = clone(chosen_pipeline).fit(X.iloc[train], y[train])
-        values = permutation_importance(fitted, X.iloc[validation], y[validation], scoring="average_precision", n_repeats=3, random_state=config["seed"] + fold, n_jobs=config["jobs"])
+        values = permutation_importance(fitted, X.iloc[validation], y[validation], scoring="average_precision", n_repeats=config.get("permutation_repeats", 3), random_state=config["seed"] + fold, n_jobs=config["jobs"])
         permutation_drops.append(values.importances_mean)
     mean_drop = np.mean(permutation_drops, axis=0)
     single_feature_model = Pipeline([
@@ -138,6 +143,7 @@ def feature_assessment(X, y, cv, chosen_pipeline, final_pipeline, config):
 
 
 def metric_values(y, probability, baseline=None):
+    """Compute ranking and probability metrics at the fixed 0.5 class cutoff."""
     y, probability = np.asarray(y), np.asarray(probability)
     prediction = probability >= .5
     result = {
@@ -154,6 +160,12 @@ def metric_values(y, probability, baseline=None):
 
 
 def evaluate(features, labels, destination: Path, config, *, root: Path | None = None):
+    """Select on development mice and publish predictions for reserved mice.
+
+    Inputs are joined on mouse/day keys. Fitted preprocessing, model selection,
+    calibration, and feature assessments exclude the test mice. Returns held-out
+    predictions and metrics; writes the fitted model and technical records.
+    """
     frame = features.merge(labels.dropna(subset=["is_estrus"]), on=KEYS, how="inner", validate="one_to_one")
     frame["is_estrus"] = frame.is_estrus.astype(int)
     columns = [column for column in features if column not in KEYS]

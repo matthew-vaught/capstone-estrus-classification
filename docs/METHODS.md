@@ -2,7 +2,7 @@
 
 ## Data and labels
 
-The female CSVs contain 20,160 one-minute readings for each of 13 mice, with temperature in °C and activity in counts/minute. Recording days 2–13 provide 156 mouse-days. Days 1 and 14 are buffers. Male files are retained but unused.
+The female CSVs contain 20,160 one-minute readings for each of 13 mice, with temperature in °C and activity in counts/minute. Recording days 2–13 provide 156 mouse-days. Days 1 and 14 are buffers. Male files are unused by the shared classifier; Alisha's separate exploratory analysis uses them as a control.
 
 Recording days 2, 6, and 10 are provisionally positive, based on the team's assumed alignment with the supplied Smarr et al. paper. This gives 39 estrus and 117 non-estrus days. The paper identified estrus using temperature profiles; these are not independent biological staging labels. Results currently measure recognition of that paper-aligned pattern. Confirm alignment with the professor, or use `--labels` with independently curated labels. Blank targets are excluded.
 
@@ -16,7 +16,7 @@ Recording days 2, 6, and 10 are provisionally positive, based on the team's assu
 
 The model-comparison table shows the best validation result for each model family and marks the winning combination. Expanding the feature-selection trials shows the best result for each model/feature-set combination. The headline AP is the chosen model's separate test result, so it can differ from its selection score. There is no combined row made from changing model choices across evaluation rounds.
 
-`Model Building/config.json` controls `test_mice`, `cv_folds`, `trees`, `seed`, and `jobs`. Custom labels must leave both classes in the training, validation, and test partitions. Fewer labeled mice may require reducing the configured counts.
+`Model Building/config.json` controls `test_mice`, `cv_folds`, `trees`, `seed`, `jobs`, feature-selection percentages, regularization grids, forest settings, and permutation repeats. The values above describe its defaults; alternate files can be supplied with `--config`. Custom labels must leave both classes in the training, validation, and test partitions. Fewer labeled mice may require reducing the configured counts.
 
 ## Feature assessment is the focus
 
@@ -36,7 +36,7 @@ These assessments help the team develop features. They are not causal effects, s
 
 ## Feature input scope
 
-Reference features and the default contributor rule use only the target day's complete 1,440 readings. Do not use mouse identity, recording-day number, cycle position, or labels as features. Adjacent-day inputs and full-recording transforms require an explicit retrospective definition, as in Matthew's exception below. Population transforms belong inside the shared model pipeline. Export validation catches naming and formatting mistakes, but code review is still needed to catch semantic leakage.
+Reference features and the default contributor rule use only the target day's complete 1,440 readings. Do not use mouse identity, recording-day number, cycle position, or labels as features. Adjacent-day inputs and full-recording transforms require an explicit retrospective definition. Current submissions from Matthew, Alisha, and Vivian all include complete-recording context, documented below and in their feature guides. Population transforms belong inside the shared model pipeline. Export validation catches naming and formatting mistakes, but code review is still needed to catch semantic leakage.
 
 The reference features describe temperature/activity location, spread, plateau length, roughness, first/second-half differences, daily harmonic shape, 1–3-hour Morlet power, missingness, and temperature–activity correlation. Signals with fewer than 720 observed minutes produce missing signal features. Other gaps use within-day interpolation with a ten-minute limit, then that day's median. Original values are not clipped using population statistics.
 
@@ -44,13 +44,19 @@ Wavelet features use five-minute averages, `cmor1.5-1.0`, and 13 periods between
 
 ## Matthew's retrospective recording features
 
-At Matthew's request, this contribution explicitly expands the input scope beyond a single day. It exports exactly four features: next-day minus current-day circadian LA amplitude (23–25-hour band), first-half CBT ultradian amplitude (1–3-hour band, hours 0–12), and the fractions of hours 6–12 above 37.2 °C CBT and 15 counts/minute LA. Hours are elapsed recording-day hours, with clock/light alignment unconfirmed.
+This contribution uses recording-level context beyond a single day. It exports exactly four features: next-day minus current-day circadian LA amplitude (23–25-hour band), first-half CBT ultradian amplitude (1–3-hour band, hours 0–12), and the fractions of hours 6–12 above 37.2 °C CBT and 15 counts/minute LA. Hours are elapsed recording-day hours, with clock/light alignment unconfirmed.
 
-The wavelets use each mouse's complete 14-day recording: analytic generalized Morse, beta=5, gamma=3, peak response=2, linear detrending, periodic FFT boundary, band maximum of absolute coefficients at each minute followed by window averaging. These are amplitudes, not squared power. Day 13's LA delta is NaN for each mouse because its next-day amplitude would come from the endpoint-sensitive final buffer. The other three features remain present and all 156 canonical target rows are retained: 143 observed LA deltas, 13 missing. The model uses fitting-fold median imputation, fitted on final training mice for the saved model; it does not recover the unavailable change or use test values to fill it. Day 14's raw readings still support the wavelet, and residual boundary effects remain. No missing samples are silently filled for these transforms. Exact definitions, grids, units, and reproducibility artifacts are in [Matthew's README](../Matthew%20Feature%20Engineering/README.md).
+The wavelets use each mouse's complete 14-day recording: analytic generalized Morse, beta=5, gamma=3, peak response=2, linear detrending, periodic FFT boundary, band maximum of absolute coefficients at each minute followed by window averaging. These are amplitudes, not squared power. Day 13's LA delta is NaN for each mouse because its next-day amplitude would come from the endpoint-sensitive final buffer. The other three features remain present and all 156 canonical target rows are retained: 143 observed LA deltas, 13 missing. The model uses fitting-fold median imputation, fitted on final training mice for the saved model; it does not recover the unavailable change or use test values to fill it. Day 14's raw readings still support the wavelet, and residual boundary effects remain. No missing samples are silently filled for these transforms. Exact definitions, grids, units, and reproducibility artifacts are in [Matthew's README](features/matthew.md).
 
 These features support retrospective classification when the entire recording is available, not online or end-of-day inference. Full-recording detrending and the centered wavelet use samples beyond the explicit next-day comparison. Mouse-grouped evaluation keeps overlapping context from crossing training/test partitions. This does not establish prospective performance.
 
 The two fixed thresholds came from supervised exploration on development mice and are not reselected within each model fold. Subsequent development-validation results therefore include feature-design selection and are exploratory. They were selected without the reserved test mice; avoid further design changes in response to the new test score. The notebook's nested single-feature check favored ordinary window means slightly over the tuned fractions; the exported fractions implement the requested experiment.
+
+## Other recording-level contributions
+
+[Alisha's eighteen DTW features](features/alisha.md) compare each target day with the same mouse's other thirteen recording days, including future days and both buffers. [Vivian's six features](features/vivian.md) use per-mouse complete-recording cleaning, activity regression, and adjusted-temperature wavelets. Both require retrospective recording access. Their shared exports contain no label columns and no quantities learned across mice. The shared model retains mouse-grouped partitions for all three contributor families.
+
+Vivian's separate exploratory classifier uses per-mouse centering; her shared exported features are uncentered and use training-fold preprocessing in the shared pipeline. Alisha's exploratory analysis uses other evaluation and statistical procedures described in her feature document. Those scores should not be substituted for the shared held-out result.
 
 ## Scores and confidence
 

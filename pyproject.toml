@@ -5,7 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "capstone-estrus-classification"
 version = "0.1.0"
-description = "Collaborative, mouse-grouped estrus-day classification from CBT and activity"
+description = "Mouse-grouped estrus-day classification from temperature and activity"
+readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "numpy>=1.26,<3", "pandas>=2.2,<4", "scipy>=1.12,<2",
@@ -16,6 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8,<10"]
 notebooks = ["jupyterlab>=4,<5", "ipywidgets>=8,<9"]
+extraction = ["numba>=0.61,<1"]
 
 [project.scripts]
 estrus = "estrus.cli:main"

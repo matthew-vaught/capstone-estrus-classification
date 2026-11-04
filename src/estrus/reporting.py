@@ -75,6 +75,7 @@ def plot_mouse_day(signal, reference, *, mouse, day_index, predicted, actual, co
 
 
 def feature_sections(destination, final_model, diagnostics=()):
+    """Render development-only feature assessments, grouped by contributor."""
     catalog = pd.read_csv(destination / "feature_summary.csv")
     catalog["Used in final model"] = catalog.used.map({True: "Yes", False: "No"})
     def display(frame, include_owner=False):
@@ -100,7 +101,7 @@ def feature_sections(destination, final_model, diagnostics=()):
         else:
             groups.append(f'<details class="feature-owner"><summary>{owner}: {len(block)} features, {int(block.used.sum())} used in the final model</summary>{display(block)}</details>')
     return f'''<h2>Feature selection</h2>
-<p><strong>{final_model['n_features']} of {final_model['n_available']} available features are used by the final model.</strong> The model comparison below tested all usable features, the top 35%, and the top 70%. Features are ranked for selection using training data only.</p>
+<p><strong>{final_model['n_features']} of {final_model['n_available']} available features are used by the final model.</strong> The model comparison tests all usable features and the configured reduced subsets. Features are ranked for selection using training data only.</p>
 <h3>Most useful features</h3>
 <p><strong>AP on its own</strong> measures prediction using just that feature. <strong>Contribution</strong> is how much the chosen model's validation AP drops when that feature's values are shuffled. Larger drops suggest more useful information. These are training-validation results; features that share information can hide each other's usefulness.</p>
 {strongest}
@@ -110,6 +111,7 @@ def feature_sections(destination, final_model, diagnostics=()):
 
 
 def render_report(root: Path, destination: Path, predictions, metrics, diagnostics, metadata):
+    """Write a standalone HTML report with embedded held-out-day figures."""
     figures = destination / "figures"
     figures.mkdir(exist_ok=True)
     main_score = float(metrics.set_index("metric").loc["average_precision", "estimate"])
