@@ -1,0 +1,22 @@
+[
+  {
+    "features": [
+      "matthew__circadian_la_amplitude_next_day_delta",
+      "matthew__cbt_ultradian_amplitude_h0_12"
+    ],
+    "note": "Matthew's wavelet inputs require the complete recording, including future samples. This is retrospective classification; a target day's raw signal alone is insufficient."
+  },
+  {
+    "features": [
+      "matthew__circadian_la_amplitude_next_day_delta"
+    ],
+    "note": "LA change is next-day minus current-day circadian amplitude. Recording day 13 has a missing LA change to avoid the final buffer's endpoint-sensitive amplitude; the model fills this using a median learned from its fitting data. All target days remain included."
+  },
+  {
+    "features": [
+      "matthew__cbt_fraction_above_37_2_h6_12",
+      "matthew__la_fraction_above_15_h6_12"
+    ],
+    "note": "Matthew's 37.2 °C and 15 counts/minute thresholds were chosen during development exploration and frozen before this run. Validation scores after feature design are exploratory."
+  }
+]

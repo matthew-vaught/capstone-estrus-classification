@@ -51,6 +51,23 @@ export_features(pd.DataFrame(rows), root, "Vivian")
 
 The helper validates before replacing the CSV, then writes atomically. On failure, any previous export remains; fix the issue and rerun so you do not accidentally commit stale features. `estrus validate --owner Vivian` checks the on-disk artifact. Model runs read only CSV files, never import teammates' scripts, and never write to contributor folders.
 
+## Optional input requirements
+
+Keep feature-specific recording requirements and design notes in `input_requirements.json` at the top of your own feature engineering folder. The shared pipeline reads these notes as data and carries matching notes into the saved model, report, and run README. Feature calculations and helpers stay in your folder; shared code does not need to know their names or definitions.
+
+The file is a JSON list of rules. Each rule has `features`, a nonempty list of fully prefixed feature names or wildcard patterns, and `note`, a nonempty string. A note applies when any model input matches one of its patterns. Patterns must use your own namespace; `*` can cover a family of features. For example:
+
+```json
+[
+  {
+    "features": ["vivian__example_*"],
+    "note": "These example inputs require the complete recording."
+  }
+]
+```
+
+The file is optional. If present for a contributor whose features are used, malformed rules stop training with an error. Only matching notes are included; baseline runs ignore contributor notes. `--save-details` records the notes file's hash alongside the CSV and optional `outputs/feature_metadata.json`. Numeric model inputs still come exclusively from `outputs/features.csv`.
+
 ## Feature design constraints
 
 The default input scope is the target day's signal, as used by the reference features. Long-period circadian/infradian estimates need more than one day; treat a one-day harmonic coefficient as a shape descriptor, not robust evidence of a rhythm.

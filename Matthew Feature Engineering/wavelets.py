@@ -1,4 +1,4 @@
-"""Retrospective Morse amplitudes using the supplied reconstruction convention.
+"""Matthew's retrospective Morse amplitudes using the reconstruction convention.
 
 These transforms use an entire recording, including future samples. They are
 separate from the single-day Morlet features in estrus.features.
@@ -20,7 +20,7 @@ def morse_cwt(values, periods_hours, *, sample_minutes=1, beta=5, gamma=3,
     """Return period × time coefficients; a matching cosine has |W| ≈ amplitude.
 
     Frequency responses peak at 2. Periods refer to the response peak, not a
-    package's default scale convention. This follows CIRCADIAN_LA_FEATURE_HANDOFF.md,
+    package's default scale convention. This follows the convention in README.md,
     without claiming equivalence to the paper's unavailable MATLAB transform.
     """
     values = np.asarray(values, dtype=float)

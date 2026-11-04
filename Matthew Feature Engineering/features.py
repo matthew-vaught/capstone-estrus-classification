@@ -8,14 +8,17 @@ from __future__ import annotations
 import importlib.metadata
 import json
 from pathlib import Path
+import sys
 
 import numpy as np
 import pandas as pd
 
 from estrus.contracts import export_features, validate_features
 from estrus.data import ANALYSIS_DAYS, MINUTES_PER_DAY, MICE, find_root, load_signals, sha256
-from estrus.wavelets import (CIRCADIAN_PERIODS_HOURS, ULTRADIAN_PERIODS_HOURS,
-                            recording_band_amplitude)
+# Resolve sibling helpers when loaded from a notebook or through importlib, too.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from wavelets import (CIRCADIAN_PERIODS_HOURS, ULTRADIAN_PERIODS_HOURS,
+                      recording_band_amplitude)
 
 OWNER = "Matthew"
 CBT_THRESHOLD = 37.2  # °C; frozen from the development-only exploratory notebook.
@@ -128,9 +131,10 @@ def feature_metadata(root, frame):
         "input_sha256": {f"data/inputs/{name}": sha256(root / "data/inputs" / name)
                          for name in ["fem_act.csv", "fem_temp.csv"]},
         "source_sha256": {str(path.relative_to(root)): sha256(path) for path in [
-            Path(__file__).resolve(), root / "src/estrus/wavelets.py",
+            Path(__file__).resolve(), Path(__file__).with_name("wavelets.py").resolve(),
+            Path(__file__).with_name("README.md").resolve(),
+            Path(__file__).with_name("input_requirements.json").resolve(),
             root / "Matthew Feature Engineering/exploratory analysis.ipynb",
-            root / "data/Important Data Files/CIRCADIAN_LA_FEATURE_HANDOFF.md",
         ]},
         "feature_columns": list(frame.columns[2:]),
         "versions": {name: importlib.metadata.version(name) for name in ["numpy", "scipy", "pandas"]},

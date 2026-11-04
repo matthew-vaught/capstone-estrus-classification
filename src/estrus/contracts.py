@@ -3,38 +3,46 @@ from __future__ import annotations
 
 import json
 import re
+from fnmatch import fnmatchcase
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from .data import KEYS, canonical_keys
+from .data import KEYS, canonical_keys, find_root
 
 OWNERS = ("Matthew", "Vivian", "Brandon", "Alisha")
 
 
-def input_requirements(columns):
-    """Keep contributors' recording context and design provenance with models."""
+def input_requirements(columns, root: Path | None = None):
+    """Read matching notes from contributors' optional input_requirements.json.
+
+    Definitions stay with their owner; training reads JSON without importing
+    extraction code. An explicit root supports running against another checkout.
+    """
     columns = set(columns)
     notes = []
-    if any(column.startswith("alisha__dtw_shift_") for column in columns):
-        notes.append("Alisha's DTW inputs compare each day with the same mouse's other 13 recording days, "
-                     "including future days and buffers 1 and 14. They require the complete 14-day recording "
-                     "for retrospective classification; an isolated day's signal is insufficient. "
-                     "These comparisons use no labels or other mice.")
-    if columns & {
-        "matthew__circadian_la_amplitude_next_day_delta",
-        "matthew__cbt_ultradian_amplitude_h0_12",
-    }:
-        notes.append("Matthew's wavelet inputs require the complete recording, including future samples. "
-                     "This is retrospective classification; a target day's raw signal alone is insufficient.")
-    if "matthew__circadian_la_amplitude_next_day_delta" in columns:
-        notes.append("LA change is next-day minus current-day circadian amplitude. Recording day 13 "
-                     "has a missing LA change to avoid the final buffer's endpoint-sensitive amplitude; "
-                     "the model fills this using a median learned from its fitting data. All target days remain included.")
-    if columns & {"matthew__cbt_fraction_above_37_2_h6_12", "matthew__la_fraction_above_15_h6_12"}:
-        notes.append("Matthew's 37.2 °C and 15 counts/minute thresholds were chosen during development "
-                     "exploration and frozen before this run. Validation scores after feature design are exploratory.")
+    for owner in OWNERS:
+        prefix = owner.lower() + "__"
+        if not any(column.startswith(prefix) for column in columns):
+            continue
+        if root is None:
+            root = find_root(Path(__file__).parent)
+        path = root / f"{owner} Feature Engineering" / "input_requirements.json"
+        if not path.exists():
+            continue
+        rules = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(rules, list):
+            raise ValueError(f"{path}: expected a list of feature requirement rules.")
+        for rule in rules:
+            if (not isinstance(rule, dict) or set(rule) != {"features", "note"}
+                    or not isinstance(rule["features"], list) or not rule["features"]
+                    or not all(isinstance(pattern, str) and pattern.startswith(prefix)
+                               for pattern in rule["features"])
+                    or not isinstance(rule["note"], str) or not rule["note"].strip()):
+                raise ValueError(f"{path}: each rule needs owner-prefixed features and a nonempty note.")
+            if any(fnmatchcase(column, pattern) for column in columns for pattern in rule["features"]):
+                notes.append(rule["note"])
     return notes
 
 

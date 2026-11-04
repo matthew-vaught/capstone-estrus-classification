@@ -60,10 +60,12 @@ data/
   inputs/                     Original female + male CSVs, left untouched
   Important Data Files/       Supplied research paper
   outputs/                    Reproducible prepared data and templates, ignored
-src/estrus/                   Shared data, validation, features, modeling, reporting
+src/estrus/                   Shared data, validation, reference baseline, models, reports
 docs/                         Feature contract and scientific methods
-tests/                        Contract, leakage, and pipeline checks
+tests/                        Shared contract, leakage, and pipeline checks
 ```
+
+Contributor feature calculations, helper modules, notebooks, tests, and feature-specific notes live inside that person's folder. For example, Matthew's Morse transforms are in `Matthew Feature Engineering/wavelets.py`. `src/estrus/features.py` is the shared reference baseline used by `--baseline` and the fallback when no valid exports exist. Shared loaders and export helpers can be used by everyone. Training reads contributor CSVs and optional JSON notes; it never imports contributor code.
 
 ## Each person's workflow
 

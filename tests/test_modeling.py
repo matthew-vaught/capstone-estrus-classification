@@ -41,7 +41,14 @@ def test_training_validation_and_test_mice_are_disjoint():
 
 def test_one_winner_matches_validation_and_saved_model(tmp_path):
     features, labels = synthetic()
-    predictions, metrics = evaluate(features, labels, tmp_path, config())
+    root = tmp_path / "checkout"
+    owner_folder = root / "Vivian Feature Engineering"
+    owner_folder.mkdir(parents=True)
+    note = "Input context supplied by the checkout used for this run."
+    (owner_folder / "input_requirements.json").write_text(json.dumps([
+        {"features": ["vivian__example"], "note": note},
+    ]))
+    predictions, metrics = evaluate(features, labels, tmp_path, config(), root=root)
     choices = pd.read_csv(tmp_path / "model_comparison.csv")
     winner = choices[choices.chosen].iloc[0]
     assert choices.chosen.sum() == 1
@@ -49,6 +56,7 @@ def test_one_winner_matches_validation_and_saved_model(tmp_path):
     summary = json.loads((tmp_path / "final_model.json").read_text())
     assert summary["family"] == winner.family
     assert summary["feature_set"] == winner.feature_set
+    assert summary["input_requirements"] == [note]
     assert predictions.family.nunique() == 1
     assert set(predictions.family) == {winner.family}
     assert len(predictions) == 16  # Two reserved mice, eight days each.
@@ -56,6 +64,7 @@ def test_one_winner_matches_validation_and_saved_model(tmp_path):
     assert not set(splits["training_mice"]) & set(splits["test_mice"])
     assert set(predictions.mouse_id) == set(splits["test_mice"])
     bundle = joblib.load(tmp_path / "model.joblib")
+    assert bundle["input_requirements"] == [note]
     assert len(bundle["model"].calibrated_classifiers_) == 1
     final_pipeline = bundle["model"].calibrated_classifiers_[0].estimator
     assert set(selected_feature_names(final_pipeline, bundle["feature_columns"])) == set(summary["selected_features"])

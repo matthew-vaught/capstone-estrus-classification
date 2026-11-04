@@ -153,10 +153,11 @@ def metric_values(y, probability, baseline=None):
     return result
 
 
-def evaluate(features, labels, destination: Path, config):
+def evaluate(features, labels, destination: Path, config, *, root: Path | None = None):
     frame = features.merge(labels.dropna(subset=["is_estrus"]), on=KEYS, how="inner", validate="one_to_one")
     frame["is_estrus"] = frame.is_estrus.astype(int)
     columns = [column for column in features if column not in KEYS]
+    requirements = input_requirements(columns, root)
     X, y, groups = frame[columns], frame.is_estrus.to_numpy(), frame.mouse_id.to_numpy()
     train, test = split_mice(y, groups, config)
     X_train, y_train = X.iloc[train], y[train]
@@ -196,7 +197,7 @@ def evaluate(features, labels, destination: Path, config):
                "training_mice": splits["training_mice"], "test_mice": splits["test_mice"],
                "threshold": .5, "settings": winner.settings}
     summary["feature_source"] = "baseline" if all(name.startswith("baseline__") for name in columns) else "contributors" if not any(name.startswith("baseline__") for name in columns) else "mixed"
-    summary["input_requirements"] = input_requirements(columns)
+    summary["input_requirements"] = requirements
     (destination / "final_model.json").write_text(json.dumps(summary, indent=2) + "\n")
     joblib.dump({"model": model, "feature_columns": columns, "selected_features": selected,
                  "threshold": .5, "family": family, "label_sources": sorted(frame.label_source.unique()),

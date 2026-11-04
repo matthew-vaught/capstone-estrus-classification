@@ -21,6 +21,9 @@ def metadata(root, config, args, diagnostics):
     paths += [feature_path(root, d["owner"]) for d in diagnostics if d["status"] != "ignored" and feature_path(root, d["owner"]).exists()]
     provenance = {}
     for item in diagnostics:
+        requirements = root / f"{item['owner']} Feature Engineering" / "input_requirements.json"
+        if item["status"] == "accepted" and requirements.exists():
+            paths.append(requirements)
         manifest = feature_path(root, item["owner"]).with_name("feature_metadata.json")
         if item["status"] == "accepted" and manifest.exists():
             # Preserve an optional contributor's extraction settings with run details.
@@ -99,7 +102,7 @@ def main(argv=None):
             meta = metadata(root, config, args, diagnostics)
             meta["feature_mode"] = "contributors" if any(d["status"] == "accepted" for d in diagnostics) else "baseline"
             (workspace / "run_metadata.json").write_text(json.dumps(meta, indent=2) + "\n")
-            predictions, metrics = evaluate(features, labels, workspace, config)
+            predictions, metrics = evaluate(features, labels, workspace, config, root=root)
             render_report(root, workspace, predictions, metrics, diagnostics, meta)
             report = publish_results(workspace, destination, predictions, metrics, save_details=args.save_details)
         print(f"Results saved to {destination.resolve()}")

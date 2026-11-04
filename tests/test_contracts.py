@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -100,10 +102,30 @@ def test_duplicate_csv_headers_rejected(tmp_path):
         read_features(path, "Vivian")
 
 
-def test_alisha_recording_requirements_are_preserved_without_other_contributors():
-    notes = input_requirements(["alisha__dtw_shift_whole_temp"])
-    assert len(notes) == 1
-    assert "other 13 recording days" in notes[0]
-    assert "complete 14-day recording" in notes[0]
-    assert "no labels or other mice" in notes[0]
-    assert input_requirements(["baseline__cbt_mean"]) == []
+def test_csv_and_json_handoff_needs_no_contributor_code(tmp_path):
+    export_features(valid(), tmp_path, "Vivian")
+    folder = tmp_path / "Vivian Feature Engineering"
+    (folder / "features.py").write_text("raise RuntimeError('Extraction must not run during training')\n")
+    (folder / "input_requirements.json").write_text(json.dumps([
+        {"features": ["vivian__power*"], "note": "Custom input context from this checkout."},
+        {"features": ["vivian__unused"], "note": "Not an input to this model."},
+    ]))
+    combined, _ = collect_features(tmp_path, canonical_keys(), tmp_path / "results")
+    pd.testing.assert_frame_equal(combined, valid())
+    assert input_requirements(combined.columns, tmp_path) == ["Custom input context from this checkout."]
+    assert input_requirements(["baseline__example"], tmp_path) == []
+    assert input_requirements(["brandon__example"], tmp_path) == []
+
+
+@pytest.mark.parametrize("rules", [
+    {},
+    [{"features": ["matthew__example"], "note": "Wrong owner"}],
+    [{"features": ["vivian__power"], "note": ""}],
+    [{"features": "vivian__power", "note": "Expected a list"}],
+])
+def test_malformed_input_requirements_fail_explicitly(tmp_path, rules):
+    folder = tmp_path / "Vivian Feature Engineering"
+    folder.mkdir()
+    (folder / "input_requirements.json").write_text(json.dumps(rules))
+    with pytest.raises(ValueError, match="input_requirements.json"):
+        input_requirements(["vivian__power"], tmp_path)

@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from estrus import wavelets
 from estrus.contracts import input_requirements, read_features
 from estrus.data import canonical_keys, find_root, load_signals
 
@@ -20,8 +19,15 @@ def matthew():
     return module
 
 
+@pytest.fixture(scope="module")
+def wavelets(matthew):
+    # features.py resolves this sibling module from Matthew's folder.
+    import wavelets
+    return wavelets
+
+
 @pytest.mark.parametrize("period", [2., 24.])
-def test_morse_matching_cosine_recovers_amplitude_not_power(period):
+def test_morse_matching_cosine_recovers_amplitude_not_power(period, wavelets):
     hours = np.arange(14 * 1440) / 60
     amplitude = 3.7
     values = 20 + amplitude * np.cos(2 * np.pi * hours / period)
@@ -30,7 +36,7 @@ def test_morse_matching_cosine_recovers_amplitude_not_power(period):
     np.testing.assert_allclose(wavelets.morse_cwt(np.ones(1440), [period]), 0, atol=1e-12)
 
 
-def test_band_grid_and_maximum_precede_time_mean(monkeypatch):
+def test_band_grid_and_maximum_precede_time_mean(monkeypatch, wavelets):
     np.testing.assert_allclose(wavelets.CIRCADIAN_PERIODS_HOURS,
                               [23, 23.623267980838676, 24, 24.552064994038158, 25])
     assert wavelets.ULTRADIAN_PERIODS_HOURS[0] == 1
@@ -43,7 +49,7 @@ def test_band_grid_and_maximum_precede_time_mean(monkeypatch):
     assert result.mean() == 3  # max(mean(abs(W))) would incorrectly give 2.
 
 
-def test_recording_day_pairing_direction_buffer_and_first_half(matthew, monkeypatch):
+def test_recording_day_pairing_direction_buffer_and_first_half(matthew, monkeypatch, wavelets):
     circadian = np.repeat(np.array([10., 12., 9.])[:, None], 1440, axis=1)
     ultradian = np.tile(np.r_[np.repeat(2., 720), np.repeat(100., 720)], (3, 1))
 
@@ -96,7 +102,7 @@ def test_wavelet_recording_rejects_unestablished_gap_policies(matthew, problem):
         matthew.extract_recording_features(la, cbt)
 
 
-def test_real_export_keeps_156_rows_and_excludes_only_final_la_deltas(matthew):
+def test_real_export_keeps_156_rows_and_excludes_only_final_la_deltas(matthew, wavelets):
     root = find_root(Path(__file__).parent)
     frame, inspection = matthew.build_features(root)
     pd.testing.assert_frame_equal(frame[["mouse_id", "day_index"]], canonical_keys())
@@ -115,6 +121,9 @@ def test_real_export_keeps_156_rows_and_excludes_only_final_la_deltas(matthew):
                                - inspection.circadian_la_amplitude)
     exported = read_features(root / "Matthew Feature Engineering/outputs/features.csv", "Matthew")
     pd.testing.assert_frame_equal(frame, exported, check_exact=False, rtol=1e-12)
+    metadata = matthew.feature_metadata(root, frame)
+    assert "Matthew Feature Engineering/wavelets.py" in metadata["source_sha256"]
+    assert all(path.startswith("Matthew Feature Engineering/") for path in metadata["source_sha256"])
     # Compute against original full-recording coefficients, including final buffer.
     signals = load_signals(root)
     coefficients = wavelets.morse_cwt(signals["la"].f1.to_numpy(), wavelets.CIRCADIAN_PERIODS_HOURS)

@@ -1,0 +1,13 @@
+[
+  {
+    "features": [
+      "vivian__adj_ultradian_amp",
+      "vivian__adj_circadian_amp",
+      "vivian__adj_mean_h6_12",
+      "vivian__adj_range",
+      "vivian__adj_decline_hour",
+      "vivian__act_cbt_corr"
+    ],
+    "note": "Vivian's activity-adjusted CBT inputs use per-mouse cleaning and activity regression over the complete recording; wavelet inputs also include future samples and buffers. They support retrospective classification, not isolated-day prediction. Extraction uses no labels or other mice; the shared export is uncentered."
+  }
+]
