@@ -44,6 +44,10 @@ Open the printed `Model Building/results/run-.../report.html` path in a browser.
 | `tests/` | Shared checks and a small synthetic-data recipe |
 | `notebooks/archive/` | Historical modeling prototype |
 
+## AI use
+
+Human contributors supplied the research context, feature submissions, and project decisions. OpenAI Codex assisted with repository review, documentation, shared build and model-configuration changes, and test creation and execution under human direction. The team remains responsible for reviewing the code and scientific conclusions. See [AI_USE.md](AI_USE.md) for the available prompts, contributions, testing, and gaps in the earlier project history.
+
 ## Documentation and attribution
 
 Start with the [documentation index](docs/README.md). Development and folder ownership are covered in the [collaboration guide](docs/COLLABORATION.md).
