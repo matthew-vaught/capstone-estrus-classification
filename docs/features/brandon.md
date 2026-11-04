@@ -2,7 +2,7 @@
 
 Brandon owns everything inside this folder. Put notebooks, figures, exploratory code, and notes here. Other teammates should not edit these files.
 
-The only file consumed by model building is `outputs/features.csv`. Start by changing `extract_features` in [features.py](features.py), then run from the repository root:
+The only file consumed by model building is `outputs/features.csv`. Start by changing `extract_features` in [features.py](../../Brandon%20Feature%20Engineering/features.py), then run from the repository root:
 
 ```bash
 python "Brandon Feature Engineering/features.py"
@@ -20,4 +20,4 @@ Use `iter_days(root)` to get the same 156 female mouse-days as everyone else. Th
 
 Commit `outputs/features.csv` with the code that generated it; it is a small, versioned handoff artifact. Keep its column names stable between experiments or describe changes in your PR. Model runs read it but never modify it or execute this script. To withdraw your submission, remove that CSV in your own branch.
 
-See the shared [feature contract](../docs/FEATURE_CONTRACT.md), [collaboration guide](../CONTRIBUTING.md), and [methods](../docs/METHODS.md). Everyone may use the same inputs; only write inside your own folder.
+See the shared [feature contract](../FEATURE_CONTRACT.md), [collaboration guide](../COLLABORATION.md), and [methods](../METHODS.md). Everyone may use the same inputs; only write inside your own folder.

@@ -1,0 +1,115 @@
+{
+  "purpose": "Presentation milestone reproduced from retained classroom inputs and submitted contributor exports.",
+  "command": ".venv/bin/python run.py all --save-details --output \"Model Building/results/presentation-2026-11-03\"",
+  "created_utc": "2026-11-04T04:31:30.921795+00:00",
+  "git_commit": "908f5b9be6c264e26cbbb8068d9af43ad36c7ce6",
+  "git_dirty": true,
+  "final_model": {
+    "family": "logistic",
+    "feature_set": "Top 35% of features",
+    "validation_ap": 0.9917582417582418,
+    "test_ap": 0.9320987654320989,
+    "selected_features": [
+      "matthew__circadian_la_amplitude_next_day_delta",
+      "matthew__cbt_ultradian_amplitude_h0_12",
+      "matthew__cbt_fraction_above_37_2_h6_12",
+      "matthew__la_fraction_above_15_h6_12",
+      "vivian__adj_range",
+      "alisha__dtw_shift_whole_temp",
+      "alisha__dtw_shift_seg3_temp",
+      "alisha__dtw_shift_seg4_temp",
+      "alisha__dtw_shift_seg3_act",
+      "alisha__dtw_shift_seg5_act"
+    ],
+    "n_features": 10,
+    "n_available": 28,
+    "training_mice": [
+      "f1",
+      "f10",
+      "f12",
+      "f13",
+      "f2",
+      "f4",
+      "f5",
+      "f7",
+      "f8",
+      "f9"
+    ],
+    "test_mice": [
+      "f11",
+      "f3",
+      "f6"
+    ],
+    "threshold": 0.5,
+    "settings": "{'model__C': 1.0}",
+    "feature_source": "contributors",
+    "input_requirements": [
+      "Matthew's wavelet inputs require the complete recording, including future samples. This is retrospective classification; a target day's raw signal alone is insufficient.",
+      "LA change is next-day minus current-day circadian amplitude. Recording day 13 has a missing LA change to avoid the final buffer's endpoint-sensitive amplitude; the model fills this using a median learned from its fitting data. All target days remain included.",
+      "Matthew's 37.2 \u00b0C and 15 counts/minute thresholds were chosen during development exploration and frozen before this run. Validation scores after feature design are exploratory.",
+      "Vivian's activity-adjusted CBT inputs use per-mouse cleaning and activity regression over the complete recording; wavelet inputs also include future samples and buffers. They support retrospective classification, not isolated-day prediction. Extraction uses no labels or other mice; the shared export is uncentered.",
+      "Alisha's DTW inputs compare each day with the same mouse's other 13 recording days, including future days and buffers 1 and 14. They require the complete 14-day recording for retrospective classification; an isolated day's signal is insufficient. These comparisons use no labels or other mice."
+    ]
+  },
+  "config": {
+    "seed": 190,
+    "test_mice": 3,
+    "cv_folds": 3,
+    "trees": 100,
+    "jobs": 1,
+    "feature_percentiles": [
+      35,
+      70
+    ],
+    "regularization": [
+      0.1,
+      1.0,
+      10.0
+    ],
+    "quick_regularization": [
+      1.0
+    ],
+    "forest_max_depth": [
+      3,
+      null
+    ],
+    "forest_min_samples_leaf": 3,
+    "permutation_repeats": 3
+  },
+  "versions": {
+    "numpy": "2.5.4",
+    "pandas": "3.1.0",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "matplotlib": "3.11.2",
+    "PyWavelets": "1.10.0",
+    "joblib": "1.6.0"
+  },
+  "input_sha256": {
+    "data/inputs/male_temp.csv": "e08d98e3069efb754a3cf9474834214052d8ef2c1e7e1a260ba59f10adf130a4",
+    "data/inputs/male_act.csv": "a57f607eeb27a07e509d61ce01d95055019fb640b9b2347df93b6f1745affce1",
+    "data/inputs/fem_temp.csv": "bd66f8633f8773e44a1d765cdaa0c52f927f002d8f02ef5288416c78bc80f68e",
+    "data/inputs/fem_act.csv": "5398fd74dc21d4fb22af7948057651605e8e8187eb0b796a95a816d98e32447c",
+    "Matthew Feature Engineering/outputs/features.csv": "2108151636b34f8c2495439a66627ecc86c41b50b186e1e0283bb63f787b7e18",
+    "Vivian Feature Engineering/outputs/features.csv": "a395608a39caed2f98d6ab729f22c0fb1e5acde5c86231999716f0e719ee29ca",
+    "Alisha Feature Engineering/outputs/features.csv": "80d576ede22c4bc46981be505ddc4ab7a82efeb1870966af73925ff01933dd30",
+    "Matthew Feature Engineering/input_requirements.json": "53450969971b7a8b0db1929b3796ae4def17e005f3c73f348a9e56de8808cc59",
+    "Matthew Feature Engineering/outputs/feature_metadata.json": "d35de7dcdf2ee58a389145ae1a49b2cd5c6208667def138d733402128dd130e1",
+    "Vivian Feature Engineering/input_requirements.json": "1a41825ee55526603c027d31c32339696fb74338a78bf7f651399f78e0ec53f3",
+    "Alisha Feature Engineering/input_requirements.json": "9873ff6c2248f8a07aedf299676badabefe7470358965530ba47f8aa24ea8721"
+  },
+  "source_sha256": {
+    "src/estrus/__init__.py": "0e38e9b93a2c23e2a62a351978074e6e8fe9134e2c97a0d4ad059475b5df6e80",
+    "src/estrus/build.py": "d6188202f13f0dab284cda72ddc24863fdf24dcf5bca0909d4c8f9b9d5c6b87a",
+    "src/estrus/cli.py": "b34d4a17a96dd79b900c6696c889f7f86b56ada714ae5c65a5e9cebd274fd4af",
+    "src/estrus/contracts.py": "8ba53bd3a558fac5b8c1cb8ae7c1b4cdce4cf0b878c1e7fec986e043d50fd269",
+    "src/estrus/data.py": "6e327ade283f3b1eb7a4636da24c6552103271164305cd94eb743a555bf1ee14",
+    "src/estrus/features.py": "d6079f5f2d5f13888f8d1ae3e24d49fb7c92874a11ea89cd4a608fdbd2a379c9",
+    "src/estrus/modeling.py": "3e12917c5519f74a70d7ff97017ff545bfff25ea699b55c0d9af2c26aaf0914c",
+    "src/estrus/reporting.py": "36c72d035b7ec7f5e98a25d89989f8d2a3236d2d2c537970ec0b01c33157132d",
+    "src/estrus/results.py": "12871d299e5f53f5ade9e2f1bdb96fe725f55334583e6d268a0ee43f98d78cdb",
+    "src/estrus/synthetic.py": "b45ccf337b67d1a7433e09dc82f2930aeb7b6f1d190feb6453160927b064ca06"
+  },
+  "report_sha256": "3b5aefc276f99564852bbafeea154e7130532cb4faf2d42376af4c710f423089",
+  "predictions_sha256": "147738dcd852a47ad2f9eaf30a4adb94faf644500f79879453ba279bd511e229"
+}

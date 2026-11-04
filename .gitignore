@@ -9,5 +9,10 @@ data/outputs/*
 !data/outputs/.gitkeep
 Model Building/results/*
 !Model Building/results/.gitkeep
-# Local exports can be committed deliberately inside each owner's folder.
+# Retain submitted handoffs/metadata; ignore new exploratory generated artifacts.
+* Feature Engineering/outputs/*
+!* Feature Engineering/outputs/features.csv
+!* Feature Engineering/outputs/feature_metadata.json
+!* Feature Engineering/outputs/.gitkeep
+# Historical tracked outputs remain preserved; ignore rules do not untrack them.
 **/outputs/*.tmp

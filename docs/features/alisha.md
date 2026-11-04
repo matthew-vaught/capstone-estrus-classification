@@ -1,6 +1,6 @@
 # Alisha Feature Engineering
 
-Alisha contributes 18 within-mouse dynamic time warping (DTW) time-shift features through [outputs/features.csv](outputs/features.csv). They measure how much earlier or later a day's core body temperature (CBT) or locomotor activity (LA) pattern runs than the same mouse's other days. Generate and validate from the repository root:
+Alisha contributes 18 within-mouse dynamic time warping (DTW) time-shift features through [outputs/features.csv](../../Alisha%20Feature%20Engineering/outputs/features.csv). They measure how much earlier or later a day's core body temperature (CBT) or locomotor activity (LA) pattern runs than the same mouse's other days. Generate and validate from the repository root:
 
 ```bash
 python -m pip install numba   # only needed to regenerate; model building reads the CSV
@@ -55,6 +55,6 @@ Plain accuracy is reported but not used for conclusions: always predicting "not 
 
 ## Files
 
-- [dtw.py](dtw.py): numba DTW alignment, loading, optional cleaning, and the cached 14 × 14 shift matrices per mouse, signal, and scope (whole day + 8 segments), for both sexes.
-- [features.py](features.py): builds and exports the 156 female rows.
-- [analysis.py](analysis.py): statistics, classifiers, permutation null, male control, and plots.
+- [dtw.py](../../Alisha%20Feature%20Engineering/dtw.py): numba DTW alignment, loading, optional cleaning, and the cached 14 × 14 shift matrices per mouse, signal, and scope (whole day + 8 segments), for both sexes.
+- [features.py](../../Alisha%20Feature%20Engineering/features.py): builds and exports the 156 female rows.
+- [analysis.py](../../Alisha%20Feature%20Engineering/analysis.py): statistics, classifiers, permutation null, male control, and plots.

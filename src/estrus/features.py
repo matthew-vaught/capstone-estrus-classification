@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pywt
 
-from .data import iter_days
+from .data import KEYS, canonical_keys, iter_days
 
 
 def _longest_run(mask):
@@ -69,7 +69,24 @@ def extract_day(day: pd.DataFrame) -> dict[str, float]:
 
 
 def baseline_features(root):
+    """Extract the reference schema for all canonical days in raw recordings."""
     return pd.DataFrame([
         {"mouse_id": mouse, "day_index": day, **{"baseline__" + key: value for key, value in extract_day(signal).items()}}
         for mouse, day, signal in iter_days(root)
     ])
+
+
+def assemble_features(root, destination, *, baseline_only=False):
+    """Join validated exports; compute reference features only when needed.
+
+    No contributor code is executed and no contributor files are written.
+    Validation diagnostics are saved at ``destination`` by the contract loader.
+    """
+    from .contracts import collect_features
+
+    features, diagnostics = collect_features(
+        root, canonical_keys(), destination, baseline_only=baseline_only
+    )
+    if len(features.columns) == len(KEYS):
+        features = baseline_features(root)
+    return features, diagnostics

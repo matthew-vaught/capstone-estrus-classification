@@ -13,10 +13,11 @@ import pandas as pd
 
 from .contracts import OWNERS, collect_features, feature_path, read_features
 from .data import PROXY_SOURCE, find_root, load_labels, prepare, sha256
-from .features import baseline_features
+from .features import assemble_features
 
 
 def metadata(root, config, args, diagnostics):
+    """Record the executed sources, input hashes, configuration, and versions."""
     paths = list((root / "data/inputs").glob("*.csv"))
     paths += [feature_path(root, d["owner"]) for d in diagnostics if d["status"] != "ignored" and feature_path(root, d["owner"]).exists()]
     provenance = {}
@@ -38,12 +39,13 @@ def metadata(root, config, args, diagnostics):
             "git_dirty": bool(status.stdout.strip()), "label_mode": str(args.labels or PROXY_SOURCE),
             "contributor_feature_metadata": provenance,
             "input_sha256": {str(p.relative_to(root) if p.is_relative_to(root) else p): sha256(p) for p in paths},
-            "source_sha256": {str(p.relative_to(root)): sha256(p) for p in sorted((root / "src/estrus").glob("*.py"))},
+            "source_sha256": {f"src/estrus/{p.name}": sha256(p) for p in sorted(Path(__file__).parent.glob("*.py"))},
             "versions": {name: importlib.metadata.version(name) for name in ["numpy", "pandas", "scipy", "scikit-learn", "matplotlib", "PyWavelets", "joblib"]}}
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Collaborative female mouse-day estrus classification")
+    """Prepare inputs, validate exports, train a model, or predict feature rows."""
+    parser = argparse.ArgumentParser(description="Female mouse-day estrus classification")
     parser.add_argument("--root", type=Path, help="Repository path (otherwise locate from working directory)")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("prepare", help="Export day index, minute data, and label templates (ignored by Git)")
@@ -97,8 +99,7 @@ def main(argv=None):
             raise ValueError(f"Output directory {destination} is nonempty; choose a new run directory.")
         with TemporaryDirectory(prefix="estrus-run-") as temporary:
             workspace = Path(temporary)
-            baseline = baseline_features(root)
-            features, diagnostics = collect_features(root, baseline, workspace, baseline_only=args.baseline)
+            features, diagnostics = assemble_features(root, workspace, baseline_only=args.baseline)
             meta = metadata(root, config, args, diagnostics)
             meta["feature_mode"] = "contributors" if any(d["status"] == "accepted" for d in diagnostics) else "baseline"
             (workspace / "run_metadata.json").write_text(json.dumps(meta, indent=2) + "\n")

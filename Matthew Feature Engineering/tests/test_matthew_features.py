@@ -123,7 +123,9 @@ def test_real_export_keeps_156_rows_and_excludes_only_final_la_deltas(matthew, w
     pd.testing.assert_frame_equal(frame, exported, check_exact=False, rtol=1e-12)
     metadata = matthew.feature_metadata(root, frame)
     assert "Matthew Feature Engineering/wavelets.py" in metadata["source_sha256"]
-    assert all(path.startswith("Matthew Feature Engineering/") for path in metadata["source_sha256"])
+    assert "docs/features/matthew.md" in metadata["source_sha256"]
+    assert all(path.startswith("Matthew Feature Engineering/") or path == "docs/features/matthew.md"
+               for path in metadata["source_sha256"])
     # Compute against original full-recording coefficients, including final buffer.
     signals = load_signals(root)
     coefficients = wavelets.morse_cwt(signals["la"].f1.to_numpy(), wavelets.CIRCADIAN_PERIODS_HOURS)

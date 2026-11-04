@@ -1,0 +1,9 @@
+{
+  "source": "Classroom-provided CSV exports; retained for course submission reproducibility.",
+  "sha256": {
+    "data/inputs/fem_act.csv": "5398fd74dc21d4fb22af7948057651605e8e8187eb0b796a95a816d98e32447c",
+    "data/inputs/fem_temp.csv": "bd66f8633f8773e44a1d765cdaa0c52f927f002d8f02ef5288416c78bc80f68e",
+    "data/inputs/male_act.csv": "a57f607eeb27a07e509d61ce01d95055019fb640b9b2347df93b6f1745affce1",
+    "data/inputs/male_temp.csv": "e08d98e3069efb754a3cf9474834214052d8ef2c1e7e1a260ba59f10adf130a4"
+  }
+}

@@ -132,7 +132,7 @@ def feature_metadata(root, frame):
                          for name in ["fem_act.csv", "fem_temp.csv"]},
         "source_sha256": {str(path.relative_to(root)): sha256(path) for path in [
             Path(__file__).resolve(), Path(__file__).with_name("wavelets.py").resolve(),
-            Path(__file__).with_name("README.md").resolve(),
+            root / "docs/features/matthew.md",
             Path(__file__).with_name("input_requirements.json").resolve(),
             root / "Matthew Feature Engineering/exploratory analysis.ipynb",
         ]},

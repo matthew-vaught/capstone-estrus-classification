@@ -15,6 +15,7 @@ PROXY_SOURCE = "paper_alignment_proxy_days_2_6_10_UNVERIFIED"
 
 
 def find_root(start: Path | None = None) -> Path:
+    """Locate a checkout by its package metadata and retained female input."""
     start = (start or Path.cwd()).resolve()
     for path in (start, *start.parents):
         if (path / "data/inputs/fem_temp.csv").exists() and (path / "pyproject.toml").exists():
@@ -23,6 +24,7 @@ def find_root(start: Path | None = None) -> Path:
 
 
 def load_signals(root: Path) -> dict[str, pd.DataFrame]:
+    """Read female CBT/LA recordings with fixed shape and numeric validation."""
     result = {}
     for name, filename in [("cbt", "fem_temp.csv"), ("la", "fem_act.csv")]:
         frame = pd.read_csv(root / "data/inputs" / filename, encoding="utf-8-sig")
@@ -36,6 +38,7 @@ def load_signals(root: Path) -> dict[str, pd.DataFrame]:
 
 
 def canonical_keys() -> pd.DataFrame:
+    """Return the 156 permitted female mouse-day keys in stable order."""
     return pd.MultiIndex.from_product([MICE, ANALYSIS_DAYS], names=KEYS).to_frame(index=False)
 
 
@@ -56,6 +59,7 @@ def iter_days(root: Path):
 
 
 def proxy_labels() -> pd.DataFrame:
+    """Label assumed paper-aligned days; these are not independent stage labels."""
     frame = canonical_keys()
     frame["is_estrus"] = frame.day_index.isin([2, 6, 10]).astype(int)
     frame["label_source"] = PROXY_SOURCE
@@ -63,6 +67,7 @@ def proxy_labels() -> pd.DataFrame:
 
 
 def load_labels(path: Path | None = None) -> pd.DataFrame:
+    """Load validated custom labels, or return the explicit provisional proxy."""
     if path is None:
         return proxy_labels()
     frame = pd.read_csv(path)
@@ -83,6 +88,7 @@ def load_labels(path: Path | None = None) -> pd.DataFrame:
 
 
 def sha256(path: Path) -> str:
+    """Hash a file in chunks for input and source provenance."""
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
@@ -90,8 +96,13 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def prepare(root: Path) -> Path:
-    output = root / "data/outputs"
+def prepare(root: Path, output: Path | None = None) -> Path:
+    """Write reproducible tables and label templates without changing raw inputs.
+
+    ``output`` can isolate build-script intermediates from other local analysis.
+    Existing generated tables at that destination are replaced.
+    """
+    output = output if output is not None else root / "data/outputs"
     output.mkdir(parents=True, exist_ok=True)
     rows = []
     for mouse, day, signal in iter_days(root):

@@ -47,12 +47,18 @@ def input_requirements(columns, root: Path | None = None):
 
 
 def feature_path(root: Path, owner: str) -> Path:
+    """Locate one owner's handoff CSV without importing their extractor."""
     if owner not in OWNERS:
         raise ValueError(f"Unknown owner {owner!r}; choose {OWNERS}.")
     return root / f"{owner} Feature Engineering" / "outputs/features.csv"
 
 
 def validate_features(frame: pd.DataFrame, owner: str) -> pd.DataFrame:
+    """Validate coverage, keys, names, and numeric values; return canonical order.
+
+    Reject the whole export on a schema violation. Partial numeric missingness
+    is retained for training-fold imputation, without modifying the input frame.
+    """
     prefix = owner.lower() + "__"
     if not set(KEYS).issubset(frame.columns):
         raise ValueError("Missing mouse_id or day_index key columns.")
@@ -82,6 +88,7 @@ def validate_features(frame: pd.DataFrame, owner: str) -> pd.DataFrame:
 
 
 def read_features(path: Path, owner: str) -> pd.DataFrame:
+    """Load and validate a handoff, rejecting duplicate headers before parsing."""
     # pandas silently renames duplicate CSV headers, so reject them before parsing.
     import csv
     with path.open(encoding="utf-8-sig", newline="") as handle:
@@ -92,6 +99,7 @@ def read_features(path: Path, owner: str) -> pd.DataFrame:
 
 
 def export_features(frame: pd.DataFrame, root: Path, owner: str) -> Path:
+    """Validate then atomically replace an owner's CSV; preserve it on failure."""
     clean = validate_features(frame, owner)
     path = feature_path(root, owner)
     path.parent.mkdir(parents=True, exist_ok=True)

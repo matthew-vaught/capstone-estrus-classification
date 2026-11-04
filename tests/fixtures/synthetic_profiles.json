@@ -1,0 +1,7 @@
+{
+  "description": "Invented daily profiles. Values between hour anchors are linearly interpolated; small deterministic mouse/day oscillations avoid exact duplicate samples.",
+  "hours": [0, 6, 12, 18, 24],
+  "non_estrus": {"cbt": [36.5, 36.8, 37.0, 36.7, 36.5], "la": [2, 5, 10, 5, 2]},
+  "estrus": {"cbt": [36.8, 37.4, 37.8, 37.1, 36.8], "la": [3, 12, 20, 9, 3]},
+  "config": {"seed": 190, "test_mice": 1, "cv_folds": 2, "trees": 5, "jobs": 1, "quick": true}
+}

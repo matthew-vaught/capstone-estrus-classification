@@ -17,9 +17,6 @@
     "**/*.pyc": true,
     "**/*.pyo": true,
     "**/*.egg-info": true,
-    "**/.DS_Store": true,
-    "requirements-lock.txt": true,
-    "pyproject.toml": true,
-    "CONTRIBUTING.md": true
+    "**/.DS_Store": true
   }
 }
