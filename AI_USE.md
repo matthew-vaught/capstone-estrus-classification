@@ -2,7 +2,7 @@
 
 Last consolidated: November 3, 2026 (America/Los_Angeles).
 
-**Coverage: 44 recorded user turns from seven project conversations.** The user reports having collected their project conversations. This consolidation organizes the supplied records; it does not independently establish a complete archive of every teammate's AI use or recover missing historical tool outputs. Known source-evidence limits are identified below rather than treating unrecorded activity as human-only work.
+**Coverage: 47 recorded user turns from seven project conversations.** Separately, the appended Claude record contains nine phase entries with selected prompts; those are not a complete turn count and are not included in this total. The user reports having collected their project conversations. This consolidation organizes the supplied records; it does not independently establish a complete archive of every teammate's AI use or recover missing historical tool outputs. Known source-evidence limits are identified below rather than treating unrecorded activity as human-only work.
 
 The record contains user prompts, resulting AI assistance, and actual verification where known. It supports the brief [README acknowledgement](README.md#ai-use) and the course's requirement to document AI use and testing. Automatically attached IDE/environment/page metadata is omitted. Existing quoted prompts and P001–P038 IDs were preserved; P039–P040 add the directly available continuation of the cleanup conversation.
 
@@ -22,7 +22,7 @@ Tool: **OpenAI Codex**. Imported session records identify the agent as based on 
 | S04 | Initial repository, modeling, integration, and writing: P014–P038 | Alisha run November 2; Vivian run and logging November 3, 2026; other prompt dates unavailable | Original recorder reported verbatim user prompts throughout. Assistant replies/edits/tool outputs for P014–P034 were available to that recorder only through a retained summary; P035–P038 had directly available response/execution history. **Summary-only refers to those outcomes, not to reconstructed prompt quotations.** |
 | S05 | Ignore local reference files and agent instructions: P041–P042 | Client date November 4, 2026; exact turn timestamps unavailable | User requests and tool execution directly available in this conversation. This label identifies the source conversation, not a recovered session ID. |
 | S06 | Input time granularity: P043 | Client date November 6, 2026; exact turn timestamp unavailable | User question and read-only inspection directly available in this conversation. This label identifies the source conversation, not a recovered session ID. |
-| S07 | Divergent Git branches: P050 | Client date November 11, 2026; exact turn timestamp unavailable | User terminal transcript and local Git inspection directly available in this conversation. This is a source label, not a recovered session ID. |
+| S07 | Divergent Git branches, merge editor, status, and push guidance: P050–P053 | Client date November 11, 2026; exact turn timestamp unavailable | User terminal transcript and local Git inspection directly available in this conversation. This is a source label, not a recovered session ID. |
 
 Source notes and historical verification paragraphs below retain the original recorder's wording. Within a labeled entry or evidence group, “this conversation,” “visible,” and “current” refer to its source session at recording time. A later preservation or link check does not independently reverify those past executions. Historical test totals (44, 45, 46, 51, and 59) describe different implementation states and should not be combined into one test run.
 
@@ -99,6 +99,9 @@ The provenance of the original submitted feature work is not fully established b
 | [P042](#p042-ignore-local-agent-instructions) | S05 | Ignore root `AGENTS.md` and remove it from the index while retaining the local file. | Ignore/index/local-file checks and disclosure formatting checks; no code tests or training needed. |
 | [P043](#p043-explain-input-and-model-time-granularity) | S06 | Explain minute-level input measurements versus daily model examples. | Read data documentation/loader; counted female CSV rows and a contributor export; disclosure checks only, no training or code tests. |
 | [P050](#p050-explain-divergent-git-branches) | S07 | Explain rejected push and divergent pull; recommend preserving and merging both histories. | Read-only Git status/history/diff inspection and disclosure checks; no merge, push, tests, or training executed. |
+| [P051](#p051-explain-the-merge-commit-editor) | S07 | Explain Nano and saving the default merge message; advise committing the follow-up disclosure before pushing. | Screenshot and local merge-state inspection; documentation checks only; no Git mutation or code tests. |
+| [P052](#p052-confirm-successful-merge-and-remaining-disclosure-change) | S07 | Confirm successful merge, explain three local commits and the remaining disclosure edit, and give commit/push commands. | Local Git status/history/diff and documentation checks; no commit, push, code tests, or training executed. |
+| [P053](#p053-confirm-readiness-to-push) | S07 | Confirm the user can push and provide commands to include the required disclosure update. | Read-only status/history and documentation checks; no commit or push executed. |
 
 ## Prompt log
 
@@ -864,6 +867,72 @@ did i mess something up? do i need to do something about this?
 **Resulting AI assistance:** Explained that neither error lost work: local and remote main each have one unique commit, and the user's pull fetched without integrating. Recommended committing this required disclosure update, then `git pull --no-rebase` to merge both histories, followed by `git push` once any conflicts are resolved. Both histories edit this disclosure; preserving both sets of entries and addressing overlapping IDs/source labels may require manual resolution. These are suggested commands, not executed operations. Only `AI_USE.md` was changed; no branch history, Git configuration, code, inputs, or contributor artifacts were changed.
 
 **Verification and limits:** Executed `git status --short --branch`, `git log --oneline --graph --decorate -12`, `git log --oneline --left-right HEAD...origin/main`, `git show --stat --oneline` for each unique commit, and file/diff comparisons against common ancestor `bcaa31c`. Initially the tree was clean, with local `055d7a5` and remote `1d815e6`; the latter adds Vivian's AI-use disclosure. Read the project instructions, coverage, index, and recent records. An initial focused patch failed because its coverage-line context omitted the rest of that line; it made no changes. Reread immediately before the successful focused replacements. Documentation checks verify prior prompt preservation, index anchors, count, balanced fences, edit scope, and `git diff --check`. No code tests or model training ran because this was Git guidance plus disclosure maintenance. No fetch, pull, merge, rebase, commit, or push was executed by Codex.
+
+### P051: Explain the merge commit editor
+
+Conversation: **S07**.
+
+```text
+it gave me this screen
+```
+
+Attachment: terminal screenshot showing GNU nano 7.2 editing `.git/MERGE_MSG`, with the default message `Merge branch 'main' of github.com:matthew-vaught/capstone-estrus-classification` and Git's commented commit-message instructions. No repository copy of the image is established. Automatically attached empty companion-page wrappers are omitted.
+
+**Resulting AI assistance:** Identified the normal merge commit message editor and explained how to keep the default message: Ctrl+O, Enter, then Ctrl+X. Advised waiting for Git to return to the shell, committing this required follow-up disclosure update, then pushing. Only `AI_USE.md` was edited; Codex did not operate the user's editor, stage files, complete the merge, commit, or push. The existing staged merge result and imported Claude records were preserved. The imported phase entries retain their existing overlapping IDs/source labels; reconciliation remains deferred as noted in P050.
+
+**Verification and limits:** Read the screenshot, coverage, index, and recent entries. Executed `git status --short --branch`, `git log -3 --oneline`, `git diff --cached --stat`, and `git rev-parse --verify MERGE_HEAD`. These confirmed local guidance commit `ed7bf84`, a pending merge of `1d815e6`, and 230 staged lines added to `AI_USE.md`. Reread immediately before editing. Checked previous prompt and imported-record preservation, the new index anchor, balanced fences, updated count, and working-tree/staged diff whitespace. No code tests or training ran because this was editor guidance and disclosure maintenance; final merge completion and push were not observed.
+
+### P052: Confirm successful merge and remaining disclosure change
+
+Conversation: **S07**.
+
+```text
+capstone-estrus-classification on  main [⇕] is 📦 v0.1.0 via 🐍 v3.12.3 (.venv) took 2s\
+❯ git add AI_USE.md\
+&#x20; git commit -m "Record Git troubleshooting guidance"\
+&#x20; git pull --no-rebase\
+[main ed7bf84] Record Git troubleshooting guidance\
+&#x20;1 file changed, 57 insertions(+), 1 deletion(-)\
+Enter passphrase for key '/home/vaugh/.ssh/id_ed25519':\
+Auto-merging AI_USE.md\
+Merge made by the 'ort' strategy.\
+&#x20;AI_USE.md | 250 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-\
+&#x20;1 file changed, 248 insertions(+), 2 deletions(-)\
+\
+capstone-estrus-classification on  main [!⇡] is 📦 v0.1.0 via 🐍 v3.12.3 (.venv) took 1m1s\
+❯\
+\
+capstone-estrus-classification on  main [!⇡] is 📦 v0.1.0 via 🐍 v3.12.3 (.venv) took 1m1s\
+❯ git status\
+On branch main\
+Your branch is ahead of 'origin/main' by 3 commits.\
+&#x20; (use "git push" to publish your local commits)\
+\
+Changes not staged for commit:\
+&#x20; (use "git add \<file>..." to update what will be committed)\
+&#x20; (use "git restore \<file>..." to discard changes in working directory)\
+&#x20;       modified:   AI_USE.md\
+\
+no changes added to commit (use "git add" and/or "git commit -a")
+
+is this okay?
+```
+
+**Resulting AI assistance:** Confirmed that the merge succeeded and three commits ahead is expected: original local commit, troubleshooting disclosure commit, and merge commit. Explained that the remaining unstaged `AI_USE.md` edit is the P051 follow-up added while Nano was open, with P052 now also recorded as required by project instructions. Recommended staging/committing the disclosure, pushing, and checking status afterward. These commands were advice, not executed actions. Only `AI_USE.md` was edited; preserved all imported records and prior prompts, and repaired the blank line separating the P051 index row from its table.
+
+**Verification and limits:** Executed `git status --short --branch`, `git log -5 --oneline`, `git diff --stat`, and `git diff -- AI_USE.md`. Confirmed merge commit `4bc6e1c`, three commits ahead with no commits behind the local `origin/main` reference, and only the prior disclosure follow-up as an unstaged modification. Read coverage/index/recent entries and reread immediately before editing. Documentation checks confirm preserved previous prompt bodies/imported Claude section, matching new index anchor, updated primary-log count, balanced fences, and `git diff --check`. Existing overlapping imported IDs/source labels remain deferred as previously recorded. No code tests or model training ran because this was Git status guidance and disclosure maintenance; no new fetch, commit, or push was executed.
+
+### P053: Confirm readiness to push
+
+Conversation: **S07**.
+
+```text
+so can i push to github?
+```
+
+**Resulting AI assistance:** Confirmed that the successful merge allows a normal push. Provided commands to stage and commit the required disclosure follow-ups, including this turn, and then push. Only `AI_USE.md` was edited. No commit or push was executed by Codex; the user asked whether they could push.
+
+**Verification and limits:** Executed `git status --short --branch` and `git log -3 --oneline`; confirmed three commits ahead of the local `origin/main` reference, merge commit `4bc6e1c`, and an unstaged disclosure edit. Read coverage, index, and recent entries; reread immediately before writing. Documentation checks confirm previous prompt bodies and imported Claude section preserved, updated primary count, new index anchor, balanced fences, and clean diff whitespace. No remote fetch or push was attempted, so subsequent remote changes are not ruled out. No code tests or model training ran because only guidance and the disclosure record changed.
 
 ## Coding process and validation evidence
 
