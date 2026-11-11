@@ -2,7 +2,7 @@
 
 Last consolidated: November 3, 2026 (America/Los_Angeles).
 
-**Coverage: 43 recorded user turns from six project conversations.** The user reports having collected their project conversations. This consolidation organizes the supplied records; it does not independently establish a complete archive of every teammate's AI use or recover missing historical tool outputs. Known source-evidence limits are identified below rather than treating unrecorded activity as human-only work.
+**Coverage: 44 recorded user turns from seven project conversations.** The user reports having collected their project conversations. This consolidation organizes the supplied records; it does not independently establish a complete archive of every teammate's AI use or recover missing historical tool outputs. Known source-evidence limits are identified below rather than treating unrecorded activity as human-only work.
 
 The record contains user prompts, resulting AI assistance, and actual verification where known. It supports the brief [README acknowledgement](README.md#ai-use) and the course's requirement to document AI use and testing. Automatically attached IDE/environment/page metadata is omitted. Existing quoted prompts and P001–P038 IDs were preserved; P039–P040 add the directly available continuation of the cleanup conversation.
 
@@ -22,6 +22,7 @@ Tool: **OpenAI Codex**. Imported session records identify the agent as based on 
 | S04 | Initial repository, modeling, integration, and writing: P014–P038 | Alisha run November 2; Vivian run and logging November 3, 2026; other prompt dates unavailable | Original recorder reported verbatim user prompts throughout. Assistant replies/edits/tool outputs for P014–P034 were available to that recorder only through a retained summary; P035–P038 had directly available response/execution history. **Summary-only refers to those outcomes, not to reconstructed prompt quotations.** |
 | S05 | Ignore local reference files and agent instructions: P041–P042 | Client date November 4, 2026; exact turn timestamps unavailable | User requests and tool execution directly available in this conversation. This label identifies the source conversation, not a recovered session ID. |
 | S06 | Input time granularity: P043 | Client date November 6, 2026; exact turn timestamp unavailable | User question and read-only inspection directly available in this conversation. This label identifies the source conversation, not a recovered session ID. |
+| S07 | Divergent Git branches: P050 | Client date November 11, 2026; exact turn timestamp unavailable | User terminal transcript and local Git inspection directly available in this conversation. This is a source label, not a recovered session ID. |
 
 Source notes and historical verification paragraphs below retain the original recorder's wording. Within a labeled entry or evidence group, “this conversation,” “visible,” and “current” refer to its source session at recording time. A later preservation or link check does not independently reverify those past executions. Historical test totals (44, 45, 46, 51, and 59) describe different implementation states and should not be combined into one test run.
 
@@ -97,6 +98,7 @@ The provenance of the original submitted feature work is not fully established b
 | [P041](#p041-ignore-local-reference-files) | S05 | Ignore `data/Important Data Files/` while preserving its files. | Git ignore/status checks and disclosure formatting checks; no code tests or training needed. |
 | [P042](#p042-ignore-local-agent-instructions) | S05 | Ignore root `AGENTS.md` and remove it from the index while retaining the local file. | Ignore/index/local-file checks and disclosure formatting checks; no code tests or training needed. |
 | [P043](#p043-explain-input-and-model-time-granularity) | S06 | Explain minute-level input measurements versus daily model examples. | Read data documentation/loader; counted female CSV rows and a contributor export; disclosure checks only, no training or code tests. |
+| [P050](#p050-explain-divergent-git-branches) | S07 | Explain rejected push and divergent pull; recommend preserving and merging both histories. | Read-only Git status/history/diff inspection and disclosure checks; no merge, push, tests, or training executed. |
 
 ## Prompt log
 
@@ -808,6 +810,60 @@ is the data that were using minute level data or liek what granularity of itme
 **Resulting AI assistance:** Explained that the repository treats temperature (CBT) and locomotor activity (LA) inputs as one measurement per minute per mouse: 1,440 readings per day and 20,160 readings over 14 recording days. Distinguished that input resolution from the classifier's one-example/one-prediction-per-mouse-day resolution: analysis days 2–13 give 156 examples across 13 female mice, with days 1 and 14 retained as recording buffers. No absolute clock timestamps are established by these CSVs. Only this disclosure was edited; input files, contributor work, and shared code were preserved.
 
 **Verification and limits:** Read `docs/DATA.md`, `src/estrus/data.py`, and relevant feature code. A read-only Python CSV count confirmed both female inputs have 20,160 rows and 13 mouse columns; Matthew's feature export has 156 rows for 13 mice on days 2–13. The one-minute interpretation is documented and enforced by the loader's recording-day slicing; row counts alone do not independently verify the upstream acquisition/export interval. Checked prompt/index coverage, the new anchor, fenced-block balance, preservation of previous prompt bodies, and disclosure diff whitespace. No code tests or model training ran because the task was an explanation with a documentation-only log update.
+
+### P050: Explain divergent Git branches
+
+Conversation: **S07**.
+
+Numbering note: inspected `origin/main` already contains separately imported P041–P049 under its own S05 label, overlapping local P041–P043/S05. P050 avoids another collision. Those remote records have not been merged or renumbered here; the coverage above counts this working copy only. Reconciliation should preserve both contributors' records and their source attribution.
+
+```text
+capstone-estrus-classification on  main [⇡] is 📦 v0.1.0 via 🐍 v3.12.3 (.venv)\
+❯ git push\
+Enter passphrase for key '/home/vaugh/.ssh/id_ed25519':\
+To github.com:matthew-vaught/capstone-estrus-classification.git\
+&#x20;! [rejected]        main -> main (fetch first)\
+error: failed to push some refs to 'github.com:matthew-vaught/capstone-estrus-classification.git'\
+hint: Updates were rejected because the remote contains work that you do not\
+hint: have locally. This is usually caused by another repository pushing to\
+hint: the same ref. If you want to integrate the remote changes, use\
+hint: 'git pull' before pushing again.\
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.\
+\
+capstone-estrus-classification on  main [⇡] is 📦 v0.1.0 via 🐍 v3.12.3 (.venv) took 3s\
+❯\
+\
+capstone-estrus-classification on  main [⇡] is 📦 v0.1.0 via 🐍 v3.12.3 (.venv) took 3s\
+❯ git pull\
+Enter passphrase for key '/home/vaugh/.ssh/id_ed25519':\
+remote: Enumerating objects: 5, done.\
+remote: Counting objects: 100% (5/5), done.\
+remote: Compressing objects: 100% (1/1), done.\
+remote: Total 3 (delta 2), reused 3 (delta 2), pack-reused 0 (from 0)\
+Unpacking objects: 100% (3/3), 5.17 KiB | 587.00 KiB/s, done.\
+From github.com:matthew-vaught/capstone-estrus-classification\
+&#x20;  bcaa31c..1d815e6  main       -> origin/main\
+hint: You have divergent branches and need to specify how to reconcile them.\
+hint: You can do so by running one of the following commands sometime before\
+hint: your next pull:\
+hint:\
+hint:   git config pull.rebase false  # merge\
+hint:   git config pull.rebase true   # rebase\
+hint:   git config pull.ff only       # fast-forward only\
+hint:\
+hint: You can replace "git config" with "git config --global" to set a default\
+hint: preference for all repositories. You can also pass --rebase, --no-rebase,\
+hint: or --ff-only on the command line to override the configured default per\
+hint: invocation.\
+fatal: Need to specify how to reconcile divergent branches.
+
+
+did i mess something up? do i need to do something about this?
+```
+
+**Resulting AI assistance:** Explained that neither error lost work: local and remote main each have one unique commit, and the user's pull fetched without integrating. Recommended committing this required disclosure update, then `git pull --no-rebase` to merge both histories, followed by `git push` once any conflicts are resolved. Both histories edit this disclosure; preserving both sets of entries and addressing overlapping IDs/source labels may require manual resolution. These are suggested commands, not executed operations. Only `AI_USE.md` was changed; no branch history, Git configuration, code, inputs, or contributor artifacts were changed.
+
+**Verification and limits:** Executed `git status --short --branch`, `git log --oneline --graph --decorate -12`, `git log --oneline --left-right HEAD...origin/main`, `git show --stat --oneline` for each unique commit, and file/diff comparisons against common ancestor `bcaa31c`. Initially the tree was clean, with local `055d7a5` and remote `1d815e6`; the latter adds Vivian's AI-use disclosure. Read the project instructions, coverage, index, and recent records. An initial focused patch failed because its coverage-line context omitted the rest of that line; it made no changes. Reread immediately before the successful focused replacements. Documentation checks verify prior prompt preservation, index anchors, count, balanced fences, edit scope, and `git diff --check`. No code tests or model training ran because this was Git guidance plus disclosure maintenance. No fetch, pull, merge, rebase, commit, or push was executed by Codex.
 
 ## Coding process and validation evidence
 
