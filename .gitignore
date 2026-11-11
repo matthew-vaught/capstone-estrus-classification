@@ -5,6 +5,8 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 .DS_Store
+/AGENTS.md
+/data/Important Data Files/
 data/outputs/*
 !data/outputs/.gitkeep
 Model Building/results/*

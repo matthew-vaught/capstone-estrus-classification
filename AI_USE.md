@@ -2,7 +2,7 @@
 
 Last consolidated: November 3, 2026 (America/Los_Angeles).
 
-**Coverage: 40 recorded user turns from four project conversations.** The user reports having collected their project conversations. This consolidation organizes the supplied records; it does not independently establish a complete archive of every teammate's AI use or recover missing historical tool outputs. Known source-evidence limits are identified below rather than treating unrecorded activity as human-only work.
+**Coverage: 43 recorded user turns from six project conversations.** The user reports having collected their project conversations. This consolidation organizes the supplied records; it does not independently establish a complete archive of every teammate's AI use or recover missing historical tool outputs. Known source-evidence limits are identified below rather than treating unrecorded activity as human-only work.
 
 The record contains user prompts, resulting AI assistance, and actual verification where known. It supports the brief [README acknowledgement](README.md#ai-use) and the course's requirement to document AI use and testing. Automatically attached IDE/environment/page metadata is omitted. Existing quoted prompts and P001–P038 IDs were preserved; P039–P040 add the directly available continuation of the cleanup conversation.
 
@@ -20,6 +20,8 @@ Tool: **OpenAI Codex**. Imported session records identify the agent as based on 
 | S02 | Contributor-folder boundaries: P006–P007 | Client/record date November 3, 2026; exact turn timestamps unavailable | Original recorder reported full user messages and execution evidence. This consolidation has that imported account, not a separately recovered transcript. |
 | S03 | Matthew's exploratory notebook and features: P008–P013 | Earlier work has October 28 client context; logging has November 3 context; exact turn timestamps unavailable | Original recorder reported full user messages, including the structured P010 reply, and execution evidence. Original attachments and the other project behind the wavelet handoff were not independently recovered here. |
 | S04 | Initial repository, modeling, integration, and writing: P014–P038 | Alisha run November 2; Vivian run and logging November 3, 2026; other prompt dates unavailable | Original recorder reported verbatim user prompts throughout. Assistant replies/edits/tool outputs for P014–P034 were available to that recorder only through a retained summary; P035–P038 had directly available response/execution history. **Summary-only refers to those outcomes, not to reconstructed prompt quotations.** |
+| S05 | Ignore local reference files and agent instructions: P041–P042 | Client date November 4, 2026; exact turn timestamps unavailable | User requests and tool execution directly available in this conversation. This label identifies the source conversation, not a recovered session ID. |
+| S06 | Input time granularity: P043 | Client date November 6, 2026; exact turn timestamp unavailable | User question and read-only inspection directly available in this conversation. This label identifies the source conversation, not a recovered session ID. |
 
 Source notes and historical verification paragraphs below retain the original recorder's wording. Within a labeled entry or evidence group, “this conversation,” “visible,” and “current” refer to its source session at recording time. A later preservation or link check does not independently reverify those past executions. Historical test totals (44, 45, 46, 51, and 59) describe different implementation states and should not be combined into one test run.
 
@@ -92,6 +94,9 @@ The provenance of the original submitted feature work is not fully established b
 | [P038](#p038-record-this-repository-building-and-evaluation-conversation) | S04 | Record this repository-building and evaluation conversation. See the entry for resulting assistance. | Writing/documentation only; no new model run. |
 | [P039](#p039-request-a-reusable-prompt-for-collecting-other-conversations) | S01 | Draft a prompt to collect other conversations without fabricating history. | Chat-only response; no repository changes. |
 | [P040](#p040-consolidate-the-ai-use-record-and-enable-future-prompt-logging) | S01 | Organize the combined record and add project-level logging instructions. | Preservation, ID/index, link, fence, whitespace, and scope checks; no pipeline rerun. |
+| [P041](#p041-ignore-local-reference-files) | S05 | Ignore `data/Important Data Files/` while preserving its files. | Git ignore/status checks and disclosure formatting checks; no code tests or training needed. |
+| [P042](#p042-ignore-local-agent-instructions) | S05 | Ignore root `AGENTS.md` and remove it from the index while retaining the local file. | Ignore/index/local-file checks and disclosure formatting checks; no code tests or training needed. |
+| [P043](#p043-explain-input-and-model-time-granularity) | S06 | Explain minute-level input measurements versus daily model examples. | Read data documentation/loader; counted female CSV rows and a contributor export; disclosure checks only, no training or code tests. |
 
 ## Prompt log
 
@@ -767,6 +772,42 @@ also, is there any way to tell codex that from now on, anytime i prompt it in th
 
 **Verification and limits:** Documentation/instruction changes only. Preservation checks compare all 38 pre-existing quoted bodies with the saved pre-edit file, verify all 40 IDs and index anchors, balanced fences, links, and formatting, and compare the other 95 repository-file hashes. No project tests, contributor extraction, notebooks, or model runs are rerun for this maintenance request.
 
+
+### P041: Ignore local reference files
+
+Conversation: **S05**.
+
+```text
+can you gitignore the stuff in data/Important Data Files/
+```
+
+**Resulting AI assistance:** Added `/data/Important Data Files/` to root `.gitignore` and updated this disclosure. The three untracked PDFs are now ignored. The previously tracked `report_guidelines.pdf` remains tracked; no files were deleted or removed from the index. Preserved the pre-existing `AGENTS.md` modification and all input data/contributor files.
+
+**Verification and limits:** `git check-ignore -v` confirmed the new rule matches all three untracked PDFs. `git ls-files -- 'data/Important Data Files/'` confirmed `report_guidelines.pdf` remains tracked, and `git status --short` showed the PDFs no longer appear as untracked. Checked disclosure prompt/index IDs, the new anchor, fences, and `git diff --check`. No code tests or model training ran because this change only affects Git ignore configuration and documentation.
+
+### P042: Ignore local agent instructions
+
+Conversation: **S05**.
+
+```text
+can u also gitignore the agents.md file
+```
+
+**Resulting AI assistance:** Added `/AGENTS.md` to root `.gitignore`. Because `AGENTS.md` was already tracked, ran `git rm --cached -- AGENTS.md` to stage its removal from the repository while preserving the local file and its existing contents. Updated this disclosure. No commit was created.
+
+**Verification and limits:** The initial index removal failed because the sandbox made `.git/index.lock` read-only; the same command succeeded with approved elevated execution. `git check-ignore -v -- AGENTS.md` matched the new rule; `test -f AGENTS.md` passed; `git ls-files -- AGENTS.md` returned no entries; and status showed its staged deletion. Checked prompt/index IDs, the new anchor, balanced fences, and working-tree/staged diff whitespace. No code tests or model training ran because only Git configuration, index tracking, and disclosure documentation changed.
+
+### P043: Explain input and model time granularity
+
+Conversation: **S06**.
+
+```text
+is the data that were using minute level data or liek what granularity of itme
+```
+
+**Resulting AI assistance:** Explained that the repository treats temperature (CBT) and locomotor activity (LA) inputs as one measurement per minute per mouse: 1,440 readings per day and 20,160 readings over 14 recording days. Distinguished that input resolution from the classifier's one-example/one-prediction-per-mouse-day resolution: analysis days 2–13 give 156 examples across 13 female mice, with days 1 and 14 retained as recording buffers. No absolute clock timestamps are established by these CSVs. Only this disclosure was edited; input files, contributor work, and shared code were preserved.
+
+**Verification and limits:** Read `docs/DATA.md`, `src/estrus/data.py`, and relevant feature code. A read-only Python CSV count confirmed both female inputs have 20,160 rows and 13 mouse columns; Matthew's feature export has 156 rows for 13 mice on days 2–13. The one-minute interpretation is documented and enforced by the loader's recording-day slicing; row counts alone do not independently verify the upstream acquisition/export interval. Checked prompt/index coverage, the new anchor, fenced-block balance, preservation of previous prompt bodies, and disclosure diff whitespace. No code tests or model training ran because the task was an explanation with a documentation-only log update.
 
 ## Coding process and validation evidence
 
