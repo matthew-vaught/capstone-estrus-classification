@@ -20,6 +20,8 @@ The model-comparison table shows the best validation result for each model famil
 
 ## Feature assessment is the focus
 
+The default workflow retains the fixed 0.5 decision cutoff. The optional [threshold experiment](THRESHOLD_TUNING.md) first generates development probabilities with the scored mouse excluded from model selection, preprocessing, fitting, and calibration; selects a cutoff by F2 (or balanced accuracy); and freezes it before reserved-test prediction. It then uses the same final model-selection/calibration workflow described above. Development threshold-selection scores are not independent evaluation scores.
+
 Every input feature appears in the report, grouped under Matthew, Vivian, Brandon, Alisha, or Reference features. Names come from the CSV namespace. Valid contributor exports are combined **without reference features**. With no valid exports, the workflow reports a fallback to the reference baseline. `--baseline` explicitly ignores all contributor exports and runs the reference features alone. Missing or invalid exports do not trigger the switch to contributor-only features.
 
 For baseline-versus-team comparisons, use the same labels, seed, configuration, and quick/full setting. Mouse membership and validation partitions depend on those inputs, not the feature columns. Each run selects the best model/subset for its own available features. Feature engineering is not guaranteed to improve the test score; the comparison measures whether it does. Reduced feature sets retain at least one usable feature, so an export with only one or a few features still works.
@@ -62,7 +64,7 @@ Vivian's separate exploratory classifier uses per-mouse centering; her shared ex
 
 **Average precision (AP)** is used consistently for comparison, selection, feature screening, and final testing. It evaluates how well estrus days rank near the top of predicted probabilities. Higher is better and 1 is perfect. It is not accuracy. AP can penalize highly ranked false positives, but changing probability magnitudes without changing rank can leave AP unchanged.
 
-At the fixed threshold of 0.5, the report also gives plain counts of correctly classified estrus and non-estrus days. `confidence = max(p_estrus, 1-p_estrus)` is the probability assigned to the predicted class. Calibration attempts to make probabilities meaningful, but cannot guarantee this with so few mice and provisional labels. Additional metrics, including log loss and Brier score that penalize confidently wrong probabilities, are retained with `--save-details`.
+At the run's saved decision threshold (0.5 by default), the report also gives plain counts of correctly classified estrus and non-estrus days. Confidence is the probability assigned to the predicted class: `p_estrus` for Estrus and `1-p_estrus` for Non-estrus. With the default cutoff this equals `max(p_estrus, 1-p_estrus)`; a tuned cutoff can select a class with probability below 0.5. Calibration attempts to make probabilities meaningful, but cannot guarantee this with so few mice and provisional labels. Additional metrics, including accuracy, sensitivity, specificity, F2, confusion counts, log loss, and Brier score, are retained with `--save-details`.
 
 The spreadsheet uses `mouse_id`, `day_index`, `actual_class`, `predicted_class`, `estrus_probability`, and `confidence`. Probabilities are on a 0–1 scale. All plotted examples come from the reserved test mice.
 

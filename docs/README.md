@@ -6,6 +6,8 @@ This project evaluates temperature and activity features for retrospective class
 | --- | --- |
 | [Reproducing the project](REPRODUCING.md) | Environment, build stages, regeneration, configuration, and synthetic verification |
 | [Results](RESULTS.md) | Presentation milestone, report interpretation, and evaluation limits |
+| [Improvement research plan](research/estrus-improvement-2026-11-11.md) | Error analysis, literature, feature hypotheses, and a prioritized evaluation plan |
+| [Decision-threshold experiment](THRESHOLD_TUNING.md) | Development-only cutoff selection, F2 objective, comparison with 0.5, and saved-model behavior |
 | [Data](DATA.md) | Classroom recordings, checksums, provisional labels, and data-retention policy |
 | [Methods](METHODS.md) | Features, grouped evaluation, metrics, and scientific limitations |
 | [Modeling and reports](MODELING.md) | Available models, saved artifacts, and inference |

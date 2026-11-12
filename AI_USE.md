@@ -2,7 +2,7 @@
 
 Last consolidated: November 3, 2026 (America/Los_Angeles).
 
-**Coverage: 47 recorded user turns from seven project conversations.** Separately, the appended Claude record contains nine phase entries with selected prompts; those are not a complete turn count and are not included in this total. The user reports having collected their project conversations. This consolidation organizes the supplied records; it does not independently establish a complete archive of every teammate's AI use or recover missing historical tool outputs. Known source-evidence limits are identified below rather than treating unrecorded activity as human-only work.
+**Coverage: 52 recorded user turns from eight project conversations.** Separately, the appended Claude record contains nine phase entries with selected prompts; those are not a complete turn count and are not included in this total. The user reports having collected their project conversations. This consolidation organizes the supplied records; it does not independently establish a complete archive of every teammate's AI use or recover missing historical tool outputs. Known source-evidence limits are identified below rather than treating unrecorded activity as human-only work.
 
 The record contains user prompts, resulting AI assistance, and actual verification where known. It supports the brief [README acknowledgement](README.md#ai-use) and the course's requirement to document AI use and testing. Automatically attached IDE/environment/page metadata is omitted. Existing quoted prompts and P001–P038 IDs were preserved; P039–P040 add the directly available continuation of the cleanup conversation.
 
@@ -23,6 +23,7 @@ Tool: **OpenAI Codex**. Imported session records identify the agent as based on 
 | S05 | Ignore local reference files and agent instructions: P041–P042 | Client date November 4, 2026; exact turn timestamps unavailable | User requests and tool execution directly available in this conversation. This label identifies the source conversation, not a recovered session ID. |
 | S06 | Input time granularity: P043 | Client date November 6, 2026; exact turn timestamp unavailable | User question and read-only inspection directly available in this conversation. This label identifies the source conversation, not a recovered session ID. |
 | S07 | Divergent Git branches, merge editor, status, and push guidance: P050–P053 | Client date November 11, 2026; exact turn timestamp unavailable | User terminal transcript and local Git inspection directly available in this conversation. This is a source label, not a recovered session ID. |
+| S08 | Improvement research, assumed-label clarification, and decision-threshold implementation/leakage review and AP explanation: P054–P058 | Client date November 11, 2026; exact turn timestamps unavailable | User requests and clarification, repository inspection, saved-prediction calculations, web research, implementation, tests, full experiment, and documentation edits directly available in this conversation. This is a source label, not a recovered session ID. |
 
 Source notes and historical verification paragraphs below retain the original recorder's wording. Within a labeled entry or evidence group, “this conversation,” “visible,” and “current” refer to its source session at recording time. A later preservation or link check does not independently reverify those past executions. Historical test totals (44, 45, 46, 51, and 59) describe different implementation states and should not be combined into one test run.
 
@@ -47,6 +48,8 @@ Codex's recorded assistance spans:
 | Submission integration | Review/reproduction of Alisha's export and correction/integration of Vivian's notebook handoff; resulting model runs | P034–P035 |
 | Ownership and maintainability | Relocation of Matthew-only helper/tests; generic JSON input requirements; later documentation migrations, build orchestration, configuration, and synthetic verification | P006, P001–P002 |
 | Reports and interpretation | HTML accordions, reference overlays, feature tables, explanations, and paste-ready collaboration/modeling/evaluation prose | P016–P033, P036–P037 |
+| Improvement research | Existing-model error analysis, threshold illustrations, primary-source research, and proposed feature/model/evaluation experiments; labels retained | P054–P055 |
+| Decision-threshold tuning | Opt-in nested mouse-grouped cutoff selection, report/model integration, leakage regression tests, and full experiment with original features/labels | P056–P057 |
 | Disclosure | Contribution statement, prompt-collection template, imported records, consolidated log, and future logging instructions | P005, P007, P013, P038–P040 |
 
 The provenance of the original submitted feature work is not fully established by a later integration review. In particular, P035 records earlier AI edits to Vivian's notebook/export interface, while P002's later cleanup preserved her implementation; those statements describe different stages. The wavelet handoff supplied in P009 is a specification, not proof that its originating project was written without AI. The reference features were general/paper-inspired choices, not random features, and baseline comparisons do not establish human superiority over AI.
@@ -102,6 +105,11 @@ The provenance of the original submitted feature work is not fully established b
 | [P051](#p051-explain-the-merge-commit-editor) | S07 | Explain Nano and saving the default merge message; advise committing the follow-up disclosure before pushing. | Screenshot and local merge-state inspection; documentation checks only; no Git mutation or code tests. |
 | [P052](#p052-confirm-successful-merge-and-remaining-disclosure-change) | S07 | Confirm successful merge, explain three local commits and the remaining disclosure edit, and give commit/push commands. | Local Git status/history/diff and documentation checks; no commit, push, code tests, or training executed. |
 | [P053](#p053-confirm-readiness-to-push) | S07 | Confirm the user can push and provide commands to include the required disclosure update. | Read-only status/history and documentation checks; no commit or push executed. |
+| [P054](#p054-research-improvements-to-the-current-estrus-classifier) | S08 | Assess the current result and investigate features, models, metrics, false negatives, and possible label uncertainty. | Inspected code and retained results; recomputed saved-prediction metrics without fitting; browsed primary papers/official documentation; checked research-note links and disclosure preservation. |
+| [P055](#p055-clarify-assumed-cycle-labels-and-preserve-them) | S08 | Confirm labels assume a repeating four-day cycle and explicitly retain all labels. | Incorporated the clarification into the research assessment; documentation and protected-file checks, no relabeling or training. |
+| [P056](#p056-plan-and-implement-decision-threshold-tuning) | S08 | Explore threshold tuning first, separately from mouse-relative and joint LA–CBT features; plan and implement it. | Targeted tests: 22 passed; initial full suite: 68 passed; full original-feature experiment selected cutoff 0.367183, detecting 7/9 positives with no false alarms; saved-model/provenance/preservation checks. |
+| [P057](#p057-check-threshold-tuning-best-practices-and-data-leakage) | S08 | Follow scikit-learn threshold-tuning guidance and double-check overfitting/leakage prevention. | Rechecked official guidance; added excluded-development-label invariance test; final full suite: 69 passed; documented remaining selection/previous-exploration limits. |
+| [P058](#p058-explain-why-threshold-tuning-leaves-average-precision-unchanged) | S08 | Explain unchanged AP after decision-threshold tuning. | Read saved cutoff comparison; documentation preservation/index/fence/whitespace checks; no training or code tests. |
 
 ## Prompt log
 
@@ -933,6 +941,108 @@ so can i push to github?
 **Resulting AI assistance:** Confirmed that the successful merge allows a normal push. Provided commands to stage and commit the required disclosure follow-ups, including this turn, and then push. Only `AI_USE.md` was edited. No commit or push was executed by Codex; the user asked whether they could push.
 
 **Verification and limits:** Executed `git status --short --branch` and `git log -3 --oneline`; confirmed three commits ahead of the local `origin/main` reference, merge commit `4bc6e1c`, and an unstaged disclosure edit. Read coverage, index, and recent entries; reread immediately before writing. Documentation checks confirm previous prompt bodies and imported Claude section preserved, updated primary count, new index anchor, balanced fences, and clean diff whitespace. No remote fetch or push was attempted, so subsequent remote changes are not ruled out. No code tests or model training ran because only guidance and the disclosure record changed.
+
+### P054: Research improvements to the current estrus classifier
+
+Conversation: **S08**.
+
+```text
+Okay so right now our model is doing pretty well. the latest run where we did it with all of me, vivian, and alisha's features achieved an average precision of .932 on the held-out test set and a validation AP of .992
+
+given the context of the problem that we are working on and the work that we have done so far and our feature engineering and the model we're using and everything, is this a good result?
+
+the thing is, our mentor wants us to basically get 100% accuracy if not like near 100% accuracy
+
+can you help me do some research into basically how we can improve there? do we need better features? are we maybe missing some important features that would isolate relationships that we haven't yet touched that could help us get to the 100% mark?
+
+do we maybe need to explore some different models? or different evaluation metrics?
+
+i want to treat this like a bit of a research problem where im just trying to figure out what we need to do to get that last bit of improvement.
+
+Also one thing I will say is that currently, our model is misclassifying only 4 days. Unfortunately, all 4 of those days are estrus days that got misclassified as non estrus days. So it seems to be a bit biased in that sense.
+
+Also, I wanted to note that the data of f3 recording day 10 is supoosedly an estrus day based on our professor's labeling, but looking at the data I think that this might be wrong. I think that because it is a non-official labeling and because mouse estrus cycles aren
+```
+
+Source note: the available request ends mid-sentence at `aren`; it has not been reconstructed. The user's subsequent clarification is recorded separately as P055.
+
+**Resulting AI assistance:** Reviewed the actual model, feature definitions, evaluation setup, and retained presentation run. Added [docs/research/estrus-improvement-2026-11-11.md](docs/research/estrus-improvement-2026-11-11.md) and a navigation row in [docs/README.md](docs/README.md). Distinguished AP from accuracy and sensitivity: the saved run has AP 0.9320987654320989, accuracy 32/36, sensitivity 5/9, and specificity 27/27 at cutoff 0.5. Identified the four missed days and their scores, and calculated per-mouse AP (f3 and f6: 1; f11: 0.9167). Described between-mouse normalization as a hypothesis, not a demonstrated cause. Alternative test cutoffs were illustrated as retrospective arithmetic only: 0.4 detects 7/9 positives with no false alarms; 0.33 detects 8/9 with one false alarm; 0.05 detects 9/9 with nine false alarms. No cutoff was selected for deployment or saved into a model.
+
+Browsed Smarr et al. (2017), Pantier et al. (2019), Wolcott et al. (2022), and official scikit-learn documentation. Recommended development-only cutoff selection, mouse-relative measurements, explicit sustained-plateau/decline features, a small set of adjacent-day contrasts/interactions, and targeted nonlinear-model comparisons. Noted that balanced class weights and several coupling features already exist, and reference plateau features are excluded from the current contributor-only run. Explained the small cohort, assumed labels, model-selection optimism, retrospective input scope, and the need for new animals for stronger generalization claims. These are research recommendations; no feature/model/evaluation implementation was changed and no improvement was newly validated. F3 day 10 remains an unresolved disagreement, not a confirmed label error.
+
+**Verification and limits:** Executed `rg --files`, focused `rg` searches, `cat`/`sed`/`tail` reads, and `git status --short` to inspect instructions, this disclosure, documentation, configuration, source, the versioned presentation JSON, and local ignored results. A `.venv/bin/python -` calculation using pandas and scikit-learn recomputed AP, confusion counts, accuracy, recall, precision, balanced accuracy, F2, and per-mouse AP directly from saved predictions; no model fitting occurred. The observed threshold results and individual scores are recorded in the research note. Some direct Nature/PMC page fetches failed with access/redirect errors; accessible Springer text, indexed primary-paper passages, and official software documentation supplied the cited evidence. Local documentation checks verify new links, anchors, fences, preservation of prior disclosure text/prompts, protected-file hashes, and diff whitespace. The initial preservation check detected an end-of-file newline added by the patch tool; restored the original end-of-file convention before rerunning the checks. No project tests, training, notebook, or feature regeneration ran because only research/documentation changed. The detailed local run is ignored by Git and may be absent from a fresh checkout. Only the research note, documentation index, and this disclosure were edited.
+
+### P055: Clarify assumed cycle labels and preserve them
+
+Conversation: **S08**.
+
+```text
+they are based on an assumed repeating 4 day cycle which isn't necessarily always true. I don't want you to change the label like we should still keep all the same labels but the reason i brought it up is because im acknowledging that it may be extremely difficult to get 100% accuracy because there's a chance that label might be wrong lol
+```
+
+**Resulting AI assistance:** Accepted the user's clarification and explicit restriction on relabeling. Kept all assigned labels and all analysis days; the research note distinguishes possible proxy-label uncertainty from evidence that any specific label is incorrect. No label correction, exclusion of difficult cases, or sensitivity result under revised labels was implemented or claimed. Incorporated this clarification into the ongoing P054 assessment rather than starting a separate model experiment.
+
+**Verification and limits:** Read the clarification directly, compared it with the documented label construction and primary-source staging context, and checked preservation of input, contributor, source, test, and retained-run files. P054's saved-prediction calculations use the original labels throughout. Documentation checks cover the two new prompt entries and the research note. No model training or code tests ran for this clarification because it changed only the assessment and disclosure.
+
+### P056: Plan and implement decision-threshold tuning
+
+Conversation: **S08**.
+
+```text
+Okay there's 3 things that im actually interested in testing:
+
+
+
+1) decision threshold tuning (i think the idea of maybe determining a threshold that isnt exactly 0.5 is a great idea and something we should explore)
+2) creating some features to measure changes relative to each mouse's own baseline (I think this could add a ton of value)
+3) creating some new features to measure join relationships between LA and CBT (our professor actually gave us a lead on this topic that I think can motivate some very useful features)
+
+
+
+ultimately, I want to explore each one one-by-one.
+
+
+
+first, i want to take a look at decision threshold tuning. come up with a good gameplan for implementing this and get started on implementing, and let me know what is being done and why
+```
+
+**Resulting AI assistance:** Implemented the first experiment, leaving mouse-relative/joint-feature work for later. Added opt-in `threshold_tuning` configuration with F2 as the first objective and balanced accuracy as an alternative. The historical configuration and old models retain 0.5. For each mouse-grouped development fold, the new routine repeats model/feature/hyperparameter selection, fitting-fold preprocessing, and grouped sigmoid calibration exclusively on that fold's fitting mice, then predicts the excluded mice. It selects a cutoff from pooled excluded-mouse development probabilities and freezes it before final model fitting/test prediction. Development selection scores are explicitly distinguished from independent evaluation.
+
+Changed [src/estrus/modeling.py](src/estrus/modeling.py) to implement tuning, threshold-aware metrics, fold/curve evidence, same-model default-vs-selected test comparisons, and persistence of the exact cutoff. Corrected predicted-class probability to follow the selected class even below 0.5. Updated [src/estrus/reporting.py](src/estrus/reporting.py) and [src/estrus/results.py](src/estrus/results.py) to show the actual cutoff, comparison table, embedded development selection curve, and saved-model behavior. Added [config/threshold-f2.json](config/threshold-f2.json), [docs/THRESHOLD_TUNING.md](docs/THRESHOLD_TUNING.md), and [docs/results/threshold-f2-2026-11-11.json](docs/results/threshold-f2-2026-11-11.json); updated configuration/modeling/methods/reproduction/documentation-index guides. Expanded [tests/test_modeling.py](tests/test_modeling.py) and [tests/test_reporting.py](tests/test_reporting.py). Input data, contributor code/notebooks/exports, original labels, and existing result folders were preserved. No model or feature experiment beyond threshold tuning was added.
+
+**Verification and observed result:** Ran `MPLCONFIGDIR=/tmp/estrus-threshold-mpl .venv/bin/python -m pytest -q tests/test_modeling.py tests/test_reporting.py tests/test_results.py`: **22 passed in 7.60s**. Ran the full suite: **68 passed in 14.16s**. Executed the full experiment with `MPLCONFIGDIR=/tmp/estrus-threshold-mpl .venv/bin/python run.py model --config config/threshold-f2.json --save-details --output 'Model Building/results/threshold-f2-2026-11-11'`; it completed training, nested tuning, report generation, and saved-model publishing successfully. The development-only cutoff was **0.36718281570864303**. The final model remained logistic regression, C=1, top 35%/ten features. Test accuracy changed from **32/36 to 34/36 (88.9% to 94.4%)**, recall from **5/9 to 7/9**, with **0 false alarms** at both cutoffs and AP unchanged at **0.9320987654320989**. F3 day 2 and F11 day 6 were recovered; F3 day 10 and F11 day 10 remained false negatives. No cutoff was revised after inspecting this outcome.
+
+Additional executed Python assertions reconstructed the cutoff from 120 unique development prediction rows, checked inner/outer mouse memberships, verified that every final test probability matched the historical presentation run at `rtol=1e-12, atol=1e-12`, confirmed unchanged original test labels, and replayed saved-model probabilities, decisions, and class probabilities. Inspected the generated development-curve image with `view_image`; confirmed the report contains the selected cutoff and comparison. SHA-256 checks confirmed all **250** snapshotted original input/contributor/historical-result files were unchanged. Documentation checks cover new links/anchors, fences, previous disclosure preservation, experiment JSON provenance, and diff formatting. These are software and exploratory evaluation results, not independent biological validation. No failing test run or training failure occurred.
+
+### P057: Check threshold-tuning best practices and data leakage
+
+Conversation: **S08**.
+
+```text
+oh yeah i forgot to mention this but follow the best practices for decision threshold tuning. you gave me a link to here:
+
+[https://scikit-learn.org/stable/modules/classification_threshold.html](https://scikit-learn.org/stable/modules/classification_threshold.html)
+
+which warns against the issues with overfitting and also i jsut want to make sure we're preventing data leakage at all times
+
+i think youre already doing that right but i want to double check
+```
+
+**Resulting AI assistance:** Rechecked the specified official guidance, including its warning against using fitting predictions for cutoff selection and its default row-stratified validation. Confirmed that the implementation uses explicit mouse-disjoint folds and excludes each scored development mouse from model selection, preprocessing, fitting, and calibration; test mice are not passed to cutoff selection. Added a direct regression test that flips an excluded development fold's labels and requires its own probabilities and fold-specific model-choice audit to remain exactly unchanged. The cutoff may legitimately change because development targets select it after probability generation. Existing tests also require changing only test labels to leave cutoff/model choices and probabilities unchanged. Explained that development-selected threshold scores are still selection scores and can overfit a small cohort; earlier feature design and previously inspected test results limit independence and are not undone by nested computation. No claim of universally eliminated leakage or independent new validation was made.
+
+**Verification and limits:** Browsed the linked scikit-learn threshold documentation and its probability-calibration API. Ran the full suite after adding the explicit exclusion test: **69 passed in 13.99s**. P056's full experiment, saved-prediction/model replay, and protected-file checks remained applicable; no second training experiment or objective/cutoff adjustment was performed. Updated the threshold protocol with the additional test and observed result, and recorded both user turns once in this disclosure. Historical labels, inputs, contributor work, and existing runs remain unchanged. The final documentation/provenance checks preserve all previous prompt bodies and imported records, validate the two new index anchors/coverage, and check formatting and local links.
+
+### P058: Explain why threshold tuning leaves average precision unchanged
+
+Conversation: **S08**.
+
+```text
+wait why does average precision not go up at all?
+```
+
+**Resulting AI assistance:** Explained that average precision summarizes positive-class ranking across score thresholds. The experiment preserves every final probability and its ordering, so changing the one operating cutoff from 0.5 to 0.367183 cannot change AP. Used F3 day 2's unchanged probability of approximately 0.447 to illustrate how its class decision changes while its score/rank stays the same. Distinguished improvements in accuracy/recall/F2 from improvements in discrimination, and noted that raising AP requires improving positive-versus-negative ordering, for example through useful features or modeling changes. This was an explanation only; no implementation, feature, label, or model change was made. Only this disclosure was edited.
+
+**Verification and limits:** Read the coverage/index/recent disclosure entries, working-tree status, and retained `Model Building/results/threshold-f2-2026-11-11/details/threshold_comparison.csv`. The CSV reports identical AP 0.9320987654320989 at both cutoffs, accuracy 0.8888888888888888 versus 0.9444444444444444, and recall 0.5555555555555556 versus 0.7777777777777778. Previous saved-probability equality checks remain historical evidence rather than a new model execution. Checked preservation of all previous disclosure content apart from the declared count/coverage additions, the new index anchor, prompt/fence formatting, and `git diff --check -- AI_USE.md`. No code tests or training ran because this turn only explains the existing result and updates its disclosure.
 
 ## Coding process and validation evidence
 

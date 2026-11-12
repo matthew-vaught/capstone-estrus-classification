@@ -63,6 +63,8 @@ python run.py model --labels /path/to/confirmed_labels.csv --save-details
 
 For a new experiment, copy that configuration into `config/` under a descriptive name and pass its path. `--quick` overrides validation folds to two, trees to forty, and the regularization search to the quick grid. Use full mode for the presentation result. Baseline/team comparisons need matching labels, seed, configuration, and quick/full mode.
 
+`python run.py model --config config/threshold-f2.json --save-details` runs the opt-in [decision-threshold experiment](THRESHOLD_TUNING.md) using the full model search and unchanged labels/features. It adds nested mouse-grouped development fits to choose a cutoff by F2, and compares it with 0.5. Omitting `threshold_tuning` preserves the historical fixed cutoff.
+
 Proxy-label days, canonical mouse/day keys, and frozen scientific feature definitions are documented in [methods](METHODS.md) and the [contract](FEATURE_CONTRACT.md). Curated labels are supplied separately with `--labels`. This cleanup does not change the target, split, or feature definitions.
 
 ## Results and provenance

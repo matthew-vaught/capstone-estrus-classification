@@ -16,6 +16,14 @@ python run.py model --quick
 python run.py model --baseline --save-details
 ```
 
+To explore a development-selected decision cutoff with the current features:
+
+```bash
+python run.py model --config config/threshold-f2.json --save-details
+```
+
+This opt-in experiment selects a cutoff by F2 using mouse-disjoint development predictions, repeating model selection and calibration within each fitting fold. The report compares it with 0.5 on the same final model. The ordinary configuration retains 0.5. See the [threshold experiment](THRESHOLD_TUNING.md) for the protocol, interpretation limits, and detailed outputs.
+
 ## Output files
 
 | File | Purpose |
@@ -27,6 +35,8 @@ python run.py model --baseline --save-details
 | `details/` | Configuration, hashes, splits, full scores, and other records when `--save-details` is used |
 
 Probabilities use a 0–1 scale. Confidence is the probability assigned to the predicted class, rather than a guarantee of correctness. Average precision is a ranking metric and is not classification accuracy. Feature assessments use development mice; the headline score uses reserved mice.
+
+The saved model includes the decision cutoff used in its report. A recall-oriented cutoff below 0.5 can produce an Estrus decision with confidence below 50%.
 
 Report examples show activity and temperature side by side. The black reference averages cycles within each female, then all thirteen females, including test mice, for visual comparison only. It never enters model fitting or scoring. See [methods](METHODS.md#cycle-day-reference-overlays) for the provisional cycle alignment and display conventions.
 
