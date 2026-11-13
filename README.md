@@ -2,7 +2,7 @@
 
 This capstone investigates whether core body temperature (CBT) and locomotor activity (LA) features can distinguish estrus-proxy days in female mice. The pipeline combines independently developed feature sets, compares classifiers with mouse-grouped validation, and produces a shareable HTML report.
 
-The dataset contains 14 days of one-minute recordings from 13 females. Analysis uses recording days 2–13, giving 156 mouse-days. Current submissions provide 28 features: Matthew's four, Alisha's eighteen, and Vivian's six. Brandon's folder currently contains starter code. See the [feature overview](docs/README.md#feature-documentation).
+The dataset contains 14 days of one-minute recordings from 13 females. Analysis uses recording days 2–13, giving 156 mouse-days. Current submissions provide 28 features: Matthew's four, Alisha's eighteen, and Vivian's six. Brandon's folder contains feature evaluation code. See the [feature overview](docs/README.md#feature-documentation).
 
 **Interpretation:** labels for recording days 2, 6, and 10 are provisional paper-alignment proxies, rather than independently confirmed biological stages. Current contributor features require complete recordings, including future context, and support retrospective classification. The [methods](docs/METHODS.md) explain these limitations.
 
