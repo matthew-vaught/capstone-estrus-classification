@@ -23,7 +23,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 from .data import KEYS
-from .contracts import input_requirements
+from .contracts import OWNERS, feature_prefix, input_requirements
 
 FAMILIES = {
     LogisticRegression: "logistic",
@@ -130,12 +130,13 @@ def feature_assessment(X, y, cv, chosen_pipeline, final_pipeline, config):
         ("model", LogisticRegression(max_iter=3000, class_weight="balanced", random_state=config["seed"])),
     ])
     rows = []
+    owner_names = {feature_prefix(owner)[:-2]: owner for owner in OWNERS}
     for index, feature in enumerate(X.columns):
         owner, name = feature.split("__", 1)
         solo_score = float(cross_val_score(single_feature_model, X[[feature]], y, cv=cv, scoring="average_precision", n_jobs=config["jobs"]).mean())
         rows.append({
             "feature": feature, "name": name,
-            "owner": "Reference features" if owner == "baseline" else owner.title(),
+            "owner": "Reference features" if owner == "baseline" else owner_names.get(owner, owner.replace("_", " ").title()),
             "individual_ap": solo_score, "importance_ap_drop": float(mean_drop[index]),
             "used": feature in selected,
             "status": "Used" if feature in selected else ("Constant / unavailable" if X[feature].nunique(dropna=True) <= 1 else "Not selected"),

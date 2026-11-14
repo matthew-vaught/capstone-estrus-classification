@@ -2,12 +2,14 @@
 
 This project evaluates temperature and activity features for retrospective classification of female mouse-days. The root [README](../README.md) provides installation and the shortest path to a report.
 
+**Retained final model:** original 28 features with F2 decision-threshold tuning, using [config/threshold-f2.json](../config/threshold-f2.json). Both experimental feature families are excluded. The [results guide](RESULTS.md) gives the retained scores and the recorded reasons for excluding those experiments.
+
 | Guide | What it explains |
 | --- | --- |
 | [Reproducing the project](REPRODUCING.md) | Environment, build stages, regeneration, configuration, and synthetic verification |
-| [Results](RESULTS.md) | Presentation milestone, report interpretation, and evaluation limits |
-| [Improvement research plan](research/estrus-improvement-2026-11-11.md) | Error analysis, literature, feature hypotheses, and a prioritized evaluation plan |
-| [Decision-threshold experiment](THRESHOLD_TUNING.md) | Development-only cutoff selection, F2 objective, comparison with 0.5, and saved-model behavior |
+| [Results](RESULTS.md) | Retained final result, historical presentation milestone, excluded experiments, and evaluation limits |
+| [Historical improvement research plan](research/estrus-improvement-2026-11-11.md) | Original error analysis, literature, and hypotheses before the completed experiments |
+| [Decision-threshold tuning](THRESHOLD_TUNING.md) | Retained development-only cutoff selection, F2 objective, comparison with 0.5, and saved-model behavior |
 | [Data](DATA.md) | Classroom recordings, checksums, provisional labels, and data-retention policy |
 | [Methods](METHODS.md) | Features, grouped evaluation, metrics, and scientific limitations |
 | [Modeling and reports](MODELING.md) | Available models, saved artifacts, and inference |
@@ -16,16 +18,18 @@ This project evaluates temperature and activity features for retrospective class
 
 ## Feature documentation
 
-Feature calculations remain in their original contributor folders. The documents below were moved from those folders, retaining the feature explanations and updating links.
+Feature calculations remain in their contributor or experimental-family folders. Definitions and reproduction notes are centralized below.
 
 | Contributor | Current submission | Documentation |
 | --- | --- | --- |
 | Matthew | 4 features: Morse amplitudes, next-day LA change, and threshold fractions | [Definitions and diagnostics](features/matthew.md) |
 | Alisha | 18 within-mouse DTW time-shift features | [Definitions and exploratory analysis](features/alisha.md) |
 | Vivian | 6 activity-adjusted CBT and correlation features | [Definitions and notebook regeneration](features/vivian.md) |
-| Brandon | Starter examples; no submitted CSV | [Starter and submission instructions](features/brandon.md) |
+| Brandon | Feature evaluation notebook and starter exporter; no submitted feature CSV | [Starter and submission instructions](features/brandon.md) |
+| Mouse Baseline (excluded) | 4 within-mouse contrasts; historical experiment only | [Rationale, formulas, and experiment](features/mouse-baseline.md) |
+| LA CBT Relationship (excluded) | 4 day-local joint-signal descriptors; historical experiment only | [Paper motivation, definitions, and experiment](features/la-cbt-relationship.md) |
 
-The current submitted feature set contains 28 numeric columns and all 156 canonical mouse-days. All three submitted feature families include complete-recording context. Counts describe the current submission and will change as contributors update their exports.
+The final configuration currently consumes 28 numeric columns on all 156 canonical mouse-days. All three supplied original feature families include complete-recording context. Each excluded experiment separately offered 32 columns; neither family's CSV is automatically added to the final setup.
 
 ## References and repository design
 

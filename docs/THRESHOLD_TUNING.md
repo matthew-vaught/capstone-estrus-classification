@@ -1,6 +1,6 @@
-# Decision-threshold experiment
+# Decision-threshold tuning for the retained final model
 
-This experiment changes how predicted probabilities become Estrus/Non-estrus decisions. It uses the existing contributor features, labels, mouse split, model search, and final probability calibration. Mouse-relative and joint LA–CBT feature experiments remain separate future work.
+This retained change controls how predicted probabilities become Estrus/Non-estrus decisions. It uses the original 28 contributor features, labels, mouse split, model search, and final probability calibration. The separate Mouse Baseline and LA CBT Relationship experiments were evaluated and excluded from the final model; their [results](RESULTS.md#feature-experiments-excluded-from-the-final-model) are retained as research history.
 
 ## Run it
 
@@ -12,7 +12,7 @@ python run.py model --config config/threshold-f2.json --save-details
 
 Open the printed `report.html`. It shows the selected cutoff, a comparison against 0.5 on the same final model, and the development selection curve. A new output directory preserves historical runs. The default `Model Building/config.json` still uses 0.5, so `python run.py model --save-details` retains the historical decision rule. Old saved models retain their own cutoffs.
 
-The [experiment configuration](../config/threshold-f2.json) copies the maintained full-search settings and adds:
+The [final configuration](../config/threshold-f2.json) copies the historical full-search settings and adds:
 
 ```json
 "threshold_tuning": {
@@ -21,7 +21,7 @@ The [experiment configuration](../config/threshold-f2.json) copies the maintaine
 }
 ```
 
-Supported objectives are `f2` and `balanced_accuracy`. F2 is the predeclared first experiment because missed estrus days are the immediate concern. Its formula is `5 TP / (5 TP + 4 FN + FP)`: it emphasizes recall while penalizing false alarms. It does not force every day positive to guarantee recall. Balanced accuracy gives equal weight to sensitivity and specificity. Neither objective guarantees 100% accuracy or an improvement on new mice.
+Supported objectives are `f2` and `balanced_accuracy`. F2 is the retained choice because missed estrus days motivated this work. Its formula is `5 TP / (5 TP + 4 FN + FP)`: it emphasizes recall while penalizing false alarms. It does not force every day positive to guarantee recall. Balanced accuracy is available for research and gives equal weight to sensitivity and specificity. Neither objective guarantees 100% accuracy or an improvement on new mice.
 
 ## How the cutoff is selected
 

@@ -1,5 +1,7 @@
 # Brandon Feature Engineering
 
+Brandon's current work includes [model_eval.ipynb](../../Brandon%20Feature%20Engineering/model_eval.ipynb) for feature evaluation. No `outputs/features.csv` is currently submitted, so his work does not add columns to the retained 28-feature model. The instructions below describe the existing starter exporter for a future feature contribution.
+
 Brandon owns everything inside this folder. Put notebooks, figures, exploratory code, and notes here. Other teammates should not edit these files.
 
 The only file consumed by model building is `outputs/features.csv`. Start by changing `extract_features` in [features.py](../../Brandon%20Feature%20Engineering/features.py), then run from the repository root:

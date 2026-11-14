@@ -10,19 +10,25 @@ All three submitted families include full-recording or future context, so the cu
 
 The workflow reserves three mice, compares logistic regression, random forest, and RBF SVM on the other ten, selects the combination with highest validation average precision, calibrates it, and evaluates it on the reserved mice. All days from a mouse stay together. Exact settings, leakage controls, feature assessments, and limitations are explained in [methods](METHODS.md).
 
-```bash
-python run.py model --save-details
-python run.py model --quick
-python run.py model --baseline --save-details
-```
-
-To explore a development-selected decision cutoff with the current features:
+The retained final setup adds a decision cutoff selected by F2 on excluded-mouse development probabilities. Mouse Baseline and LA CBT Relationship features are excluded. Use the explicit final configuration:
 
 ```bash
 python run.py model --config config/threshold-f2.json --save-details
+python run.py model --config config/threshold-f2.json --quick
+python run.py model --config config/threshold-f2.json --baseline --save-details
 ```
 
-This opt-in experiment selects a cutoff by F2 using mouse-disjoint development predictions, repeating model selection and calibration within each fitting fold. The report compares it with 0.5 on the same final model. The ordinary configuration retains 0.5. See the [threshold experiment](THRESHOLD_TUNING.md) for the protocol, interpretation limits, and detailed outputs.
+The last command is a reference-only comparison, not the final contributor model; `--quick` is a reduced trial, not the recorded final search. For the historical fixed-0.5 run:
+
+```bash
+python run.py model --config "Model Building/config.json" --save-details
+```
+
+The final configuration repeats model selection and calibration within fitting folds to obtain mouse-disjoint development predictions, selects a cutoff by F2, and freezes it before test prediction. The report compares it with 0.5 on the same model. Omitting `--config` still selects the historical fixed-0.5 configuration. See [threshold tuning](THRESHOLD_TUNING.md) for the protocol, interpretation limits, and detailed outputs.
+
+For historical experiment reproduction only, `config/mouse-baseline-f2.json` enables [Mouse Baseline features](features/mouse-baseline.md), and `config/la-cbt-relationship-f2.json` enables [LA–CBT relationship descriptors](features/la-cbt-relationship.md). Both were excluded from the final model; their code, exports, and results remain as research records. They use explicit `feature_owners` lists and do not change the final configuration's original 28 inputs.
+
+The retained result used logistic regression with ten selected features and cutoff 0.367183, AP 0.932, and accuracy 94.4%. Each fresh run selects its cutoff from development data; reuse `model.joblib` to obtain the exact recorded model and cutoff. See [results](RESULTS.md) for provenance and cohort-specific limits.
 
 ## Output files
 

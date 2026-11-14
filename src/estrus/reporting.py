@@ -14,7 +14,7 @@ import pandas as pd
 
 from .data import ANALYSIS_DAYS, iter_days
 from .results import MODEL_NAMES
-from .contracts import OWNERS
+from .contracts import DEFAULT_OWNERS
 
 
 def _image(fig, path):
@@ -88,7 +88,9 @@ def feature_sections(destination, final_model, diagnostics=()):
     strongest = display(top, include_owner=True) if len(top) else "<p>No feature showed a positive contribution in this validation run.</p>"
     groups = []
     statuses = {item["owner"]: item["status"] for item in diagnostics}
-    for owner in [*OWNERS, "Reference features"]:
+    owners = dict.fromkeys([*DEFAULT_OWNERS, *[item["owner"] for item in diagnostics],
+                            *catalog.owner.tolist(), "Reference features"])
+    for owner in owners:
         block = catalog[catalog.owner.eq(owner)]
         if block.empty:
             if owner == "Reference features":

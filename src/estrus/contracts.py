@@ -11,7 +11,23 @@ import pandas as pd
 
 from .data import KEYS, canonical_keys, find_root
 
-OWNERS = ("Matthew", "Vivian", "Brandon", "Alisha")
+DEFAULT_OWNERS = ("Matthew", "Vivian", "Brandon", "Alisha")
+OWNERS = (*DEFAULT_OWNERS, "Mouse Baseline", "LA CBT Relationship")
+
+
+def feature_prefix(owner):
+    return owner.lower().replace(" ", "_") + "__"
+
+
+def resolve_owners(owners=None):
+    """Explicit feature-family lists enable experiments without changing defaults."""
+    if owners is None:
+        return DEFAULT_OWNERS
+    if (not isinstance(owners, (list, tuple)) or not owners
+            or any(not isinstance(owner, str) or owner not in OWNERS for owner in owners)
+            or len(set(owners)) != len(owners)):
+        raise ValueError(f"feature_owners must be a nonempty list of distinct registered names: {OWNERS}.")
+    return tuple(owners)
 
 
 def input_requirements(columns, root: Path | None = None):
@@ -23,7 +39,7 @@ def input_requirements(columns, root: Path | None = None):
     columns = set(columns)
     notes = []
     for owner in OWNERS:
-        prefix = owner.lower() + "__"
+        prefix = feature_prefix(owner)
         if not any(column.startswith(prefix) for column in columns):
             continue
         if root is None:
@@ -59,7 +75,7 @@ def validate_features(frame: pd.DataFrame, owner: str) -> pd.DataFrame:
     Reject the whole export on a schema violation. Partial numeric missingness
     is retained for training-fold imputation, without modifying the input frame.
     """
-    prefix = owner.lower() + "__"
+    prefix = feature_prefix(owner)
     if not set(KEYS).issubset(frame.columns):
         raise ValueError("Missing mouse_id or day_index key columns.")
     if frame.columns.duplicated().any():
@@ -109,11 +125,11 @@ def export_features(frame: pd.DataFrame, root: Path, owner: str) -> Path:
     return path
 
 
-def collect_features(root: Path, baseline: pd.DataFrame, destination: Path, *, baseline_only=False):
+def collect_features(root: Path, baseline: pd.DataFrame, destination: Path, *, baseline_only=False, owners=None):
     """Use valid team exports alone, or reference features when none are valid."""
     combined = canonical_keys()
     diagnostics = []
-    for owner in OWNERS:
+    for owner in resolve_owners(owners):
         path = feature_path(root, owner)
         status = {"owner": owner, "path": str(path.relative_to(root))}
         if baseline_only:

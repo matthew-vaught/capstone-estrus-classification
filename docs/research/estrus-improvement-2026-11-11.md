@@ -1,5 +1,7 @@
 # Research plan for improving estrus-day classification
 
+Historical research plan, prepared before the completed experiments. The retained final decision is the original 28 features plus F2 threshold tuning; both new feature families were excluded. See [current results and decisions](../RESULTS.md) for outcomes rather than treating the proposed work below as pending implementation.
+
 Prepared November 11, 2026. This is a research assessment of the existing model, not a new training experiment. The user confirmed that labels follow an assumed four-day cycle and explicitly requested that all labels remain unchanged. Possible label error is an interpretation limit, not an established finding about F3 day 10.
 
 ## Assessment of the current result

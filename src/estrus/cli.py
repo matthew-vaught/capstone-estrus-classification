@@ -11,7 +11,7 @@ from tempfile import TemporaryDirectory
 
 import pandas as pd
 
-from .contracts import OWNERS, collect_features, feature_path, read_features
+from .contracts import OWNERS, collect_features, feature_path, read_features, resolve_owners
 from .data import PROXY_SOURCE, find_root, load_labels, prepare, sha256
 from .features import assemble_features
 
@@ -88,6 +88,7 @@ def main(argv=None):
         from .results import publish_results
         config_path = args.config or root / "Model Building/config.json"
         config = json.loads(config_path.read_text())
+        owners = resolve_owners(config.get("feature_owners"))
         if args.quick:
             config.update(cv_folds=2, trees=40, quick=True)
         labels = load_labels(args.labels)
@@ -99,7 +100,11 @@ def main(argv=None):
             raise ValueError(f"Output directory {destination} is nonempty; choose a new run directory.")
         with TemporaryDirectory(prefix="estrus-run-") as temporary:
             workspace = Path(temporary)
-            features, diagnostics = assemble_features(root, workspace, baseline_only=args.baseline)
+            features, diagnostics = assemble_features(root, workspace, baseline_only=args.baseline, owners=owners)
+            if "feature_owners" in config and not args.baseline:
+                rejected = [d["owner"] for d in diagnostics if d["status"] != "accepted"]
+                if rejected:
+                    raise ValueError(f"Explicit feature_owners require valid exports for {rejected}. Generate/validate them before this experiment.")
             meta = metadata(root, config, args, diagnostics)
             meta["feature_mode"] = "contributors" if any(d["status"] == "accepted" for d in diagnostics) else "baseline"
             (workspace / "run_metadata.json").write_text(json.dumps(meta, indent=2) + "\n")

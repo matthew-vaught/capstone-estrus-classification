@@ -56,6 +56,17 @@ def test_regeneration_rejects_notebook_and_starter_owners(tmp_path):
         assert failure.value.code == 2
 
 
+def test_explicit_missing_feature_family_stops_model_experiment(tmp_path, capsys):
+    from estrus.cli import main
+    submitted = canonical_keys().assign(vivian__example=range(156))
+    export_features(submitted, tmp_path, "Vivian")
+    config = tmp_path / "experiment.json"
+    config.write_text(json.dumps({"feature_owners": ["Vivian", "Mouse Baseline"]}))
+    assert main(["--root", str(tmp_path), "run", "--config", str(config)]) == 2
+    assert "Explicit feature_owners require valid exports" in capsys.readouterr().err
+    assert not (tmp_path / "Model Building/results").exists()
+
+
 def test_clean_removes_only_build_scratch_and_refuses_symlinks(tmp_path):
     retained = ["data/inputs/fem_temp.csv", "Vivian Feature Engineering/outputs/features.csv",
                 "Model Building/results/historical/report.html", "data/outputs/labels.template.csv"]

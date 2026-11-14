@@ -1,0 +1,52 @@
+{
+  "owner": "Mouse Baseline",
+  "information_cutoff": "retrospective_complete_recording",
+  "baseline": "Per target day, median of the other 11 analysis-day summaries of the same mouse; all labels ignored",
+  "analysis_days": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13
+  ],
+  "minimum_reference_days": 9,
+  "denominator_floor": 1e-12,
+  "inspiration": "Matthew's hours-6\u201312 threshold/mean exploration, first-half CBT ultradian suppression, and next-day circadian LA amplitude delta",
+  "units": {
+    "cbt_mean_h6_12_minus_median": "degrees C",
+    "la_mean_h6_12_relative_median": "fractional difference",
+    "cbt_ultradian_amplitude_h0_12_relative_median": "fractional difference",
+    "circadian_la_next_day_delta_relative_median": "fractional amplitude change"
+  },
+  "missing_values_per_feature": {
+    "mouse_baseline__cbt_mean_h6_12_minus_median": 0,
+    "mouse_baseline__la_mean_h6_12_relative_median": 0,
+    "mouse_baseline__cbt_ultradian_amplitude_h0_12_relative_median": 0,
+    "mouse_baseline__circadian_la_next_day_delta_relative_median": 13
+  },
+  "wavelet": "Unchanged Matthew Morse helper: beta=5, gamma=3, peak-2, linear detrending, periodic boundary, band max absolute amplitude then window mean",
+  "input_sha256": {
+    "data/inputs/fem_temp.csv": "bd66f8633f8773e44a1d765cdaa0c52f927f002d8f02ef5288416c78bc80f68e",
+    "data/inputs/fem_act.csv": "5398fd74dc21d4fb22af7948057651605e8e8187eb0b796a95a816d98e32447c"
+  },
+  "source_sha256": {
+    "Mouse Baseline Feature Engineering/features.py": "0b1412c071e3f99a9763df879f52c8ca0a98585656d41c64e610ecf58ceb96e4",
+    "Mouse Baseline Feature Engineering/input_requirements.json": "1b07ced42960d2adbda6b618372e64a4ed5f37166584a288b43e7f67417739ec",
+    "Matthew Feature Engineering/wavelets.py": "f22ef7481b21207b2fc4ffa7383bb5818c5234cec54f1d38f93d396428c87c13",
+    "docs/features/mouse-baseline.md": "84b3b952bd96b78ec5ea83ee5b5316085f23c8f14155b108dd56c17f8c605bd4"
+  },
+  "feature_columns": [
+    "mouse_baseline__cbt_mean_h6_12_minus_median",
+    "mouse_baseline__la_mean_h6_12_relative_median",
+    "mouse_baseline__cbt_ultradian_amplitude_h0_12_relative_median",
+    "mouse_baseline__circadian_la_next_day_delta_relative_median"
+  ],
+  "feature_csv_sha256": "b02cff840f8e03bbab3461b1a19209313600dc9f7b8aec0b97c717d699714bad"
+}
