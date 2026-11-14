@@ -73,6 +73,8 @@ This completed run evaluated {len(predictions)} mouse-days from {predictions.mou
 **Main metric: average precision = {scores['average_precision']:.3f}.** It measures how well estrus days appear near the top when days are ranked by predicted estrus probability. Higher is better; 1 is perfect. This is the metric used to choose models, not a percentage of correct predictions.
 
 The saved model uses **{model_name}** with **{final_model['n_features']} features** ({final_model['feature_set']}). It was chosen using validation on {len(final_model['training_mice'])} training mice. The score above comes from {len(final_model['test_mice'])} reserved test mice. The saved model is the same fitted model evaluated here; test mice are not used to fit it.
+
+**Decision cutoff: {final_model.get('threshold', .5):.6f}.** {'Selected using development mice only; see the report for the comparison with 0.5.' if final_model.get('threshold_tuning', {}).get('enabled') else 'Fixed at the historical default of 0.5.'} This cutoff is saved with the model and used by `estrus predict`.
 {note}
 In the spreadsheet, `actual_class` and `predicted_class` say Estrus or Non-estrus. `estrus_probability` is P(estrus); `confidence` is the probability assigned to the predicted class. Both use 0–1, so 0.8 means 80%. Confidence is a model estimate, not a guarantee.
 {extra}

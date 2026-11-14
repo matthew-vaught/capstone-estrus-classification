@@ -2,7 +2,7 @@
 
 Last consolidated: November 3, 2026 (America/Los_Angeles).
 
-**Coverage: 47 recorded user turns from seven project conversations.** Separately, the appended Claude record contains nine phase entries with selected prompts; those are not a complete turn count and are not included in this total. The user reports having collected their project conversations. This consolidation organizes the supplied records; it does not independently establish a complete archive of every teammate's AI use or recover missing historical tool outputs. Known source-evidence limits are identified below rather than treating unrecorded activity as human-only work.
+**Coverage: 63 recorded user turns from nine project conversations.** Separately, the appended Claude record contains nine phase entries with selected prompts; those are not a complete turn count and are not included in this total. The user reports having collected their project conversations. This consolidation organizes the supplied records; it does not independently establish a complete archive of every teammate's AI use or recover missing historical tool outputs. Known source-evidence limits are identified below rather than treating unrecorded activity as human-only work.
 
 The record contains user prompts, resulting AI assistance, and actual verification where known. It supports the brief [README acknowledgement](README.md#ai-use) and the course's requirement to document AI use and testing. Automatically attached IDE/environment/page metadata is omitted. Existing quoted prompts and P001–P038 IDs were preserved; P039–P040 add the directly available continuation of the cleanup conversation.
 
@@ -23,6 +23,8 @@ Tool: **OpenAI Codex**. Imported session records identify the agent as based on 
 | S05 | Ignore local reference files and agent instructions: P041–P042 | Client date November 4, 2026; exact turn timestamps unavailable | User requests and tool execution directly available in this conversation. This label identifies the source conversation, not a recovered session ID. |
 | S06 | Input time granularity: P043 | Client date November 6, 2026; exact turn timestamp unavailable | User question and read-only inspection directly available in this conversation. This label identifies the source conversation, not a recovered session ID. |
 | S07 | Divergent Git branches, merge editor, status, and push guidance: P050–P053 | Client date November 11, 2026; exact turn timestamp unavailable | User terminal transcript and local Git inspection directly available in this conversation. This is a source label, not a recovered session ID. |
+| S08 | Improvement research, threshold tuning, AP explanation, and Mouse Baseline features, and LA–CBT relationship exploration: P054–P063, P066–P069 | Client dates November 11 and 13, 2026; exact turn timestamps unavailable | User requests and clarification, repository inspection, saved-prediction calculations, web research, implementation, tests, full experiments, and documentation edits directly available in this conversation. This is a source label, not a recovered session ID. |
+| S09 | Updating a feature branch with teammates’ changes: P064–P065 | Client date November 13, 2026; exact turn timestamp unavailable | User request and local read-only Git inspection directly available in this conversation. This is a source label, not a recovered session ID. |
 
 Source notes and historical verification paragraphs below retain the original recorder's wording. Within a labeled entry or evidence group, “this conversation,” “visible,” and “current” refer to its source session at recording time. A later preservation or link check does not independently reverify those past executions. Historical test totals (44, 45, 46, 51, and 59) describe different implementation states and should not be combined into one test run.
 
@@ -47,6 +49,8 @@ Codex's recorded assistance spans:
 | Submission integration | Review/reproduction of Alisha's export and correction/integration of Vivian's notebook handoff; resulting model runs | P034–P035 |
 | Ownership and maintainability | Relocation of Matthew-only helper/tests; generic JSON input requirements; later documentation migrations, build orchestration, configuration, and synthetic verification | P006, P001–P002 |
 | Reports and interpretation | HTML accordions, reference overlays, feature tables, explanations, and paste-ready collaboration/modeling/evaluation prose | P016–P033, P036–P037 |
+| Improvement research | Existing-model error analysis, threshold illustrations, primary-source research, and proposed feature/model/evaluation experiments; labels retained | P054–P055 |
+| Decision-threshold tuning | Opt-in nested mouse-grouped cutoff selection, report/model integration, leakage regression tests, and full experiment with original features/labels | P056–P057 |
 | Disclosure | Contribution statement, prompt-collection template, imported records, consolidated log, and future logging instructions | P005, P007, P013, P038–P040 |
 
 The provenance of the original submitted feature work is not fully established by a later integration review. In particular, P035 records earlier AI edits to Vivian's notebook/export interface, while P002's later cleanup preserved her implementation; those statements describe different stages. The wavelet handoff supplied in P009 is a specification, not proof that its originating project was written without AI. The reference features were general/paper-inspired choices, not random features, and baseline comparisons do not establish human superiority over AI.
@@ -102,6 +106,22 @@ The provenance of the original submitted feature work is not fully established b
 | [P051](#p051-explain-the-merge-commit-editor) | S07 | Explain Nano and saving the default merge message; advise committing the follow-up disclosure before pushing. | Screenshot and local merge-state inspection; documentation checks only; no Git mutation or code tests. |
 | [P052](#p052-confirm-successful-merge-and-remaining-disclosure-change) | S07 | Confirm successful merge, explain three local commits and the remaining disclosure edit, and give commit/push commands. | Local Git status/history/diff and documentation checks; no commit, push, code tests, or training executed. |
 | [P053](#p053-confirm-readiness-to-push) | S07 | Confirm the user can push and provide commands to include the required disclosure update. | Read-only status/history and documentation checks; no commit or push executed. |
+| [P054](#p054-research-improvements-to-the-current-estrus-classifier) | S08 | Assess the current result and investigate features, models, metrics, false negatives, and possible label uncertainty. | Inspected code and retained results; recomputed saved-prediction metrics without fitting; browsed primary papers/official documentation; checked research-note links and disclosure preservation. |
+| [P055](#p055-clarify-assumed-cycle-labels-and-preserve-them) | S08 | Confirm labels assume a repeating four-day cycle and explicitly retain all labels. | Incorporated the clarification into the research assessment; documentation and protected-file checks, no relabeling or training. |
+| [P056](#p056-plan-and-implement-decision-threshold-tuning) | S08 | Explore threshold tuning first, separately from mouse-relative and joint LA–CBT features; plan and implement it. | Targeted tests: 22 passed; initial full suite: 68 passed; full original-feature experiment selected cutoff 0.367183, detecting 7/9 positives with no false alarms; saved-model/provenance/preservation checks. |
+| [P057](#p057-check-threshold-tuning-best-practices-and-data-leakage) | S08 | Follow scikit-learn threshold-tuning guidance and double-check overfitting/leakage prevention. | Rechecked official guidance; added excluded-development-label invariance test; final full suite: 69 passed; documented remaining selection/previous-exploration limits. |
+| [P058](#p058-explain-why-threshold-tuning-leaves-average-precision-unchanged) | S08 | Explain unchanged AP after decision-threshold tuning. | Read saved cutoff comparison; documentation preservation/index/fence/whitespace checks; no training or code tests. |
+| [P059](#p059-approve-threshold-tuning-and-create-analysis-led-mouse-relative-features) | S08 | Keep threshold tuning and create mouse-relative features grounded in existing analysis. | New four-feature export; targeted 35-test and full 76-test suites passed; full experiment worsened test AP to 0.829; original files and accepted threshold run preserved. |
+| [P060](#p060-place-the-new-features-in-a-separate-named-folder) | S08 | Require a new appropriately named feature engineering folder. | Created Mouse Baseline Feature Engineering with independent code/tests/export/metadata and opt-in integration; namespace, mouse-isolation, preservation, and documentation checks. |
+| [P061](#p061-clarify-the-decline-after-adding-relative-features-and-retuning) | S08 | Confirm whether performance declined despite threshold tuning and relative features. | Read both saved cutoff comparisons; disclosure preservation/index/fence/whitespace checks; no new experiment or tests. |
+| [P062](#p062-create-paper-inspired-joint-lacbt-features-and-evaluate-them) | S08 | Exclude Mouse Baseline and build simple LA–CBT relationship features inspired by the supplied paper, then test them. | Read PDF/summary and publisher; 36 targeted and 82 full tests passed; full experiment AP 0.951, 9/9 estrus detected with 7 false alarms; provenance/replay/preservation checks. |
+| [P063](#p063-summarize-the-introduced-lacbt-features) | S08 | Give a one-to-two-sentence explanation of the introduced features. | Read feature definitions and recent disclosure; preservation/index/fence/whitespace checks; no code tests or training. |
+| [P064](#p064-explain-how-to-update-a-feature-branch-with-main) | S09 | Explain how to bring teammates’ main-branch changes into the current feature branch while preserving unfinished work. | Read-only Git inspection and disclosure checks; stash/fetch/merge/restore commands provided as advice only. |
+| [P065](#p065-confirm-feature-branch-merge-and-work-restoration) | S09 | Confirm the main-branch merge and restoration of unfinished feature work succeeded. | Verified main ancestry, absence of conflicts, retained stash, and matching hashes for all 34 stashed files; documentation checks only, no code tests. |
+| [P066](#p066-confirm-final-model-feature-and-threshold-decisions) | S08 | Keep threshold tuning and exclude both experimental feature families from the final model. | Read current configurations and family-selection defaults; disclosure preservation/index/fence/whitespace checks; no model/code changes or training. |
+| [P067](#p067-check-readiness-for-the-agreed-final-model) | S08 | Confirm the agreed final configuration is ready. | 82 tests passed; verified 28 original features, F2 threshold tuning, experimental-family exclusion, and no unresolved merge conflicts; default still requires explicit threshold config. |
+| [P068](#p068-update-documentation-for-the-retained-final-model) | S08 | Update the README and supporting documentation to match final model decisions. | Checked final commands/configuration/scores, 256 local links/anchors, fences, whitespace, historical preservation, and 462 unchanged non-document files; no training or code-test rerun. |
+| [P069](#p069-explain-the-rejected-main-push-from-the-feature-branch) | S08 | Explain why pushing main failed while on research/improving-model. | Screenshot and read-only Git branch/history/status inspection; disclosure checks; no fetch, commit, merge, or push executed. |
 
 ## Prompt log
 
@@ -933,6 +953,288 @@ so can i push to github?
 **Resulting AI assistance:** Confirmed that the successful merge allows a normal push. Provided commands to stage and commit the required disclosure follow-ups, including this turn, and then push. Only `AI_USE.md` was edited. No commit or push was executed by Codex; the user asked whether they could push.
 
 **Verification and limits:** Executed `git status --short --branch` and `git log -3 --oneline`; confirmed three commits ahead of the local `origin/main` reference, merge commit `4bc6e1c`, and an unstaged disclosure edit. Read coverage, index, and recent entries; reread immediately before writing. Documentation checks confirm previous prompt bodies and imported Claude section preserved, updated primary count, new index anchor, balanced fences, and clean diff whitespace. No remote fetch or push was attempted, so subsequent remote changes are not ruled out. No code tests or model training ran because only guidance and the disclosure record changed.
+
+### P054: Research improvements to the current estrus classifier
+
+Conversation: **S08**.
+
+```text
+Okay so right now our model is doing pretty well. the latest run where we did it with all of me, vivian, and alisha's features achieved an average precision of .932 on the held-out test set and a validation AP of .992
+
+given the context of the problem that we are working on and the work that we have done so far and our feature engineering and the model we're using and everything, is this a good result?
+
+the thing is, our mentor wants us to basically get 100% accuracy if not like near 100% accuracy
+
+can you help me do some research into basically how we can improve there? do we need better features? are we maybe missing some important features that would isolate relationships that we haven't yet touched that could help us get to the 100% mark?
+
+do we maybe need to explore some different models? or different evaluation metrics?
+
+i want to treat this like a bit of a research problem where im just trying to figure out what we need to do to get that last bit of improvement.
+
+Also one thing I will say is that currently, our model is misclassifying only 4 days. Unfortunately, all 4 of those days are estrus days that got misclassified as non estrus days. So it seems to be a bit biased in that sense.
+
+Also, I wanted to note that the data of f3 recording day 10 is supoosedly an estrus day based on our professor's labeling, but looking at the data I think that this might be wrong. I think that because it is a non-official labeling and because mouse estrus cycles aren
+```
+
+Source note: the available request ends mid-sentence at `aren`; it has not been reconstructed. The user's subsequent clarification is recorded separately as P055.
+
+**Resulting AI assistance:** Reviewed the actual model, feature definitions, evaluation setup, and retained presentation run. Added [docs/research/estrus-improvement-2026-11-11.md](docs/research/estrus-improvement-2026-11-11.md) and a navigation row in [docs/README.md](docs/README.md). Distinguished AP from accuracy and sensitivity: the saved run has AP 0.9320987654320989, accuracy 32/36, sensitivity 5/9, and specificity 27/27 at cutoff 0.5. Identified the four missed days and their scores, and calculated per-mouse AP (f3 and f6: 1; f11: 0.9167). Described between-mouse normalization as a hypothesis, not a demonstrated cause. Alternative test cutoffs were illustrated as retrospective arithmetic only: 0.4 detects 7/9 positives with no false alarms; 0.33 detects 8/9 with one false alarm; 0.05 detects 9/9 with nine false alarms. No cutoff was selected for deployment or saved into a model.
+
+Browsed Smarr et al. (2017), Pantier et al. (2019), Wolcott et al. (2022), and official scikit-learn documentation. Recommended development-only cutoff selection, mouse-relative measurements, explicit sustained-plateau/decline features, a small set of adjacent-day contrasts/interactions, and targeted nonlinear-model comparisons. Noted that balanced class weights and several coupling features already exist, and reference plateau features are excluded from the current contributor-only run. Explained the small cohort, assumed labels, model-selection optimism, retrospective input scope, and the need for new animals for stronger generalization claims. These are research recommendations; no feature/model/evaluation implementation was changed and no improvement was newly validated. F3 day 10 remains an unresolved disagreement, not a confirmed label error.
+
+**Verification and limits:** Executed `rg --files`, focused `rg` searches, `cat`/`sed`/`tail` reads, and `git status --short` to inspect instructions, this disclosure, documentation, configuration, source, the versioned presentation JSON, and local ignored results. A `.venv/bin/python -` calculation using pandas and scikit-learn recomputed AP, confusion counts, accuracy, recall, precision, balanced accuracy, F2, and per-mouse AP directly from saved predictions; no model fitting occurred. The observed threshold results and individual scores are recorded in the research note. Some direct Nature/PMC page fetches failed with access/redirect errors; accessible Springer text, indexed primary-paper passages, and official software documentation supplied the cited evidence. Local documentation checks verify new links, anchors, fences, preservation of prior disclosure text/prompts, protected-file hashes, and diff whitespace. The initial preservation check detected an end-of-file newline added by the patch tool; restored the original end-of-file convention before rerunning the checks. No project tests, training, notebook, or feature regeneration ran because only research/documentation changed. The detailed local run is ignored by Git and may be absent from a fresh checkout. Only the research note, documentation index, and this disclosure were edited.
+
+### P055: Clarify assumed cycle labels and preserve them
+
+Conversation: **S08**.
+
+```text
+they are based on an assumed repeating 4 day cycle which isn't necessarily always true. I don't want you to change the label like we should still keep all the same labels but the reason i brought it up is because im acknowledging that it may be extremely difficult to get 100% accuracy because there's a chance that label might be wrong lol
+```
+
+**Resulting AI assistance:** Accepted the user's clarification and explicit restriction on relabeling. Kept all assigned labels and all analysis days; the research note distinguishes possible proxy-label uncertainty from evidence that any specific label is incorrect. No label correction, exclusion of difficult cases, or sensitivity result under revised labels was implemented or claimed. Incorporated this clarification into the ongoing P054 assessment rather than starting a separate model experiment.
+
+**Verification and limits:** Read the clarification directly, compared it with the documented label construction and primary-source staging context, and checked preservation of input, contributor, source, test, and retained-run files. P054's saved-prediction calculations use the original labels throughout. Documentation checks cover the two new prompt entries and the research note. No model training or code tests ran for this clarification because it changed only the assessment and disclosure.
+
+### P056: Plan and implement decision-threshold tuning
+
+Conversation: **S08**.
+
+```text
+Okay there's 3 things that im actually interested in testing:
+
+
+
+1) decision threshold tuning (i think the idea of maybe determining a threshold that isnt exactly 0.5 is a great idea and something we should explore)
+2) creating some features to measure changes relative to each mouse's own baseline (I think this could add a ton of value)
+3) creating some new features to measure join relationships between LA and CBT (our professor actually gave us a lead on this topic that I think can motivate some very useful features)
+
+
+
+ultimately, I want to explore each one one-by-one.
+
+
+
+first, i want to take a look at decision threshold tuning. come up with a good gameplan for implementing this and get started on implementing, and let me know what is being done and why
+```
+
+**Resulting AI assistance:** Implemented the first experiment, leaving mouse-relative/joint-feature work for later. Added opt-in `threshold_tuning` configuration with F2 as the first objective and balanced accuracy as an alternative. The historical configuration and old models retain 0.5. For each mouse-grouped development fold, the new routine repeats model/feature/hyperparameter selection, fitting-fold preprocessing, and grouped sigmoid calibration exclusively on that fold's fitting mice, then predicts the excluded mice. It selects a cutoff from pooled excluded-mouse development probabilities and freezes it before final model fitting/test prediction. Development selection scores are explicitly distinguished from independent evaluation.
+
+Changed [src/estrus/modeling.py](src/estrus/modeling.py) to implement tuning, threshold-aware metrics, fold/curve evidence, same-model default-vs-selected test comparisons, and persistence of the exact cutoff. Corrected predicted-class probability to follow the selected class even below 0.5. Updated [src/estrus/reporting.py](src/estrus/reporting.py) and [src/estrus/results.py](src/estrus/results.py) to show the actual cutoff, comparison table, embedded development selection curve, and saved-model behavior. Added [config/threshold-f2.json](config/threshold-f2.json), [docs/THRESHOLD_TUNING.md](docs/THRESHOLD_TUNING.md), and [docs/results/threshold-f2-2026-11-11.json](docs/results/threshold-f2-2026-11-11.json); updated configuration/modeling/methods/reproduction/documentation-index guides. Expanded [tests/test_modeling.py](tests/test_modeling.py) and [tests/test_reporting.py](tests/test_reporting.py). Input data, contributor code/notebooks/exports, original labels, and existing result folders were preserved. No model or feature experiment beyond threshold tuning was added.
+
+**Verification and observed result:** Ran `MPLCONFIGDIR=/tmp/estrus-threshold-mpl .venv/bin/python -m pytest -q tests/test_modeling.py tests/test_reporting.py tests/test_results.py`: **22 passed in 7.60s**. Ran the full suite: **68 passed in 14.16s**. Executed the full experiment with `MPLCONFIGDIR=/tmp/estrus-threshold-mpl .venv/bin/python run.py model --config config/threshold-f2.json --save-details --output 'Model Building/results/threshold-f2-2026-11-11'`; it completed training, nested tuning, report generation, and saved-model publishing successfully. The development-only cutoff was **0.36718281570864303**. The final model remained logistic regression, C=1, top 35%/ten features. Test accuracy changed from **32/36 to 34/36 (88.9% to 94.4%)**, recall from **5/9 to 7/9**, with **0 false alarms** at both cutoffs and AP unchanged at **0.9320987654320989**. F3 day 2 and F11 day 6 were recovered; F3 day 10 and F11 day 10 remained false negatives. No cutoff was revised after inspecting this outcome.
+
+Additional executed Python assertions reconstructed the cutoff from 120 unique development prediction rows, checked inner/outer mouse memberships, verified that every final test probability matched the historical presentation run at `rtol=1e-12, atol=1e-12`, confirmed unchanged original test labels, and replayed saved-model probabilities, decisions, and class probabilities. Inspected the generated development-curve image with `view_image`; confirmed the report contains the selected cutoff and comparison. SHA-256 checks confirmed all **250** snapshotted original input/contributor/historical-result files were unchanged. Documentation checks cover new links/anchors, fences, previous disclosure preservation, experiment JSON provenance, and diff formatting. These are software and exploratory evaluation results, not independent biological validation. No failing test run or training failure occurred.
+
+### P057: Check threshold-tuning best practices and data leakage
+
+Conversation: **S08**.
+
+```text
+oh yeah i forgot to mention this but follow the best practices for decision threshold tuning. you gave me a link to here:
+
+[https://scikit-learn.org/stable/modules/classification_threshold.html](https://scikit-learn.org/stable/modules/classification_threshold.html)
+
+which warns against the issues with overfitting and also i jsut want to make sure we're preventing data leakage at all times
+
+i think youre already doing that right but i want to double check
+```
+
+**Resulting AI assistance:** Rechecked the specified official guidance, including its warning against using fitting predictions for cutoff selection and its default row-stratified validation. Confirmed that the implementation uses explicit mouse-disjoint folds and excludes each scored development mouse from model selection, preprocessing, fitting, and calibration; test mice are not passed to cutoff selection. Added a direct regression test that flips an excluded development fold's labels and requires its own probabilities and fold-specific model-choice audit to remain exactly unchanged. The cutoff may legitimately change because development targets select it after probability generation. Existing tests also require changing only test labels to leave cutoff/model choices and probabilities unchanged. Explained that development-selected threshold scores are still selection scores and can overfit a small cohort; earlier feature design and previously inspected test results limit independence and are not undone by nested computation. No claim of universally eliminated leakage or independent new validation was made.
+
+**Verification and limits:** Browsed the linked scikit-learn threshold documentation and its probability-calibration API. Ran the full suite after adding the explicit exclusion test: **69 passed in 13.99s**. P056's full experiment, saved-prediction/model replay, and protected-file checks remained applicable; no second training experiment or objective/cutoff adjustment was performed. Updated the threshold protocol with the additional test and observed result, and recorded both user turns once in this disclosure. Historical labels, inputs, contributor work, and existing runs remain unchanged. The final documentation/provenance checks preserve all previous prompt bodies and imported records, validate the two new index anchors/coverage, and check formatting and local links.
+
+### P058: Explain why threshold tuning leaves average precision unchanged
+
+Conversation: **S08**.
+
+```text
+wait why does average precision not go up at all?
+```
+
+**Resulting AI assistance:** Explained that average precision summarizes positive-class ranking across score thresholds. The experiment preserves every final probability and its ordering, so changing the one operating cutoff from 0.5 to 0.367183 cannot change AP. Used F3 day 2's unchanged probability of approximately 0.447 to illustrate how its class decision changes while its score/rank stays the same. Distinguished improvements in accuracy/recall/F2 from improvements in discrimination, and noted that raising AP requires improving positive-versus-negative ordering, for example through useful features or modeling changes. This was an explanation only; no implementation, feature, label, or model change was made. Only this disclosure was edited.
+
+**Verification and limits:** Read the coverage/index/recent disclosure entries, working-tree status, and retained `Model Building/results/threshold-f2-2026-11-11/details/threshold_comparison.csv`. The CSV reports identical AP 0.9320987654320989 at both cutoffs, accuracy 0.8888888888888888 versus 0.9444444444444444, and recall 0.5555555555555556 versus 0.7777777777777778. Previous saved-probability equality checks remain historical evidence rather than a new model execution. Checked preservation of all previous disclosure content apart from the declared count/coverage additions, the new index anchor, prompt/fence formatting, and `git diff --check -- AI_USE.md`. No code tests or training ran because this turn only explains the existing result and updates its disclosure.
+
+### P059: Approve threshold tuning and create analysis-led mouse-relative features
+
+Conversation: **S08**.
+
+```text
+sweet! thanks for explaining. That change looks good to me, I think it's a very beneficial change that should be kept.
+
+now I want you to work on creating some features to measure changes relative to each mouse's own baseline.
+
+I don't want you to just add random features that measure relative change though, I want these features to be related to work that i have already done and some of the exploratory analysis that i think i previously explained to you, or like inspired by some other features we already have or some other analysis.
+```
+
+**Resulting AI assistance:** Retained the accepted F2 threshold-tuning functionality and its historical 28-feature run. Reviewed Matthew's actual exploratory notebook, four-feature definitions/implementation and Morse helper, Vivian's per-mouse-centered exploration documentation, and Alisha's within-mouse comparisons. Chose four definitions before scoring the new model: hours-6–12 CBT mean minus the median of the same mouse's other analysis-day means; LA window mean divided by its same-mouse reference minus one; first-half CBT ultradian amplitude divided by its reference minus one; and next-day circadian LA amplitude delta divided by typical circadian amplitude. References exclude the target summary and both buffers, require nine finite other-day values, use all stages without labels, and never pool across mice. Preserved the day-13 LA-delta exclusion. The features explicitly require retrospective complete-recording access; target-summary exclusion does not remove target samples from the centered full-recording transform. Reused Matthew's unchanged Morse helper read-only, without modifying his code/notebook/export.
+
+Implemented the new family in [Mouse Baseline Feature Engineering/features.py](Mouse%20Baseline%20Feature%20Engineering/features.py), its tests, [input_requirements.json](Mouse%20Baseline%20Feature%20Engineering/input_requirements.json), validated [outputs/features.csv](Mouse%20Baseline%20Feature%20Engineering/outputs/features.csv), and extraction metadata. Added [config/mouse-baseline-f2.json](config/mouse-baseline-f2.json), [feature documentation](docs/features/mouse-baseline.md), and [versioned experiment results](docs/results/mouse-baseline-f2-2026-11-11.json). Shared changes in `src/estrus/contracts.py`, `features.py`, `cli.py`, `build.py`, `modeling.py`, and `reporting.py` register the separate namespace, accept explicit `feature_owners` experiment lists, stop model experiments with missing requested exports, support the new report grouping, and preserve default eligibility. Updated `pyproject.toml` test discovery, shared contract/build tests, configuration documentation, and the documentation index/methods/modeling/reproduction/contract/results guides. Default and threshold-only configurations still use the original 28 features; the new experiment offers 32. No joint LA–CBT feature experiment was implemented.
+
+**Verification and observed result:** Executed `MPLCONFIGDIR=/tmp/estrus-mouse-baseline-mpl .venv/bin/python -m pytest -q 'Mouse Baseline Feature Engineering/tests' tests/test_contracts.py tests/test_build.py`: **35 passed in 7.85s**. Ran `.venv/bin/python 'Mouse Baseline Feature Engineering/features.py'`: exported 156 rows and four features with 13 missing final-day LA comparisons. A Python check confirmed exact agreement of the underlying ultradian CBT and next-day LA summaries with Matthew's unchanged export at `rtol=1e-12, atol=1e-12`, canonical coverage, and unchanged default 28-feature versus explicit 32-feature assembly. Ran the full suite: **76 passed in 17.33s**, including synthetic build/report/saved-model verification and the prior threshold-leakage tests. New tests cover hand-computable reference formulas, target-summary exclusion, offset/scale invariance, missing/zero references, exact windows/buffer handling, isolation between mice, optional multiword namespaces, and failure on explicitly missing families.
+
+Ran `MPLCONFIGDIR=/tmp/estrus-mouse-baseline-mpl .venv/bin/python run.py model --config config/mouse-baseline-f2.json --save-details --output 'Model Building/results/mouse-baseline-f2-2026-11-11'`: completed the full nested F2 experiment and report. It selected logistic regression C=10, top 35%/11 features including all four new features. Development model-selection AP was **0.9932659932659934**. The frozen development cutoff was **0.6077592972690096**. Test AP **fell to 0.8287054992937346**, with **5/9 positives detected, 0 false alarms, accuracy 32/36**; the accepted threshold-only result remains AP 0.932, 7/9 detected, and 34/36 correct. Both 0.5 and the new selected cutoff made the same decisions for the new model. F3 day 10 and F11 days 2, 6, and 10 were missed. Reported this negative result candidly and kept the new family opt-in; did not revise definitions, objective, labels, or cutoff against these errors. A changed selected subset/coefficients may matter, but no cause of the decline was independently established.
+
+Additional executed assertions confirmed unchanged test cohort/labels, 120 unique excluded-mouse development probabilities, disjoint inner/outer mouse memberships, reconstruction of the exact cutoff from development scores, saved-model probability/decision/confidence replay, seven carried input notes, and correct Mouse Baseline report grouping. SHA-256 checks confirmed all **305** snapshotted original input/contributor/historical-result files remained unchanged. `.venv/bin/estrus validate --owner 'Mouse Baseline'` accepted 156 rows/four features; `.venv/bin/python run.py validate` retained the original 28-feature default. Documentation/provenance checks cover local links, fences, count/index anchors, prior disclosure preservation, source/input/export/artifact hashes, JSON validity, and diff formatting. No original contributor notebook/code/export, raw CSV, label, accepted model artifact, or prior run was changed. These are software checks and an exploratory comparison on previously inspected test mice, not independent biological validation. No failing test run or extraction/training failure occurred.
+
+### P060: Place the new features in a separate named folder
+
+Conversation: **S08**.
+
+```text
+okay one more clarification i want to make: add this in a new feature engineering folder that is named appropriately
+```
+
+**Resulting AI assistance:** Applied this steering to the ongoing P059 work. Created the separate `Mouse Baseline Feature Engineering/` folder, with its own `features.py`, `tests/test_mouse_baseline_features.py`, `input_requirements.json`, feature CSV, extraction metadata, and ignored inspection output. Detailed explanations live in `docs/features/mouse-baseline.md`. Registered the `mouse_baseline__` namespace and an explicit opt-in experiment without inserting new calculations into any original contributor's folder. Matthew's existing Morse helper is a documented read-only dependency, not a modified or relocated implementation.
+
+**Verification and limits:** P059's tests, export validation, canonical-coverage/isolation checks, 305-file preservation audit, full experiment, and documentation checks apply to this requested folder boundary. Original contributor folders were preserved byte-for-byte except automatically generated ignored Python bytecode caches, which were excluded from the preservation snapshot. No separate additional model experiment was run for this clarification; it shaped the same implementation and outcome recorded in P059.
+
+### P061: Clarify the decline after adding relative features and retuning
+
+Conversation: **S08**.
+
+```text
+so it actually declined even with the introduction of the new threshold and these features?
+```
+
+**Resulting AI assistance:** Confirmed the combined new-feature experiment declined relative to the accepted threshold-only model. Distinguished the three stages: original features/cutoff 0.5 gave AP 0.932, accuracy 88.9%, and 5/9 estrus days detected; original features/development-tuned cutoff 0.367183 retained AP 0.932 and improved accuracy to 94.4% and detection to 7/9; adding relative features and selecting a new cutoff 0.607759 gave AP 0.829, accuracy 88.9%, and detection 5/9. Explained that the new feature set changes the fitted probabilities/model, so its threshold is selected anew; a decision cutoff cannot repair poorer ranking. The original accepted run remains preserved, and the new family stays experimental. A changed feature subset/regularization is a possible contributor, not an established cause of the decline. Only this disclosure was edited.
+
+**Verification and limits:** Read coverage/index/recent disclosure entries, working-tree status, and both retained `details/threshold_comparison.csv` files for `threshold-f2-2026-11-11` and `mouse-baseline-f2-2026-11-11`. Confirmed zero false alarms in both experiments, identical new-model decisions at 0.5 and 0.607759, and the reported AP/accuracy/recall values. Checked exact preservation of prior disclosure content except declared count/source-coverage additions, the new index anchor, fenced blocks, and `git diff --check -- AI_USE.md`. No code tests, feature extraction, or model training ran because this turn only clarifies saved results and maintains the disclosure.
+
+### P062: Create paper-inspired joint LA–CBT features and evaluate them
+
+Conversation: **S08**.
+
+Attachments: user supplied Burks and Smarr (2026), *Dynamical model of aperiodic locomotor activity effects on mouse core body temperature removes transient perturbations from longitudinal temperature signals*, DOI [10.1038/s41598-025-31953-8](https://doi.org/10.1038/s41598-025-31953-8), at the unchanged local ignored [PDF](data/Important%20Data%20Files/estrus_detection_paper.pdf). That PDF is not guaranteed in a fresh checkout. The user also supplied a ChatGPT-generated research summary at an attachment path; preserved its complete text as [docs/references/la-cbt-user-provided-summary.md](docs/references/la-cbt-user-provided-summary.md). The summary is contextual AI-generated material, not a user-authored prompt quotation or authoritative validation. Its suggestion to fit dynamical parameters was not treated as overriding the user's request to avoid recreating the model. Automatically supplied file/page wrappers are omitted.
+
+```text
+Okay sounds good thanks for the analysis, I agree that these new features should not be included in our final model then.
+
+lets move on to the last exploration that I wanted to do which has to do with creating new features to measure joint relationships between LA and CBT.
+
+Like I mentioned, our professor actually directed us towards a paper that he previously published about the joint relationship between LA and CBT and how it changes with the cycle of the mice and so that might be super relevant.
+
+I have attached that paper as well as a summary of its importance (that ChatGPT whipped up for me). Hopefully that gives you some context.
+
+Without directly copying their work (I think it would be overkill to completely remake their whole model thing and derive features from that), I want you to take inspiration from the findings to help us create some very useful features for our classification model and then see if these help.
+```
+
+**Resulting AI assistance:** Read the supplied ten-page PDF using pypdf and checked the publisher's primary article. Verified the distinction between male/female parameter separation and estrus-day classification; noted the paper reuses the underlying 2017 study and does not independently validate this project. Checked the supplied summary against the paper, including the difference between signed versus positive-strength cooling conventions. Chose descriptive joint-signal proxies rather than reproducing recursive forecasting, dynamical parameter optimization, stage-specific fits, Tmin estimates, or the authors' model implementation.
+
+Created `LA CBT Relationship Feature Engineering/` with its own extractor, six tests, requirements JSON, 156-row/four-feature export, extraction metadata, and ignored coverage inspection. Features are ten-minute activity/warming partial correlation controlling initial CBT; quiet-interval ten-minute CBT change weighted toward temperatures above the day's low reference; inverse-activity-weighted hours-6–12 CBT excess; and activity-matched falling-versus-rising temperature gap. Five-minute bins preserve missing-data time positions. These use only the complete target day's paired signals, never labels, other days/mice, population fits, or model outputs. The combined original-contributor model retains its existing full-recording input requirements.
+
+Before supervised scoring, a label-free coverage check on ten development mice found that strict quiet-plus-warm filtering supplied six pairs on only 12/120 days, and strict quiet-window filtering supplied six bins on only 64/120 days. This prompted continuous temperature weighting for quiet cooling and inverse-activity weighting for the window contrast, before new feature/model scores were inspected. All four definitions were frozen before the full experiment. The ten-minute horizon is motivated by the paper's reported lag; no class-tuned lag search was run. The features are observational hypotheses, not causal coefficients or isolated hormonal residuals.
+
+Added [config/la-cbt-relationship-f2.json](config/la-cbt-relationship-f2.json) and [feature documentation](docs/features/la-cbt-relationship.md); registered the optional family in shared contracts/build regeneration and pytest discovery. Updated generic feature-owner display to retain registered acronym spelling in reports. Updated configuration, model, contract, reproduction, index, and results guides. Added [docs/results/la-cbt-relationship-f2-2026-11-11.json](docs/results/la-cbt-relationship-f2-2026-11-11.json) with scores, frozen design/coverage notes, feature assessments, extraction/input/source/artifact hashes, and false-alarm keys. Explicit experiment owners are Matthew, Vivian, Alisha, and LA CBT Relationship: the rejected Mouse Baseline family is excluded. Original default/threshold-only configurations, raw data, labels, contributor work, historical models, and the earlier baseline experiment are preserved.
+
+**Commands and observed verification:** Executed repository/attachment reads, Git status/diff checks, pypdf extraction of all ten pages to `/tmp/la-cbt-paper.txt`, and publisher/PubMed searches. A utility check found pdftotext/PDF rendering tools unavailable; installed pypdf was available, so no dependency installation was needed. Ran `.venv/bin/python 'LA CBT Relationship Feature Engineering/features.py'`: exported 156 canonical rows and four fully observed features. Ran `MPLCONFIGDIR=/tmp/estrus-la-cbt-mpl .venv/bin/python -m pytest -q 'LA CBT Relationship Feature Engineering/tests' tests/test_contracts.py tests/test_build.py`: **36 passed in 7.99s**. Ran the full suite: **82 passed in 17.11s**. New tests cover known partial correlation under confounding, ten-minute cooling units and temperature-offset invariance, exact low-activity weighting/window, matched hysteresis, missing/degenerate inputs and preserved time grid, and target-day/label isolation. Existing tests continue to check model/threshold mouse separation and invariance to excluded labels. `.venv/bin/estrus validate --owner 'LA CBT Relationship'` accepted the new export, while `.venv/bin/python run.py validate` retained the 28-feature default.
+
+Executed `MPLCONFIGDIR=/tmp/estrus-la-cbt-mpl .venv/bin/python run.py model --config config/la-cbt-relationship-f2.json --save-details --output 'Model Building/results/la-cbt-relationship-f2-2026-11-11'`: full nested F2 experiment and report completed. It selected logistic regression C=0.1, top 35%/11 features, including warming partial correlation, quiet cooling, and low-activity excess; hysteresis was not selected. Development model-selection AP was **0.9907407407407408**, test AP **0.9513888888888891**, and the development-selected cutoff **0.19540268867889038**. At that cutoff the model detected **9/9 positive days** with **7 false alarms**, accuracy **29/36 (80.6%)**, precision **56.3%**, specificity **74.1%**, and F2 **0.8653846153846154**. At 0.5, the same new model detected 8/9 with four false alarms, accuracy 31/36 (86.1%), and F2 0.8333. The accepted original-feature/F2 model remains AP 0.932, 7/9 detected, zero false alarms, and 34/36 correct. Communicated this as a mixed exploratory outcome: ranking and recall improved while accuracy/precision/specificity declined. Did not change the definitions or select a test-optimized cutoff after inspecting this outcome; the new family remains opt-in.
+
+Additional Python assertions verified the same test cohort/original labels, a 32-feature matrix containing no `mouse_baseline__` columns, 120 unique excluded-mouse development rows, inner/outer mouse disjointness, cutoff reconstruction from the development CSV, saved-model probability/decision/confidence replay, seven input notes, and exact report grouping. SHA-256 assertions confirmed **372** original input/reference/contributor/historical-result files remained unchanged. Final documentation checks cover prior disclosure preservation, new index/count/coverage, local links/fences, JSON validity, exact supplied-summary preservation, extraction/source/input/export hashes, artifact hashes, and tracked/new-file whitespace. No code-test, extraction, or model-training failure occurred. Source-paper reuse, previously inspected test mice, proxy labels, and changed feature subset/regularization limit attribution and independent generalization claims.
+
+### P063: Summarize the introduced LA–CBT features
+
+Conversation: **S08**.
+
+```text
+can you give me a quick 1-2 sentence explanation of the features that were introduced
+```
+
+**Resulting AI assistance:** Provided a two-sentence plain-language description of the four new LA–CBT descriptors: activity-associated warming accounting for starting temperature, quiet-period temperature change, low-activity temperature elevation during hours 6–12, and temperature differences during rising/falling activity at similar current activity. No causal heating/cooling coefficient or isolated hormone measurement was claimed. Only this disclosure changed; no implementation or model was modified.
+
+**Verification and limits:** Read the existing feature definitions and coverage/index/recent disclosure references, and checked working-tree status. Verified preservation of previous disclosure content except declared count/coverage additions, the new index anchor, fenced-block balance, and `git diff --check -- AI_USE.md`. No code tests, extraction, or training ran because this was a short explanation of existing features with a disclosure-only update.
+
+### P064: Explain how to update a feature branch with main
+
+Conversation: **S09**.
+
+```text
+okay so right now ive made some changes in this new feature branch.
+
+but someone else recently pushed changes to our github (i dont think theres any overlapping work so it shouldnt have any merge conflicts)
+
+but to be safe I want to pull their work first.
+
+im still in my feature branch right now though
+
+how do i navigate this
+```
+
+**Resulting AI assistance:** Confirmed the current branch is `research/improving-model`, with modified tracked files and new untracked feature folders/configuration/documentation. Recommended staying on that branch, saving unfinished tracked and untracked work with `git stash push -u`, fetching `origin`, merging `origin/main` with `--no-edit`, and then restoring work with `git stash apply`. The guidance assumes the teammate’s changes were merged into `main`; a different source branch requires substituting its remote-tracking name. Explained that this brings main’s commits into the feature branch without publishing feature work to main, that commands should proceed only after the preceding step succeeds, and that apply keeps a stash backup until restoration is verified. If merge or restoration reports conflicts, stop and resolve them before continuing. These commands were advice only: no stash, fetch, merge, checkout, commit, or push was executed. Only `AI_USE.md` was edited, preserving its pre-existing uncommitted additions and all other working files.
+
+**Verification and limits:** Read `AGENTS.md`, the disclosure coverage/index and recent entries; executed `git status --short --branch`, `git branch -vv`, `git remote -v`, `git log --oneline --decorate -8`, `git log --oneline HEAD..origin/main`, and `git diff --stat -- AI_USE.md`. Local references showed main behind cached `origin/main` by one commit (`41a0325`, “feature evaluation”); no fetch was performed, so current GitHub state and conflict absence were not verified. `git symbolic-ref refs/remotes/origin/HEAD` exited 128 because that symbolic ref is absent; explicit `origin/main` guidance uses the existing branch instead. An initial focused disclosure patch matched only part of the coverage line and failed without editing; a fresh-read focused replacement corrected it. Documentation checks verified previous prompt quotations/content preservation, new count/coverage/index anchor, fence balance, and `git diff --check -- AI_USE.md`. No code tests or training ran because the task was Git guidance with a disclosure-only edit.
+
+### P065: Confirm feature-branch merge and work restoration
+
+Conversation: **S09**.
+
+```text
+does it look good now?
+```
+
+**Resulting AI assistance:** Confirmed that `research/improving-model` contains merge commit `705b7bd`, incorporating the locally fetched `origin/main` commit `41a0325` (“feature evaluation”), with no unresolved conflicts. Verified all 34 tracked/untracked files saved in the feature-work stash matched the working files before this disclosure update. Explained that restored edits remain uncommitted, the stash remains available as a backup, and the user can continue feature work. Only this disclosure was edited; no Git history, stash, index, code, or input files were changed by the assistant. Automatically attached empty companion-page metadata supplied no screenshot or additional evidence and is omitted from the user quotation.
+
+**Verification and limits:** Executed `git status --short --branch`, `git log --oneline --decorate -10`, `git stash list`, `git branch -vv`, `git log --oneline HEAD..origin/main`, and `git diff --name-only --diff-filter=U`. The current branch was `research/improving-model`; the last two commands returned no entries, and `stash@{0}` retained “Feature work before merging main.” `git merge-base --is-ancestor origin/main HEAD` exited successfully. A Python subprocess check enumerated tracked changes with `git diff --name-only -z stash@{0}^1 stash@{0}` and new files with `git ls-tree -r --name-only -z stash@{0}^3`, then compared `git rev-parse` blob IDs against `git hash-object` for the working copies: **34 files checked, no mismatches**. Read disclosure coverage/index/recent entries; documentation checks verified the new count, coverage/index anchor, balanced fences, previous-content preservation, and `git diff --check -- AI_USE.md`. No new fetch, push, code tests, or training ran; this confirms local Git integration/restoration rather than runtime behavior or remote changes made since the user's fetch.
+
+### P066: Confirm final-model feature and threshold decisions
+
+Conversation: **S08**. Client date November 13, 2026; exact turn timestamp unavailable.
+
+```text
+so i think ultimately because there was good and bad from these new features I don't want them kept for the final model
+
+i have recently tested both these new features plus another set of new featuers and neither new set ended up helping so neither should be included in the final model
+
+i did recently also make a change to the model where i introduced threshold tuning and that did actually help so i do want that kept.
+
+understood?
+```
+
+**Resulting AI assistance:** Confirmed the user's final-model decision: retain the original 28 Matthew/Vivian/Alisha features and development-only F2 threshold tuning; exclude both Mouse Baseline and LA CBT Relationship experimental families. Identified `config/threshold-f2.json` as the existing configuration matching that recipe. Experimental files/results remain available as research records; the user did not request their deletion. This was a confirmation and preference record, not another feature/model experiment or a change to default configuration. The ordinary `Model Building/config.json` still omits threshold tuning; no claim was made that it had been switched automatically. Only this disclosure was edited.
+
+**Verification and limits:** Read project instructions, working-tree status, the coverage/index and recent P063–P065 entries, default and threshold-only configurations, shared default-family resolution, and relevant model/results/configuration documentation. Confirmed that `config/threshold-f2.json` enables F2 threshold tuning and omits experimental family selection; shared defaults permit the four original contributor owners, with 28 currently supplied features from Matthew, Vivian, and Alisha. Checked exact preservation of previous disclosure content apart from declared count/source-coverage additions, the P066 index anchor, fenced blocks, and `git diff --check -- AI_USE.md`. No code tests, feature extraction, or model training ran because this turn only confirms the final recipe and records it; existing uncommitted work and all experimental/source/model artifacts were preserved.
+
+### P067: Check readiness for the agreed final model
+
+Conversation: **S08**. Client date November 13, 2026; exact turn timestamp unavailable.
+
+```text
+so were all good to go?
+```
+
+**Resulting AI assistance:** Checked readiness for the accepted recipe after the recent main-branch integration and restoration of feature work. Confirmed that the explicit `config/threshold-f2.json` configuration enables F2 threshold tuning and selects the original feature families, excluding Mouse Baseline and LA CBT Relationship. Provided the explicit final-run command, since ordinary `Model Building/config.json` still omits threshold tuning and uses cutoff 0.5. Did not silently change that default or imply the uncommitted work had been committed/published. Only this disclosure was edited; existing code, inputs, feature exports, experiment artifacts, and working changes were preserved.
+
+**Verification and limits:** Executed `git status --short --branch` and `git diff --name-only --diff-filter=U`: branch `research/improving-model` retains modified/untracked work, with no unresolved merge conflicts reported. Python assertions loaded the explicit configuration, checked `threshold_settings` and `resolve_owners`, and assembled accepted CSV exports in a temporary directory: **156 rows and 28 original features**, no experimental prefixes, no invalid selected exports, F2 tuning enabled. The same check confirmed the ordinary configuration still has tuning disabled. Ran `MPLCONFIGDIR=/tmp/estrus-readiness-mpl .venv/bin/python -m pytest -q`: **82 passed in 15.86s**, verifying the current combined working tree, including synthetic modeling, reports, saved-model replay, and leakage regressions. No new real-data training or feature extraction was run. Read the disclosure coverage/index/recent entries and checked previous-content preservation, count/coverage/index links, fenced blocks, and `git diff --check -- AI_USE.md`. These checks establish local software/configuration readiness, not new biological validation or remote publication.
+
+### P068: Update documentation for the retained final model
+
+Conversation: **S08**. Client date November 13, 2026; exact turn timestamp unavailable.
+
+```text
+can you make sure the readme and any other necessary documentation is updated properly
+```
+
+**Resulting AI assistance:** Updated root [README.md](README.md) to lead with the accepted final command, original 28 features, F2 cutoff tuning, and exclusion of both experimental families. Kept it concise and made clear that omitting `--config` still selects historical fixed cutoff 0.5; no runtime default was silently changed. Added the retained run's AP 0.932, accuracy 94.4%, 7/9 positives detected, zero false alarms, learned cutoff approximately 0.367183, and links to the detailed limits/provenance.
+
+Updated [config/README.md](config/README.md), the documentation index, modeling, methods, reproduction, results, threshold-tuning, feature-contract, and collaboration guides. Put the accepted original-feature/F2 result first in `docs/RESULTS.md`, preserving the historical fixed-0.5 milestone and both excluded experiments below it. Distinguished final/model-only/full-build commands from quick trials, reference comparisons, custom labels, and historical reproduction. Explained that fresh training learns a cutoff while saved-model prediction reuses the recorded cutoff; retained grouping/leakage limits and proxy-label qualifications. Marked both experimental feature pages as excluded from the final model and the original research plan as historical. Added a small Brandon documentation status note for his existing feature-evaluation notebook and absent feature CSV, without editing his code/notebook. Preserved source/input/export/model/provenance files; documentation changes do not regenerate or rewrite historical extraction hashes.
+
+**Verification and limits:** Read current instructions, README/guides, configuration, saved threshold result JSON, relevant CLI/build/contract/model source, recent disclosure entries, Git status/diffs, and Brandon's file inventory. Captured hashes of **462 non-document source/configuration/input/export/result files** before editing. A Markdown audit checked **256 local links/anchors across 20 documents** before adding this entry, with balanced fences. Its initial pass found two existing AI_USE index targets whose ASCII hyphens did not match the headings' LA–CBT en dash; repaired P062/P063 index anchors to their actual `lacbt` slugs without altering the historical headings or quoted prompts, then reran successfully. A Python consistency check confirmed the final config equals the recorded experiment config, enables F2, excludes both experimental families, and that documented AP/accuracy/recall/cutoff match the retained JSON. Verified identical final full-run command in README, results, and reproduction guides. Verified all 462 protected non-document hashes unchanged. The end-of-task preservation check detected a patch-added end-of-file newline; restored the original end-of-file convention and reran the checks. Final disclosure checks preserve previous content except declared new count/coverage/index additions and the two repaired anchors, check the new prompt/index link, formatting/fences, all local targets, and tracked/new-file diff whitespace. No model training, feature regeneration, notebook execution, or code test suite ran because these were documentation-only changes; the previous turn's 82-test result was not represented as a new run.
+
+### P069: Explain the rejected main push from the feature branch
+
+Conversation: **S08**. Client date November 13, 2026; exact turn timestamp unavailable.
+
+```text
+what went wrong
+```
+
+Attachment: terminal screenshot showing a clean working tree on `research/improving-model`, followed by `git push -u origin main` and a non-fast-forward rejection of `main -> main`. Git's message says the pushed branch tip is behind its remote counterpart. The SSH passphrase prompt contains a public key-file path, not an exposed credential. No repository copy of the screenshot is established.
+
+**Resulting AI assistance:** Explained that explicitly naming `main` pushes the local main branch even while the feature branch is checked out. The user's new work is committed on `research/improving-model`; local main is behind the cached remote main. The rejection did not discard feature work or publish it. Recommended committing this required AI-use follow-up, pushing `research/improving-model` with upstream tracking, and then opening a pull request from that branch into main to integrate the work. These are instructions for the user, not actions executed by Codex. Only this disclosure changed.
+
+**Verification and limits:** Executed `git status --short --branch`, `git branch -vv`, `git log --oneline --graph --decorate -12`, `git log --oneline --left-right main...origin/main`, `git log --oneline origin/main..research/improving-model`, and `git remote -v`. The tree was clean before logging, feature HEAD was `2d44b2a`, local main was `4c24c2e`, and cached origin/main was `41a0325`; local main was behind that reference by one commit. The feature branch contains threshold commit `fb006f8`, merge `705b7bd`, and new work `2d44b2a`. No fetch was performed, so current GitHub state beyond the screenshot's rejection is not newly verified. Read the coverage/index/recent entries and checked prior disclosure preservation, updated count/source coverage, the new index anchor, fenced blocks, and `git diff --check -- AI_USE.md`. No commit, push, merge, branch switch, code tests, or training was executed.
 
 ## Coding process and validation evidence
 

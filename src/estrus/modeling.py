@@ -14,15 +14,16 @@ from sklearn.feature_selection import SelectPercentile, VarianceThreshold, f_cla
 from sklearn.impute import SimpleImputer
 from sklearn.inspection import permutation_importance
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import (average_precision_score, balanced_accuracy_score,
-                             brier_score_loss, log_loss, precision_score, recall_score)
+from sklearn.metrics import (accuracy_score, average_precision_score, balanced_accuracy_score,
+                             brier_score_loss, confusion_matrix, fbeta_score, log_loss,
+                             precision_score, recall_score)
 from sklearn.model_selection import GridSearchCV, GroupKFold, GroupShuffleSplit, cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 from .data import KEYS
-from .contracts import input_requirements
+from .contracts import OWNERS, feature_prefix, input_requirements
 
 FAMILIES = {
     LogisticRegression: "logistic",
@@ -129,12 +130,13 @@ def feature_assessment(X, y, cv, chosen_pipeline, final_pipeline, config):
         ("model", LogisticRegression(max_iter=3000, class_weight="balanced", random_state=config["seed"])),
     ])
     rows = []
+    owner_names = {feature_prefix(owner)[:-2]: owner for owner in OWNERS}
     for index, feature in enumerate(X.columns):
         owner, name = feature.split("__", 1)
         solo_score = float(cross_val_score(single_feature_model, X[[feature]], y, cv=cv, scoring="average_precision", n_jobs=config["jobs"]).mean())
         rows.append({
             "feature": feature, "name": name,
-            "owner": "Reference features" if owner == "baseline" else owner.title(),
+            "owner": "Reference features" if owner == "baseline" else owner_names.get(owner, owner.replace("_", " ").title()),
             "individual_ap": solo_score, "importance_ap_drop": float(mean_drop[index]),
             "used": feature in selected,
             "status": "Used" if feature in selected else ("Constant / unavailable" if X[feature].nunique(dropna=True) <= 1 else "Not selected"),
@@ -142,21 +144,120 @@ def feature_assessment(X, y, cv, chosen_pipeline, final_pipeline, config):
     return pd.DataFrame(rows).sort_values(["importance_ap_drop", "individual_ap"], ascending=False).reset_index(drop=True)
 
 
-def metric_values(y, probability, baseline=None):
-    """Compute ranking and probability metrics at the fixed 0.5 class cutoff."""
+def metric_values(y, probability, baseline=None, *, threshold=.5):
+    """Compute probability metrics and decisions at the supplied cutoff."""
     y, probability = np.asarray(y), np.asarray(probability)
-    prediction = probability >= .5
+    prediction = probability >= threshold
+    tn, fp, fn, tp = confusion_matrix(y, prediction, labels=[0, 1]).ravel()
     result = {
         "average_precision": float(average_precision_score(y, probability)),
+        "accuracy": float(accuracy_score(y, prediction)),
         "balanced_accuracy": float(balanced_accuracy_score(y, prediction)),
         "precision": float(precision_score(y, prediction, zero_division=0)),
         "recall": float(recall_score(y, prediction, zero_division=0)),
+        "specificity": float(tn / (tn + fp)) if tn + fp else 0.,
+        "f2": float(fbeta_score(y, prediction, beta=2, zero_division=0)),
+        "true_positive": int(tp), "false_negative": int(fn),
+        "true_negative": int(tn), "false_positive": int(fp),
         "brier": float(brier_score_loss(y, probability)),
         "log_loss": float(log_loss(y, np.c_[1 - probability, probability], labels=[0, 1])),
     }
     if baseline is not None:
         result["brier_improvement_over_prevalence"] = float(brier_score_loss(y, baseline) - result["brier"])
     return result
+
+
+def threshold_settings(config):
+    """Old configurations retain the fixed cutoff unless explicitly enabled."""
+    settings = config.get("threshold_tuning", {})
+    if not isinstance(settings, dict):
+        raise ValueError("threshold_tuning must be an object with enabled and objective settings.")
+    enabled, objective = settings.get("enabled", False), settings.get("objective", "f2")
+    if not isinstance(enabled, bool):
+        raise ValueError("threshold_tuning.enabled must be true or false.")
+    if objective not in {"f2", "balanced_accuracy"}:
+        raise ValueError("threshold_tuning.objective must be f2 or balanced_accuracy.")
+    return {"enabled": enabled, "objective": objective}
+
+
+def select_threshold(y, probability, *, objective="f2"):
+    """Enumerate decision boundaries; ties prefer closest to .5, then higher.
+
+    Midpoints between distinct scores represent each interior decision pattern.
+    Include 0, .5, and 1 explicitly. Selection scores are not evaluation scores.
+    """
+    y, probability = np.asarray(y), np.asarray(probability, dtype=float)
+    if (y.ndim != 1 or probability.shape != y.shape or set(np.unique(y)) != {0, 1}
+            or not np.isfinite(probability).all()
+            or ((probability < 0) | (probability > 1)).any()):
+        raise ValueError("Threshold selection needs both binary classes and finite probabilities in [0, 1].")
+    if objective not in {"f2", "balanced_accuracy"}:
+        raise ValueError("Threshold objective must be f2 or balanced_accuracy.")
+    scores = np.unique(probability)
+    candidates = np.unique(np.r_[0., .5, 1., scores[:-1] + np.diff(scores) / 2])
+    curve = pd.DataFrame([
+        {"threshold": float(t), **metric_values(y, probability, threshold=t)}
+        for t in candidates
+    ])
+    best = curve[np.isclose(curve[objective], curve[objective].max(), rtol=0, atol=1e-12)]
+    winner = best.assign(distance=(best.threshold - .5).abs()).sort_values(
+        ["distance", "threshold"], ascending=[True, False]).iloc[0]
+    threshold = float(winner.threshold)
+    curve["selected"] = curve.threshold.eq(threshold)
+    return threshold, curve
+
+
+def tune_threshold(X, y, groups, keys, cv, config, destination):
+    """Get development predictions excluding each scored mouse from all fitting.
+
+    Model search, imputation, scaling, feature selection, and sigmoid calibration
+    are repeated inside each fitting fold. No reserved test inputs are accepted.
+    """
+    settings = threshold_settings(config)
+    probability = np.full(len(y), np.nan)
+    fold_ids = np.full(len(y), -1, dtype=int)
+    audits = []
+    for fold, (fitting, validation) in enumerate(cv):
+        fitting_groups = groups[fitting]
+        if len(np.unique(fitting_groups)) < 2:
+            raise ValueError("Threshold tuning needs at least two fitting mice in every development fold; increase the development cohort or cv_folds.")
+        inner_cv = grouped_splits(y[fitting], fitting_groups,
+                                  min(config["cv_folds"], len(np.unique(fitting_groups))))
+        print(f"Threshold tuning: development fold {fold + 1}/{len(cv)}; repeat model search and calibration on fitting mice only...", flush=True)
+        chosen, candidates = compare_models(X.iloc[fitting], y[fitting], inner_cv, config)
+        calibrated = CalibratedClassifierCV(clone(chosen), method="sigmoid", cv=inner_cv,
+                                            ensemble=False, n_jobs=config["jobs"])
+        calibrated.fit(X.iloc[fitting], y[fitting])
+        probability[validation] = calibrated.predict_proba(X.iloc[validation])[:, 1]
+        fold_ids[validation] = fold
+        winner = candidates.loc[candidates.chosen].iloc[0]
+        audits.append({
+            "fold": fold, "fitting_mice": sorted(set(fitting_groups)),
+            "validation_mice": sorted(set(groups[validation])),
+            "inner_validation": [
+                {"fitting_mice": sorted(set(fitting_groups[a])),
+                 "validation_mice": sorted(set(fitting_groups[b]))} for a, b in inner_cv],
+            "family": winner.family, "feature_set": winner.feature_set,
+            "settings": winner.settings,
+        })
+    if not np.isfinite(probability).all():
+        raise ValueError("Threshold validation folds must provide a prediction for every development row.")
+    threshold, curve = select_threshold(y, probability, objective=settings["objective"])
+    predictions = keys.reset_index(drop=True).copy()
+    predictions["is_estrus"], predictions["p_estrus"], predictions["fold"] = y, probability, fold_ids
+    predictions.to_csv(destination / "threshold_validation_predictions.csv", index=False)
+    curve.to_csv(destination / "threshold_curve.csv", index=False)
+    evidence = {
+        **settings, "threshold": threshold, "default_threshold": .5,
+        "method": "mouse_grouped_nested_model_selection_and_calibration",
+        "tie_break": "closest_to_0.5_then_higher",
+        "score_scope": "Development scores used to choose the cutoff; not independent performance estimates.",
+        "development_mice": sorted(set(groups)), "folds": audits,
+        "default_selection_metrics": metric_values(y, probability),
+        "selected_selection_metrics": metric_values(y, probability, threshold=threshold),
+    }
+    (destination / "threshold_tuning.json").write_text(json.dumps(evidence, indent=2) + "\n")
+    return threshold, evidence
 
 
 def evaluate(features, labels, destination: Path, config, *, root: Path | None = None):
@@ -166,6 +267,7 @@ def evaluate(features, labels, destination: Path, config, *, root: Path | None =
     calibration, and feature assessments exclude the test mice. Returns held-out
     predictions and metrics; writes the fitted model and technical records.
     """
+    threshold_config = threshold_settings(config)
     frame = features.merge(labels.dropna(subset=["is_estrus"]), on=KEYS, how="inner", validate="one_to_one")
     frame["is_estrus"] = frame.is_estrus.astype(int)
     columns = [column for column in features if column not in KEYS]
@@ -178,6 +280,11 @@ def evaluate(features, labels, destination: Path, config, *, root: Path | None =
     splits = {"training_mice": sorted(set(groups[train])), "test_mice": sorted(set(groups[test])),
               "validation": [{"train_mice": sorted(set(groups[train][a])), "validation_mice": sorted(set(groups[train][b]))} for a, b in cv]}
     (destination / "splits.json").write_text(json.dumps(splits, indent=2) + "\n")
+    threshold, threshold_evidence = .5, {**threshold_config, "threshold": .5, "method": "fixed"}
+    if threshold_config["enabled"]:
+        threshold, threshold_evidence = tune_threshold(
+            X_train, y_train, groups[train], frame.iloc[train][KEYS], cv, config, destination)
+        print(f"Development-selected cutoff: {threshold:.6f} ({threshold_config['objective']}). Frozen before test prediction.", flush=True)
     print(f"Compare feature sets and models on {len(splits['training_mice'])} training mice; reserve {len(splits['test_mice'])} test mice: {', '.join(splits['test_mice'])}", flush=True)
     chosen, candidates = compare_models(X_train, y_train, cv, config)
     candidates.to_csv(destination / "model_comparison.csv", index=False)
@@ -197,22 +304,29 @@ def evaluate(features, labels, destination: Path, config, *, root: Path | None =
     predictions = frame.iloc[test][KEYS + ["is_estrus", "label_source"]].copy()
     predictions["family"] = family
     predictions["p_estrus"] = probability
-    predictions["prediction"] = (probability >= .5).astype(int)
-    predictions["predicted_class_probability"] = np.maximum(probability, 1 - probability)
+    predictions["prediction"] = (probability >= threshold).astype(int)
+    predictions["predicted_class_probability"] = np.where(predictions.prediction.eq(1), probability, 1 - probability)
     predictions.to_csv(destination / "predictions.csv", index=False)
-    metrics = pd.DataFrame([{"metric": name, "estimate": value} for name, value in metric_values(y[test], probability, np.repeat(y_train.mean(), len(test))).items()])
+    metrics = pd.DataFrame([{"metric": name, "estimate": value} for name, value in metric_values(y[test], probability, np.repeat(y_train.mean(), len(test)), threshold=threshold).items()])
     metrics.to_csv(destination / "metrics.csv", index=False)
+    if threshold_config["enabled"]:
+        pd.DataFrame([
+            {"operating_point": name, "threshold": cutoff,
+             **metric_values(y[test], probability, threshold=cutoff)}
+            for name, cutoff in [("Default", .5), ("Development-selected", threshold)]
+        ]).to_csv(destination / "threshold_comparison.csv", index=False)
     winner = candidates.loc[candidates.chosen].iloc[0]
     summary = {"family": family, "feature_set": winner.feature_set, "validation_ap": float(winner.validation_ap),
                "test_ap": float(metrics.set_index("metric").loc["average_precision", "estimate"]),
                "selected_features": selected, "n_features": len(selected), "n_available": len(columns),
                "training_mice": splits["training_mice"], "test_mice": splits["test_mice"],
-               "threshold": .5, "settings": winner.settings}
+               "threshold": threshold, "threshold_tuning": threshold_evidence, "settings": winner.settings}
     summary["feature_source"] = "baseline" if all(name.startswith("baseline__") for name in columns) else "contributors" if not any(name.startswith("baseline__") for name in columns) else "mixed"
     summary["input_requirements"] = requirements
     (destination / "final_model.json").write_text(json.dumps(summary, indent=2) + "\n")
     joblib.dump({"model": model, "feature_columns": columns, "selected_features": selected,
-                 "threshold": .5, "family": family, "label_sources": sorted(frame.label_source.unique()),
+                 "threshold": threshold, "threshold_tuning": threshold_evidence,
+                 "family": family, "label_sources": sorted(frame.label_source.unique()),
                  "training_mice": splits["training_mice"], "test_mice": splits["test_mice"], "config": config,
                  "input_requirements": summary["input_requirements"]}, destination / "model.joblib")
     features.to_csv(destination / "feature_matrix.csv", index=False)
@@ -233,5 +347,5 @@ def predict(bundle_path: Path, features: pd.DataFrame) -> pd.DataFrame:
     result = features[[c for c in KEYS if c in features]].copy()
     result["p_estrus"] = bundle["model"].predict_proba(matrix)[:, 1]
     result["prediction"] = (result.p_estrus >= bundle["threshold"]).astype(int)
-    result["predicted_class_probability"] = np.maximum(result.p_estrus, 1 - result.p_estrus)
+    result["predicted_class_probability"] = np.where(result.prediction.eq(1), result.p_estrus, 1 - result.p_estrus)
     return result

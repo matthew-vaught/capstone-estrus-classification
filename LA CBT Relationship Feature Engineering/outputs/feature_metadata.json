@@ -1,0 +1,51 @@
+{
+  "owner": "LA CBT Relationship",
+  "paper_doi": "10.1038/s41598-025-31953-8",
+  "input_policy": "complete_target_day_only",
+  "method": "Descriptive conditional, lagged, and matched-state statistics; not a reproduction of the paper's simulator",
+  "parameters": {
+    "bin_minutes": 5,
+    "horizon_bins": 2,
+    "minimum_joint_day_bins": 231,
+    "minimum_correlation_pairs": 36,
+    "minimum_conditional_pairs": 6,
+    "minimum_direction_pairs": 3,
+    "quiet_quantile": 0.25,
+    "temperature_reference_quantile": 0.1,
+    "hysteresis_activity_quantiles": [
+      0.25,
+      0.5,
+      0.75
+    ]
+  },
+  "units": {
+    "activity_warming_partial_corr_10min": "correlation",
+    "quiet_cooling_weighted_change_10min": "degrees C per 10-minute interval",
+    "low_activity_cbt_excess_h6_12": "degrees C",
+    "activity_hysteresis_cbt_gap": "degrees C"
+  },
+  "feature_columns": [
+    "la_cbt_relationship__activity_warming_partial_corr_10min",
+    "la_cbt_relationship__quiet_cooling_weighted_change_10min",
+    "la_cbt_relationship__low_activity_cbt_excess_h6_12",
+    "la_cbt_relationship__activity_hysteresis_cbt_gap"
+  ],
+  "missing_values_per_feature": {
+    "la_cbt_relationship__activity_warming_partial_corr_10min": 0,
+    "la_cbt_relationship__quiet_cooling_weighted_change_10min": 0,
+    "la_cbt_relationship__low_activity_cbt_excess_h6_12": 0,
+    "la_cbt_relationship__activity_hysteresis_cbt_gap": 0
+  },
+  "design": "Four definitions frozen before supervised model evaluation. Conditional-coverage checks used development mice only and no labels.",
+  "input_sha256": {
+    "data/inputs/fem_act.csv": "5398fd74dc21d4fb22af7948057651605e8e8187eb0b796a95a816d98e32447c",
+    "data/inputs/fem_temp.csv": "bd66f8633f8773e44a1d765cdaa0c52f927f002d8f02ef5288416c78bc80f68e"
+  },
+  "source_sha256": {
+    "LA CBT Relationship Feature Engineering/features.py": "f2454a9a494f7c9907f6ea2e126b13f4b6af3069b0af7ef2bc21e15ce1f5c830",
+    "LA CBT Relationship Feature Engineering/input_requirements.json": "a0e056efe295dfe726f74ff32dd17d61d0d32039ed959dfd7bf84a3ed9da37a6",
+    "docs/features/la-cbt-relationship.md": "bdb90cacb4cd4d9ea4185abc83ab9259b412c2d9e2056d24c3174cd2554defee"
+  },
+  "supplied_paper_sha256": "34b48c1cf3327839cf225d08317f0880141a252c17f8f53845f671bb39b02745",
+  "feature_csv_sha256": "ad90ff684884c93d265137b880b08bcd95c97f423de7cf58c6d54529364cbbb6"
+}

@@ -13,6 +13,7 @@ import sys
 from .cli import main as estrus_main
 from .data import find_root, prepare, sha256
 from .features import assemble_features
+from .contracts import resolve_owners
 
 
 def verify_inputs(root: Path) -> None:
@@ -58,7 +59,7 @@ def main(argv=None, *, root: Path | None = None) -> int:
     parser.add_argument("--labels", type=Path, help="Alternate curated labels CSV")
     parser.add_argument("--output", type=Path, help="New/empty model or synthetic-report directory")
     parser.add_argument("--save-details", action="store_true", help="Retain complete run provenance")
-    parser.add_argument("--regenerate", nargs="+", choices=["Matthew", "Alisha"], help="Explicitly rerun these owners' extractors during features/all")
+    parser.add_argument("--regenerate", nargs="+", choices=["Matthew", "Alisha", "Mouse Baseline", "LA CBT Relationship"], help="Explicitly rerun these owners' extractors during features/all")
     args = parser.parse_args(argv)
     if args.regenerate and not {"features", "all"}.intersection(args.targets):
         parser.error("--regenerate requires features or all")
@@ -90,9 +91,13 @@ def main(argv=None, *, root: Path | None = None) -> int:
             elif target == "features":
                 if args.regenerate:
                     regenerate(root, args.regenerate)
-                features, diagnostics = assemble_features(root, scratch, baseline_only=args.baseline)
+                config = json.loads(args.config.read_text()) if args.config else {}
+                owners = resolve_owners(config.get("feature_owners"))
+                features, diagnostics = assemble_features(root, scratch, baseline_only=args.baseline, owners=owners)
                 if any(item["status"] == "invalid" for item in diagnostics):
                     raise ValueError("Invalid feature exports; inspect data/outputs/build/feature_validation.json.")
+                if "feature_owners" in config and not args.baseline and any(item["status"] != "accepted" for item in diagnostics):
+                    raise ValueError("Every explicitly configured feature owner needs a valid export.")
                 features.to_csv(scratch / "features.csv", index=False)
                 print(f"Assembled {len(features)} rows and {len(features.columns) - 2} features at {scratch / 'features.csv'}")
             elif target == "validate":

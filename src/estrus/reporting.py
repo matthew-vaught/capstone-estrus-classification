@@ -14,7 +14,7 @@ import pandas as pd
 
 from .data import ANALYSIS_DAYS, iter_days
 from .results import MODEL_NAMES
-from .contracts import OWNERS
+from .contracts import DEFAULT_OWNERS
 
 
 def _image(fig, path):
@@ -88,7 +88,9 @@ def feature_sections(destination, final_model, diagnostics=()):
     strongest = display(top, include_owner=True) if len(top) else "<p>No feature showed a positive contribution in this validation run.</p>"
     groups = []
     statuses = {item["owner"]: item["status"] for item in diagnostics}
-    for owner in [*OWNERS, "Reference features"]:
+    owners = dict.fromkeys([*DEFAULT_OWNERS, *[item["owner"] for item in diagnostics],
+                            *catalog.owner.tolist(), "Reference features"])
+    for owner in owners:
         block = catalog[catalog.owner.eq(owner)]
         if block.empty:
             if owner == "Reference features":
@@ -110,6 +112,43 @@ def feature_sections(destination, final_model, diagnostics=()):
 {''.join(groups)}'''
 
 
+def threshold_section(destination, final_model):
+    """Show the fixed-vs-selected comparison and development selection curve."""
+    tuning = final_model.get("threshold_tuning", {})
+    if not tuning.get("enabled"):
+        return ""
+    comparison = pd.read_csv(destination / "threshold_comparison.csv")
+    table = comparison[["operating_point", "threshold", "accuracy", "recall", "specificity",
+                        "precision", "false_negative", "false_positive"]].copy()
+    for column in ["accuracy", "recall", "specificity", "precision"]:
+        table[column] = table[column].map(lambda value: f"{value:.1%}")
+    table["threshold"] = table.threshold.map(lambda value: f"{value:.6f}")
+    table = table.rename(columns={
+        "operating_point": "Cutoff rule", "threshold": "Cutoff", "accuracy": "Accuracy",
+        "recall": "Estrus recall", "specificity": "Specificity", "precision": "Precision",
+        "false_negative": "Missed estrus days", "false_positive": "False alarms",
+    })
+    curve = pd.read_csv(destination / "threshold_curve.csv")
+    fig, ax = plt.subplots(figsize=(8, 3.5), layout="constrained")
+    for column, label in [(tuning["objective"], "F2" if tuning["objective"] == "f2" else "Balanced accuracy"),
+                          ("recall", "Estrus recall"), ("specificity", "Specificity")]:
+        ax.step(curve.threshold, curve[column], where="mid", label=label)
+    ax.axvline(final_model["threshold"], color="black", ls="--", label="Selected cutoff")
+    ax.axvline(.5, color="gray", ls=":", label="Default 0.5")
+    ax.set(xlabel="Estrus probability cutoff", ylabel="Development selection score",
+           xlim=(0, 1), ylim=(0, 1.03))
+    ax.legend(fontsize=8)
+    picture = _image(fig, destination / "figures" / "threshold_selection.png")
+    objective = ("F2, which emphasizes estrus recall while still penalizing false alarms"
+                 if tuning["objective"] == "f2" else "balanced accuracy, the mean of sensitivity and specificity")
+    return f'''<h2>Decision threshold</h2>
+<p>The cutoff was chosen to maximize {objective} using development mice only. Each scored development mouse was excluded from model selection, fitting, and probability adjustment for its prediction. The cutoff was fixed before calculating test predictions.</p>
+<p>The table compares two cutoffs on the same final model and the same reserved test mice. Probabilities and average precision are identical; only class decisions change.</p>
+{table.to_html(index=False, border=0)}
+<details><summary>How the cutoff was selected on development mice</summary>
+<p>These development scores were used to choose the cutoff and are not independent performance estimates. They can differ from the test results above.</p>{picture}</details>'''
+
+
 def render_report(root: Path, destination: Path, predictions, metrics, diagnostics, metadata):
     """Write a standalone HTML report with embedded held-out-day figures."""
     figures = destination / "figures"
@@ -127,6 +166,8 @@ def render_report(root: Path, destination: Path, predictions, metrics, diagnosti
             frame["Selected"] = frame.Selected.map({True: "Yes", False: ""})
         return frame.to_html(index=False, border=0)
     final_model = json.loads((destination / "final_model.json").read_text())
+    cutoff = final_model.get("threshold", .5)
+    threshold_html = threshold_section(destination, final_model)
     saved_model_name = MODEL_NAMES[final_model["family"]]
     feature_html = feature_sections(destination, final_model, diagnostics)
     feature_html += "".join(f"<p>{html.escape(note)}</p>" for note in final_model.get("input_requirements", []))
@@ -176,8 +217,9 @@ details{{background:white;border:1px solid #d3dce5;border-radius:6px;padding:12p
 <div class="score" data-metric="average_precision"><b>Final model test score: average precision</b><strong>{main_score:.3f}</strong>
 <p>Measures how well the model places estrus days near the top when days are ranked by predicted estrus probability. Higher is better; 1 is perfect. Giving every day the same score would get {positive.mean():.3f} on these labels.</p>
 <p>This is the metric used to choose models. It is a ranking score, not the percentage of days classified correctly.</p></div>
-<p>Using 50% estrus probability as the cutoff: <strong>{detected} of {int(positive.sum())} estrus days detected</strong>; <strong>{ruled_out} of {int((~positive).sum())} non-estrus days correctly classified</strong>.</p>
+<p>Using {cutoff:.6g} ({cutoff:.2%}) estrus probability as the cutoff: <strong>{detected} of {int(positive.sum())} estrus days detected</strong>; <strong>{ruled_out} of {int((~positive).sum())} non-estrus days correctly classified</strong>.</p>
 <p class="note">{html.escape(label_note)}</p>
+{threshold_html}
 <h2>Model comparison</h2>
 <p>The highest validation AP wins. All models use the same training mice and validation splits. The test score above comes from separate mice and can differ from these selection scores.</p>
 {comparison_table(best)}

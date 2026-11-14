@@ -1,0 +1,15 @@
+{
+  "seed": 190,
+  "test_mice": 3,
+  "cv_folds": 3,
+  "trees": 100,
+  "jobs": 1,
+  "feature_percentiles": [35, 70],
+  "regularization": [0.1, 1.0, 10.0],
+  "quick_regularization": [1.0],
+  "forest_max_depth": [3, null],
+  "forest_min_samples_leaf": 3,
+  "permutation_repeats": 3,
+  "threshold_tuning": {"enabled": true, "objective": "f2"},
+  "feature_owners": ["Matthew", "Vivian", "Alisha", "LA CBT Relationship"]
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "features": ["mouse_baseline__*"],
+    "note": "Mouse Baseline features use label-free medians of the same mouse's other analysis days (2–13), requiring complete-recording retrospective access. The baseline is typical physiology across all stages, not a labeled non-estrus baseline. No information is pooled across mice."
+  },
+  {
+    "features": ["mouse_baseline__cbt_ultradian_amplitude_h0_12_relative_median", "mouse_baseline__circadian_la_next_day_delta_relative_median"],
+    "note": "Mouse Baseline wavelet features reuse Matthew's unchanged Morse-amplitude helper on all 14 recording days. This includes future and buffer context; the day-13 next-day LA comparison remains missing. Leaving out the target summary from the median does not remove its samples from the full-recording wavelet."
+  }
+]

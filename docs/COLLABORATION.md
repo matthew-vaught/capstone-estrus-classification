@@ -34,6 +34,8 @@ The repository includes a PR template and CI that tests infrastructure and valid
 
 ## Results and labels
 
+The retained final model uses the original 28 features with F2 cutoff tuning: `python run.py model --config config/threshold-f2.json --save-details`. Mouse Baseline and LA CBT Relationship were excluded from the final model. Preserve their experiment records without including their exports in the final run. The ordinary configuration still uses fixed cutoff 0.5 when `--config` is omitted; [results](RESULTS.md) records both setups.
+
 Generated `data/outputs/` and `Model Building/results/` files are ignored. Run outputs should be shared as report attachments or release artifacts if the team wants to preserve a milestone. Contributor `outputs/features.csv` files and existing extraction metadata remain versioned handoffs. Historical exploratory outputs are preserved; new generated artifacts are ignored by default. See the [data policy](DATA.md#version-control-policy).
 
 Maintain curated labels outside generated outputs (for example, an agreed `data/labels/confirmed.csv` added by the maintainer). `estrus prepare` regenerates templates and provisional labels, so do not edit its generated template in place without copying it elsewhere. Never use labels in feature generation, use the known 4-day position as a feature, or repeatedly tune features against the same held-out results while describing those results as an untouched test.
@@ -42,4 +44,4 @@ Maintain curated labels outside generated outputs (for example, an agreed `data/
 
 Run `python -m pytest` and `python run.py validate` for shared changes. When changing the build, data interface, modeling, or reporting, also run `python run.py test`; it uses invented recordings and never writes to the real contributor folders. The pytest suite includes that synthetic build, and CI runs the suite plus export validation.
 
-Default builds consume committed exports without rerunning extraction. `--regenerate` is an explicit opt-in for the established Matthew/Alisha scripts. Leave other contributors' implementation and notebooks under their ownership; necessary cross-folder changes should be coordinated. Keep reusable analysis functions in Python modules as contributors evolve their notebooks, and rerun notebooks top to bottom before submitting their updates.
+Default builds consume committed exports without rerunning extraction. `--regenerate` explicitly supports the established Matthew/Alisha scripts and the separate Mouse Baseline/LA CBT Relationship experimental extractors. Regenerating an excluded family's CSV does not enable it in the final configuration. Leave other contributors' implementation and notebooks under their ownership; necessary cross-folder changes should be coordinated. Keep reusable analysis functions in Python modules as contributors evolve their notebooks, and rerun notebooks top to bottom before submitting their updates.

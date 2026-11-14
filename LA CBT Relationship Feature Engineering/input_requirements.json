@@ -1,0 +1,10 @@
+[
+  {
+    "features": ["la_cbt_relationship__*"],
+    "note": "LA–CBT relationship features describe a complete target day's paired signals using five-minute bins and within-day ten-minute changes. They use no labels, other days, other mice, or fitted population quantities. Within-day forward changes require end-of-day retrospective access; the complete combined model still requires the original contributors' full-recording inputs."
+  },
+  {
+    "features": ["la_cbt_relationship__*"],
+    "note": "These are observational descriptors inspired by Burks and Smarr (2026), not their fitted dynamical coefficients, causal heating/cooling estimates, hormonal residuals, or a reproduction of their forecasting model. Hours 6–12 remain elapsed recording-day hours; light/clock alignment is unconfirmed."
+  }
+]

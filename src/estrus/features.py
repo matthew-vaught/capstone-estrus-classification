@@ -76,7 +76,7 @@ def baseline_features(root):
     ])
 
 
-def assemble_features(root, destination, *, baseline_only=False):
+def assemble_features(root, destination, *, baseline_only=False, owners=None):
     """Join validated exports; compute reference features only when needed.
 
     No contributor code is executed and no contributor files are written.
@@ -85,7 +85,7 @@ def assemble_features(root, destination, *, baseline_only=False):
     from .contracts import collect_features
 
     features, diagnostics = collect_features(
-        root, canonical_keys(), destination, baseline_only=baseline_only
+        root, canonical_keys(), destination, baseline_only=baseline_only, owners=owners
     )
     if len(features.columns) == len(KEYS):
         features = baseline_features(root)

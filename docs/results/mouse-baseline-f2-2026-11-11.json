@@ -1,0 +1,507 @@
+{
+  "purpose": "First predeclared four-feature Mouse Baseline experiment; worse observed test performance, retained as opt-in research.",
+  "command": "MPLCONFIGDIR=/tmp/estrus-mouse-baseline-mpl .venv/bin/python run.py model --config config/mouse-baseline-f2.json --save-details --output 'Model Building/results/mouse-baseline-f2-2026-11-11'",
+  "created_utc": "2026-11-12T00:15:19.387387+00:00",
+  "git_commit": "fb006f83fa763c47d5c566d681c5cbc9b1accc7b",
+  "git_dirty": true,
+  "final_model": {
+    "family": "logistic",
+    "feature_set": "Top 35% of features",
+    "validation_ap": 0.9932659932659934,
+    "test_ap": 0.8287054992937346,
+    "selected_features": [
+      "matthew__circadian_la_amplitude_next_day_delta",
+      "matthew__cbt_ultradian_amplitude_h0_12",
+      "matthew__cbt_fraction_above_37_2_h6_12",
+      "matthew__la_fraction_above_15_h6_12",
+      "vivian__adj_range",
+      "alisha__dtw_shift_whole_temp",
+      "alisha__dtw_shift_seg4_temp",
+      "mouse_baseline__cbt_mean_h6_12_minus_median",
+      "mouse_baseline__la_mean_h6_12_relative_median",
+      "mouse_baseline__cbt_ultradian_amplitude_h0_12_relative_median",
+      "mouse_baseline__circadian_la_next_day_delta_relative_median"
+    ],
+    "n_features": 11,
+    "n_available": 32,
+    "training_mice": [
+      "f1",
+      "f10",
+      "f12",
+      "f13",
+      "f2",
+      "f4",
+      "f5",
+      "f7",
+      "f8",
+      "f9"
+    ],
+    "test_mice": [
+      "f11",
+      "f3",
+      "f6"
+    ],
+    "threshold": 0.6077592972690096,
+    "threshold_tuning": {
+      "enabled": true,
+      "objective": "f2",
+      "threshold": 0.6077592972690096,
+      "default_threshold": 0.5,
+      "method": "mouse_grouped_nested_model_selection_and_calibration",
+      "tie_break": "closest_to_0.5_then_higher",
+      "score_scope": "Development scores used to choose the cutoff; not independent performance estimates.",
+      "development_mice": [
+        "f1",
+        "f10",
+        "f12",
+        "f13",
+        "f2",
+        "f4",
+        "f5",
+        "f7",
+        "f8",
+        "f9"
+      ],
+      "folds": [
+        {
+          "fold": 0,
+          "fitting_mice": [
+            "f10",
+            "f12",
+            "f2",
+            "f4",
+            "f7",
+            "f8"
+          ],
+          "validation_mice": [
+            "f1",
+            "f13",
+            "f5",
+            "f9"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f10",
+                "f12",
+                "f4",
+                "f7"
+              ],
+              "validation_mice": [
+                "f2",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f10",
+                "f2",
+                "f4",
+                "f8"
+              ],
+              "validation_mice": [
+                "f12",
+                "f7"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f12",
+                "f2",
+                "f7",
+                "f8"
+              ],
+              "validation_mice": [
+                "f10",
+                "f4"
+              ]
+            }
+          ],
+          "family": "rbf_svm",
+          "feature_set": "Top 70% of features",
+          "settings": "{'model__C': 0.1}"
+        },
+        {
+          "fold": 1,
+          "fitting_mice": [
+            "f1",
+            "f10",
+            "f13",
+            "f2",
+            "f5",
+            "f7",
+            "f9"
+          ],
+          "validation_mice": [
+            "f12",
+            "f4",
+            "f8"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f10",
+                "f13",
+                "f5",
+                "f7"
+              ],
+              "validation_mice": [
+                "f1",
+                "f2",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f10",
+                "f2",
+                "f5",
+                "f9"
+              ],
+              "validation_mice": [
+                "f13",
+                "f7"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f13",
+                "f2",
+                "f7",
+                "f9"
+              ],
+              "validation_mice": [
+                "f10",
+                "f5"
+              ]
+            }
+          ],
+          "family": "random_forest",
+          "feature_set": "All usable features",
+          "settings": "{'model__max_depth': 3}"
+        },
+        {
+          "fold": 2,
+          "fitting_mice": [
+            "f1",
+            "f12",
+            "f13",
+            "f4",
+            "f5",
+            "f8",
+            "f9"
+          ],
+          "validation_mice": [
+            "f10",
+            "f2",
+            "f7"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f12",
+                "f13",
+                "f5",
+                "f8"
+              ],
+              "validation_mice": [
+                "f1",
+                "f4",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f12",
+                "f4",
+                "f5",
+                "f9"
+              ],
+              "validation_mice": [
+                "f13",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f13",
+                "f4",
+                "f8",
+                "f9"
+              ],
+              "validation_mice": [
+                "f12",
+                "f5"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 70% of features",
+          "settings": "{'model__C': 0.1}"
+        }
+      ],
+      "default_selection_metrics": {
+        "average_precision": 0.9491444864413965,
+        "accuracy": 0.9416666666666667,
+        "balanced_accuracy": 0.9277777777777778,
+        "precision": 0.8709677419354839,
+        "recall": 0.9,
+        "specificity": 0.9555555555555556,
+        "f2": 0.8940397350993378,
+        "true_positive": 27,
+        "false_negative": 3,
+        "true_negative": 86,
+        "false_positive": 4,
+        "brier": 0.04696968657025724,
+        "log_loss": 0.16284326511196753
+      },
+      "selected_selection_metrics": {
+        "average_precision": 0.9491444864413965,
+        "accuracy": 0.9583333333333334,
+        "balanced_accuracy": 0.9388888888888889,
+        "precision": 0.9310344827586207,
+        "recall": 0.9,
+        "specificity": 0.9777777777777777,
+        "f2": 0.9060402684563759,
+        "true_positive": 27,
+        "false_negative": 3,
+        "true_negative": 88,
+        "false_positive": 2,
+        "brier": 0.04696968657025724,
+        "log_loss": 0.16284326511196753
+      }
+    },
+    "settings": "{'model__C': 10.0}",
+    "feature_source": "contributors",
+    "input_requirements": [
+      "Matthew's wavelet inputs require the complete recording, including future samples. This is retrospective classification; a target day's raw signal alone is insufficient.",
+      "LA change is next-day minus current-day circadian amplitude. Recording day 13 has a missing LA change to avoid the final buffer's endpoint-sensitive amplitude; the model fills this using a median learned from its fitting data. All target days remain included.",
+      "Matthew's 37.2 \u00b0C and 15 counts/minute thresholds were chosen during development exploration and frozen before this run. Validation scores after feature design are exploratory.",
+      "Vivian's activity-adjusted CBT inputs use per-mouse cleaning and activity regression over the complete recording; wavelet inputs also include future samples and buffers. They support retrospective classification, not isolated-day prediction. Extraction uses no labels or other mice; the shared export is uncentered.",
+      "Alisha's DTW inputs compare each day with the same mouse's other 13 recording days, including future days and buffers 1 and 14. They require the complete 14-day recording for retrospective classification; an isolated day's signal is insufficient. These comparisons use no labels or other mice.",
+      "Mouse Baseline features use label-free medians of the same mouse's other analysis days (2\u201313), requiring complete-recording retrospective access. The baseline is typical physiology across all stages, not a labeled non-estrus baseline. No information is pooled across mice.",
+      "Mouse Baseline wavelet features reuse Matthew's unchanged Morse-amplitude helper on all 14 recording days. This includes future and buffer context; the day-13 next-day LA comparison remains missing. Leaving out the target summary from the median does not remove its samples from the full-recording wavelet."
+    ]
+  },
+  "threshold_comparison": [
+    {
+      "operating_point": "Default",
+      "threshold": 0.5,
+      "average_precision": 0.8287054992937346,
+      "accuracy": 0.8888888888888888,
+      "balanced_accuracy": 0.7777777777777778,
+      "precision": 1.0,
+      "recall": 0.5555555555555556,
+      "specificity": 1.0,
+      "f2": 0.6097560975609756,
+      "true_positive": 5,
+      "false_negative": 4,
+      "true_negative": 27,
+      "false_positive": 0,
+      "brier": 0.08902993579702209,
+      "log_loss": 0.2750521595150105
+    },
+    {
+      "operating_point": "Development-selected",
+      "threshold": 0.6077592972690096,
+      "average_precision": 0.8287054992937346,
+      "accuracy": 0.8888888888888888,
+      "balanced_accuracy": 0.7777777777777778,
+      "precision": 1.0,
+      "recall": 0.5555555555555556,
+      "specificity": 1.0,
+      "f2": 0.6097560975609756,
+      "true_positive": 5,
+      "false_negative": 4,
+      "true_negative": 27,
+      "false_positive": 0,
+      "brier": 0.08902993579702209,
+      "log_loss": 0.2750521595150105
+    }
+  ],
+  "new_feature_development_assessments": [
+    {
+      "feature": "mouse_baseline__cbt_mean_h6_12_minus_median",
+      "name": "cbt_mean_h6_12_minus_median",
+      "owner": "Mouse Baseline",
+      "individual_ap": 0.9628674309229867,
+      "importance_ap_drop": 0.06114068292717531,
+      "used": true,
+      "status": "Used"
+    },
+    {
+      "feature": "mouse_baseline__la_mean_h6_12_relative_median",
+      "name": "la_mean_h6_12_relative_median",
+      "owner": "Mouse Baseline",
+      "individual_ap": 0.8532030983419873,
+      "importance_ap_drop": 0.005363926197259548,
+      "used": true,
+      "status": "Used"
+    },
+    {
+      "feature": "mouse_baseline__circadian_la_next_day_delta_relative_median",
+      "name": "circadian_la_next_day_delta_relative_median",
+      "owner": "Mouse Baseline",
+      "individual_ap": 0.7592953958433206,
+      "importance_ap_drop": 0.0014838556505223242,
+      "used": true,
+      "status": "Used"
+    },
+    {
+      "feature": "mouse_baseline__cbt_ultradian_amplitude_h0_12_relative_median",
+      "name": "cbt_ultradian_amplitude_h0_12_relative_median",
+      "owner": "Mouse Baseline",
+      "individual_ap": 0.8436885071826593,
+      "importance_ap_drop": 0.000712250712250722,
+      "used": true,
+      "status": "Used"
+    }
+  ],
+  "reference_experiment": "threshold-f2-2026-11-11",
+  "reference_test_result": {
+    "average_precision": 0.9320987654320989,
+    "accuracy": 0.9444444444444444,
+    "recall": 0.7777777777777778,
+    "false_positive": 0
+  },
+  "test_cohort_and_labels_match_reference": true,
+  "config": {
+    "seed": 190,
+    "test_mice": 3,
+    "cv_folds": 3,
+    "trees": 100,
+    "jobs": 1,
+    "feature_percentiles": [
+      35,
+      70
+    ],
+    "regularization": [
+      0.1,
+      1.0,
+      10.0
+    ],
+    "quick_regularization": [
+      1.0
+    ],
+    "forest_max_depth": [
+      3,
+      null
+    ],
+    "forest_min_samples_leaf": 3,
+    "permutation_repeats": 3,
+    "threshold_tuning": {
+      "enabled": true,
+      "objective": "f2"
+    },
+    "feature_owners": [
+      "Matthew",
+      "Vivian",
+      "Alisha",
+      "Mouse Baseline"
+    ]
+  },
+  "versions": {
+    "numpy": "2.5.4",
+    "pandas": "3.1.0",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "matplotlib": "3.11.2",
+    "PyWavelets": "1.10.0",
+    "joblib": "1.6.0"
+  },
+  "input_sha256": {
+    "data/inputs/male_temp.csv": "e08d98e3069efb754a3cf9474834214052d8ef2c1e7e1a260ba59f10adf130a4",
+    "data/inputs/male_act.csv": "a57f607eeb27a07e509d61ce01d95055019fb640b9b2347df93b6f1745affce1",
+    "data/inputs/fem_temp.csv": "bd66f8633f8773e44a1d765cdaa0c52f927f002d8f02ef5288416c78bc80f68e",
+    "data/inputs/fem_act.csv": "5398fd74dc21d4fb22af7948057651605e8e8187eb0b796a95a816d98e32447c",
+    "Matthew Feature Engineering/outputs/features.csv": "2108151636b34f8c2495439a66627ecc86c41b50b186e1e0283bb63f787b7e18",
+    "Vivian Feature Engineering/outputs/features.csv": "a395608a39caed2f98d6ab729f22c0fb1e5acde5c86231999716f0e719ee29ca",
+    "Alisha Feature Engineering/outputs/features.csv": "80d576ede22c4bc46981be505ddc4ab7a82efeb1870966af73925ff01933dd30",
+    "Mouse Baseline Feature Engineering/outputs/features.csv": "b02cff840f8e03bbab3461b1a19209313600dc9f7b8aec0b97c717d699714bad",
+    "Matthew Feature Engineering/input_requirements.json": "53450969971b7a8b0db1929b3796ae4def17e005f3c73f348a9e56de8808cc59",
+    "Matthew Feature Engineering/outputs/feature_metadata.json": "d35de7dcdf2ee58a389145ae1a49b2cd5c6208667def138d733402128dd130e1",
+    "Vivian Feature Engineering/input_requirements.json": "1a41825ee55526603c027d31c32339696fb74338a78bf7f651399f78e0ec53f3",
+    "Alisha Feature Engineering/input_requirements.json": "9873ff6c2248f8a07aedf299676badabefe7470358965530ba47f8aa24ea8721",
+    "Mouse Baseline Feature Engineering/input_requirements.json": "1b07ced42960d2adbda6b618372e64a4ed5f37166584a288b43e7f67417739ec",
+    "Mouse Baseline Feature Engineering/outputs/feature_metadata.json": "c084b25fdd13cb09eeb4601df3dab49c8c6cdda44d0e3c55802abb9f1d29d711"
+  },
+  "source_sha256": {
+    "src/estrus/__init__.py": "0e38e9b93a2c23e2a62a351978074e6e8fe9134e2c97a0d4ad059475b5df6e80",
+    "src/estrus/build.py": "3fad6c1a46a7e1ad754f5d18424dd9f86c094c7193c92dfb3d32b2080e7ea303",
+    "src/estrus/cli.py": "d810d18868a8cca4ffff49c2f2f2b284306ae332e33b7dc6d89c57b476aa62dd",
+    "src/estrus/contracts.py": "411676d0962694761bf0decfe240baa89fef9d1ea4dfc8264250b6778f13f2bf",
+    "src/estrus/data.py": "6e327ade283f3b1eb7a4636da24c6552103271164305cd94eb743a555bf1ee14",
+    "src/estrus/features.py": "b07802d0a95bf87ccad57109a02ee3730b67dbd918d73b924c3634b695a5b18a",
+    "src/estrus/modeling.py": "e94cd0052f84cc3a0e86df685a390e7aa2e15037ea7f4513cd915daba9a6ff2b",
+    "src/estrus/reporting.py": "663d26a53208b6fcdd2f047eecbb20f2100580aaeec8ae8b9a0e05f41db61c13",
+    "src/estrus/results.py": "372bb2c383b5df5e25a33301997b013545388462c37d3eeab0b47f7121734be4",
+    "src/estrus/synthetic.py": "b45ccf337b67d1a7433e09dc82f2930aeb7b6f1d190feb6453160927b064ca06"
+  },
+  "new_feature_metadata": {
+    "owner": "Mouse Baseline",
+    "information_cutoff": "retrospective_complete_recording",
+    "baseline": "Per target day, median of the other 11 analysis-day summaries of the same mouse; all labels ignored",
+    "analysis_days": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "minimum_reference_days": 9,
+    "denominator_floor": 1e-12,
+    "inspiration": "Matthew's hours-6\u201312 threshold/mean exploration, first-half CBT ultradian suppression, and next-day circadian LA amplitude delta",
+    "units": {
+      "cbt_mean_h6_12_minus_median": "degrees C",
+      "la_mean_h6_12_relative_median": "fractional difference",
+      "cbt_ultradian_amplitude_h0_12_relative_median": "fractional difference",
+      "circadian_la_next_day_delta_relative_median": "fractional amplitude change"
+    },
+    "missing_values_per_feature": {
+      "mouse_baseline__cbt_mean_h6_12_minus_median": 0,
+      "mouse_baseline__la_mean_h6_12_relative_median": 0,
+      "mouse_baseline__cbt_ultradian_amplitude_h0_12_relative_median": 0,
+      "mouse_baseline__circadian_la_next_day_delta_relative_median": 13
+    },
+    "wavelet": "Unchanged Matthew Morse helper: beta=5, gamma=3, peak-2, linear detrending, periodic boundary, band max absolute amplitude then window mean",
+    "input_sha256": {
+      "data/inputs/fem_temp.csv": "bd66f8633f8773e44a1d765cdaa0c52f927f002d8f02ef5288416c78bc80f68e",
+      "data/inputs/fem_act.csv": "5398fd74dc21d4fb22af7948057651605e8e8187eb0b796a95a816d98e32447c"
+    },
+    "source_sha256": {
+      "Mouse Baseline Feature Engineering/features.py": "0b1412c071e3f99a9763df879f52c8ca0a98585656d41c64e610ecf58ceb96e4",
+      "Mouse Baseline Feature Engineering/input_requirements.json": "1b07ced42960d2adbda6b618372e64a4ed5f37166584a288b43e7f67417739ec",
+      "Matthew Feature Engineering/wavelets.py": "f22ef7481b21207b2fc4ffa7383bb5818c5234cec54f1d38f93d396428c87c13",
+      "docs/features/mouse-baseline.md": "84b3b952bd96b78ec5ea83ee5b5316085f23c8f14155b108dd56c17f8c605bd4"
+    },
+    "feature_columns": [
+      "mouse_baseline__cbt_mean_h6_12_minus_median",
+      "mouse_baseline__la_mean_h6_12_relative_median",
+      "mouse_baseline__cbt_ultradian_amplitude_h0_12_relative_median",
+      "mouse_baseline__circadian_la_next_day_delta_relative_median"
+    ],
+    "feature_csv_sha256": "b02cff840f8e03bbab3461b1a19209313600dc9f7b8aec0b97c717d699714bad"
+  },
+  "artifact_sha256": {
+    "report.html": "85d9bdd9e8aa2982cf657f4e70417b08ec5ae316fecb43e55aa03796a9a4c788",
+    "predictions.csv": "ec4ce3a23b9a2182e704dc5aeda7fa7735c2455a5ac1f3cab2b5620e8747ccc0",
+    "model.joblib": "3980bc374b71148ad86e0d1bde8485693b1df8c4c35ce184452a091c25efedab"
+  },
+  "limitations": [
+    "Test mice were previously inspected; comparison is exploratory.",
+    "Development feature/threshold selection scores are not independent validation.",
+    "Labels and first four feature definitions were not adjusted after this outcome.",
+    "No hypothesis about the cause of the AP decline was independently tested."
+  ]
+}

@@ -26,5 +26,5 @@ estrus = "estrus.cli:main"
 where = ["src"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "Matthew Feature Engineering/tests", "Vivian Feature Engineering/tests", "Alisha Feature Engineering/tests"]
+testpaths = ["tests", "Matthew Feature Engineering/tests", "Vivian Feature Engineering/tests", "Alisha Feature Engineering/tests", "Mouse Baseline Feature Engineering/tests", "LA CBT Relationship Feature Engineering/tests"]
 pythonpath = ["src"]

@@ -2,6 +2,8 @@
 
 Each owner supplies exactly one optional file:
 
+The retained final configuration is [config/threshold-f2.json](../config/threshold-f2.json), using the original 28 supplied features and F2 cutoff tuning. Mouse Baseline and LA CBT Relationship are registered for historical experiment reproduction and excluded from the final model.
+
 Once any valid export is available, model building uses the combined valid contributor exports **without reference features**. If no valid exports exist, it falls back to the reference baseline. `estrus run --baseline` explicitly runs reference features alone for comparison. The report identifies which feature source was used.
 
 | Owner | Path | Feature prefix |
@@ -10,6 +12,10 @@ Once any valid export is available, model building uses the combined valid contr
 | Vivian | `Vivian Feature Engineering/outputs/features.csv` | `vivian__` |
 | Brandon | `Brandon Feature Engineering/outputs/features.csv` | `brandon__` |
 | Alisha | `Alisha Feature Engineering/outputs/features.csv` | `alisha__` |
+| Mouse Baseline (excluded experiment) | `Mouse Baseline Feature Engineering/outputs/features.csv` | `mouse_baseline__` |
+| LA CBT Relationship (excluded experiment) | `LA CBT Relationship Feature Engineering/outputs/features.csv` | `la_cbt_relationship__` |
+
+By default the four original owners are eligible. An experiment may supply a nonempty, duplicate-free `feature_owners` list of registered names in its JSON configuration. Every explicitly requested export must be valid and present for a model run. [Mouse Baseline](features/mouse-baseline.md) is a separately registered experimental family enabled this way; its folder/export alone does not alter the default 28-feature comparison. Spaces in registered family names become underscores in feature prefixes. `estrus validate --owner "Mouse Baseline"` validates its handoff separately.
 
 UTF-8 CSV, no index column. The column names are case-sensitive:
 
@@ -75,6 +81,10 @@ The default input scope is the target day's signal, as used by the reference fea
 **Matthew's retrospective recording features:** `matthew__circadian_la_amplitude_next_day_delta` and `matthew__cbt_ultradian_amplitude_h0_12` use full-recording Morse transforms, including buffer and future samples. The first subtracts the current day's mean amplitude from the next day's for target days 2–12. Day 13's LA delta is missing to avoid the final buffer's endpoint-sensitive daily amplitude; keep that row and its other features. This leaves 143 observed LA deltas and 13 missing values, filled by training-fold median imputation. Day 14's raw readings still provide wavelet context. The row still targets one day, but a model accepting these inputs requires the complete recording at inference. It is not an isolated-day or online prediction task. Keep all recording context within the same mouse partition. See [Matthew's definitions](features/matthew.md) for exact parameters, endpoint limitations, and gap handling. Alisha and Vivian also submit recording-level features under their own documented definitions; see below.
 
 [Alisha's DTW features](features/alisha.md) compare a target day with the other thirteen days of the same mouse. [Vivian's features](features/vivian.md) use full-recording cleaning, activity adjustment, and wavelets. Both are retrospective. Their `input_requirements.json` files carry those requirements into model outputs. No contributor's recording context may cross mouse partitions.
+
+[Mouse Baseline's four contrasts](features/mouse-baseline.md) also declare retrospective scope: they compare established per-day summaries with the same mouse's other analysis days, without stage labels or cross-mouse aggregation. They reuse Matthew's unchanged Morse helper during explicit extraction; shared model fitting still reads only their independent CSV/JSON handoff.
+
+[LA CBT Relationship](features/la-cbt-relationship.md) uses only the target day's complete paired signals, including within-day ten-minute forward changes. It does not require other days/mice or labels. It supports end-of-day description, while a combined model still requires the original recording-level features. It is an independent CSV/JSON family and does not implicitly enable Mouse Baseline.
 
 Within-day smoothing, interpolation, quantiles, or scaling are acceptable when the same rule works for one unseen day without labels. All transforms learned across days or mice (scaling, PCA, feature screening, thresholds learned from class distributions) normally belong in the shared training pipeline, where they are fitted within training folds. Matthew's two requested fractions freeze the exploratory notebook's development-selected thresholds (37.2 °C and 15 counts/minute). They are documented supervised feature-design choices, not thresholds freshly selected inside each model fold; subsequent development-validation scores must be described as exploratory. They were selected without the reserved test mice. Do not introduce full-trajectory centering into day-local exports. Recording-level preprocessing must be explicitly documented, as in Vivian's uncentered activity-adjusted export; her exploratory classifier's centering is not used in the shared model.
 

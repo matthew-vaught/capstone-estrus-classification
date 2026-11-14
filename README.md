@@ -4,6 +4,8 @@ This capstone investigates whether core body temperature (CBT) and locomotor act
 
 The dataset contains 14 days of one-minute recordings from 13 females. Analysis uses recording days 2–13, giving 156 mouse-days. Current submissions provide 28 features: Matthew's four, Alisha's eighteen, and Vivian's six. Brandon's folder contains feature evaluation code. See the [feature overview](docs/README.md#feature-documentation).
 
+**Final setup:** the original 28 features with a decision cutoff selected on development mice by F2. Mouse Baseline and LA–CBT Relationship features are excluded; their experiments are retained for reference.
+
 **Interpretation:** labels for recording days 2, 6, and 10 are provisional paper-alignment proxies, rather than independently confirmed biological stages. Current contributor features require complete recordings, including future context, and support retrospective classification. The [methods](docs/METHODS.md) explain these limitations.
 
 ## Install
@@ -22,15 +24,17 @@ On Windows PowerShell, activate with `.\.venv\Scripts\Activate.ps1`. Notebook an
 ## Reproduce and review
 
 ```bash
-python run.py all --save-details  # Prepare data, assemble supplied exports, train and report
-python run.py all --quick         # Faster trial with a smaller model search
-python run.py test                # Complete shared pipeline on invented data
-python -m pytest                 # Unit and integration tests
+python run.py all --config config/threshold-f2.json --save-details
+python run.py model --config config/threshold-f2.json --quick  # Trial, not the final search
+python run.py test  # Complete shared pipeline on invented data
+python -m pytest   # Unit and integration tests
 ```
 
-The four input CSVs and submitted feature exports are included for course submission reproducibility. The default build reads those exports without executing or changing contributors' code. Optional extraction commands and the notebook-based regeneration boundary are documented in the [reproduction guide](docs/REPRODUCING.md).
+Use the explicit `--config config/threshold-f2.json` for the final setup. Omitting it selects the historical `Model Building/config.json`, which still uses cutoff 0.5. The four input CSVs and submitted feature exports are included for course submission reproducibility. The build reads those exports without executing or changing contributors' code. Optional extraction commands are in the [reproduction guide](docs/REPRODUCING.md).
 
 Open the printed `Model Building/results/run-.../report.html` path in a browser. Each run also contains readable `predictions.csv`, the evaluated `model.joblib`, and a short run README. `--save-details` retains configuration, hashes, splits, and technical records. The main metric is **average precision**, evaluated on three reserved mice. The [results guide](docs/RESULTS.md) describes the current milestone and how to interpret it.
+
+The retained run achieved **AP 0.932 and accuracy 94.4%**, detecting 7/9 estrus-proxy days with no false alarms. The cutoff was approximately 0.367183; it is learned from development data and saved with the model. See [results and limitations](docs/RESULTS.md) for the small cohort, provisional labels, and exploratory evaluation context.
 
 ## Repository map
 

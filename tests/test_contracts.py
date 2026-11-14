@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 from estrus.contracts import (collect_features, export_features, feature_path,
-                              read_features, validate_features, input_requirements)
+                              read_features, validate_features, input_requirements, resolve_owners)
 from estrus.data import canonical_keys
 
 
@@ -129,3 +129,22 @@ def test_malformed_input_requirements_fail_explicitly(tmp_path, rules):
     (folder / "input_requirements.json").write_text(json.dumps(rules))
     with pytest.raises(ValueError, match="input_requirements.json"):
         input_requirements(["vivian__power"], tmp_path)
+
+
+def test_optional_multiword_family_is_separate_and_explicit(tmp_path):
+    frame = canonical_keys().assign(mouse_baseline__relative_mean=np.arange(156, dtype=float))
+    path = export_features(frame, tmp_path, "Mouse Baseline")
+    assert path == tmp_path / "Mouse Baseline Feature Engineering/outputs/features.csv"
+    export_features(valid(), tmp_path, "Vivian")
+    original, _ = collect_features(tmp_path, canonical_keys(), tmp_path / "default")
+    assert "mouse_baseline__relative_mean" not in original
+    combined, _ = collect_features(tmp_path, canonical_keys(), tmp_path / "experiment", owners=["Vivian", "Mouse Baseline"])
+    assert "mouse_baseline__relative_mean" in combined and "vivian__power" in combined
+    note = "Label-free retrospective reference from this mouse's other days."
+    (path.parents[1] / "input_requirements.json").write_text(json.dumps([
+        {"features": ["mouse_baseline__*"], "note": note}]))
+    assert input_requirements(combined.columns, tmp_path) == [note]
+    pd.testing.assert_frame_equal(read_features(path, "Mouse Baseline"), frame)
+    for invalid in [[], ["Nobody"], ["Vivian", "Vivian"], "Vivian"]:
+        with pytest.raises(ValueError, match="feature_owners"):
+            resolve_owners(invalid)
