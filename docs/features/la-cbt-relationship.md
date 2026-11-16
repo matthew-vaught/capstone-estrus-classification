@@ -1,6 +1,6 @@
 # LA–CBT relationship features
 
-**Status:** excluded from the final model, as confirmed November 13, 2026. This page preserves the experiment's definitions and reproduction instructions. Use [config/threshold-f2.json](../../config/threshold-f2.json) for the retained final setup; see [the comparison](../RESULTS.md#feature-experiments-excluded-from-the-final-model).
+**Status:** excluded from the final model, as confirmed November 13, 2026. This page preserves the experiment's definitions and reproduction instructions. Use [config/threshold-f2.json](../../config/threshold-f2.json) for the retained final setup; see [the comparison](../RESULTS.md#feature-and-cutoff-experiments).
 
 This experiment adds four paired-signal descriptors in `LA CBT Relationship Feature Engineering/`. The comparison is **original 28 features + accepted F2 cutoff-selection protocol + these four features**. The rejected Mouse Baseline family is excluded. All new definitions were frozen before inspecting their supervised feature/model scores.
 

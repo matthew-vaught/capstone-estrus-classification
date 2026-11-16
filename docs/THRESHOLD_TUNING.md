@@ -1,27 +1,44 @@
-# Decision-threshold tuning for the retained final model
+# Decision-threshold tuning for the final model
 
-This retained change controls how predicted probabilities become Estrus/Non-estrus decisions. It uses the original 28 contributor features, labels, mouse split, model search, and final probability calibration. The separate Mouse Baseline and LA CBT Relationship experiments were evaluated and excluded from the final model; their [results](RESULTS.md#feature-experiments-excluded-from-the-final-model) are retained as research history.
+Threshold tuning controls how predicted probabilities become Estrus/Non-estrus decisions. The cutoff is learned on development mice only and frozen before test prediction.
+
+The **final configuration**, adopted November 15, 2026, is [config/mouse-relative-fixed-cutoff.json](../config/mouse-relative-fixed-cutoff.json). It chooses the cutoff by F2, scoring development mice one at a time with one fixed model and no calibration. The previous final configuration, [config/threshold-f2.json](../config/threshold-f2.json), used three grouped folds with per-fold model search and calibration; it is retained for reproduction. The Mouse Baseline and LA CBT Relationship experiments were excluded; see their [results](RESULTS.md#feature-and-cutoff-experiments).
 
 ## Run it
 
 From the installed project environment:
 
 ```bash
-python run.py model --config config/threshold-f2.json --save-details
+python run.py model --config config/mouse-relative-fixed-cutoff.json --save-details
 ```
 
 Open the printed `report.html`. It shows the selected cutoff, a comparison against 0.5 on the same final model, and the development selection curve. A new output directory preserves historical runs. The default `Model Building/config.json` still uses 0.5, so `python run.py model --save-details` retains the historical decision rule. Old saved models retain their own cutoffs.
 
-The [final configuration](../config/threshold-f2.json) copies the historical full-search settings and adds:
+The final configuration copies the historical full-search settings and adds:
 
 ```json
 "threshold_tuning": {
   "enabled": true,
-  "objective": "f2"
-}
+  "objective": "f2",
+  "folds": "leave_one_mouse_out",
+  "model_search": "fixed"
+},
+"mouse_relative_features": true,
+"calibration": false
 ```
 
-Supported objectives are `f2` and `balanced_accuracy`. F2 is the retained choice because missed estrus days motivated this work. Its formula is `5 TP / (5 TP + 4 FN + FP)`: it emphasizes recall while penalizing false alarms. It does not force every day positive to guarantee recall. Balanced accuracy is available for research and gives equal weight to sensitivity and specificity. Neither objective guarantees 100% accuracy or an improvement on new mice.
+Supported objectives are `f2`, `balanced_accuracy`, and `accuracy`. F2 is the retained choice because missed estrus days motivated this work. Its formula is `5 TP / (5 TP + 4 FN + FP)`: it emphasizes recall while penalizing false alarms. It does not force every day positive to guarantee recall. Balanced accuracy is available for research and gives equal weight to sensitivity and specificity.
+
+Plain `accuracy`, added November 15, 2026, maximizes the fraction of all development days classified correctly. It is **not recommended**. Development data has only about 30 estrus days, so it tends to move the cutoff to gain a single development day. On the reserved test mice, it lowered accuracy for both feature sets tried; see the [experiment](RESULTS.md#later-experiment-mouse-relative-features-and-accuracy-cutoff-november-15-2026). No objective guarantees 100% accuracy or an improvement on new mice.
+
+The final configuration uses these November 15, 2026 settings; each defaults to the previous behavior:
+
+- **`"folds": "leave_one_mouse_out"`** inside `threshold_tuning` scores each development mouse with models fitted on all other development mice. The default, `"grouped"`, uses the shared grouped folds. By default model search repeats inside every fold; `threshold_tuning.json` records each fold's mice and chosen model.
+- **`"calibration": false`**, at the top level of the config, skips sigmoid calibration for both the cutoff-selection models and the final model. RBF SVMs are always calibrated because they produce no probabilities of their own. Saved models and `final_model.json` record whether calibration was applied.
+
+- **`"model_search": "fixed"`** inside `threshold_tuning` chooses the model once on all development mice, then refits that same model in every cutoff fold. The default, `"per_fold"`, repeats the full model search in each fold. With the fixed setting, every development score comes from one model family on one probability scale. Because the model choice saw every development mouse's labels, the cutoff-selection scores are slightly optimistic; reserved test mice are still never used.
+
+With mouse-relative features, `leave_one_mouse_out` folds, `fixed` model search, and no calibration ([config](../config/mouse-relative-fixed-cutoff.json)), the cutoff gave 148/156 on all 13 mice versus 145/156 for the previous final setup, and 35/36 versus 34/36 on the test mice. It was adopted as the final setup; see the [experiment](RESULTS.md#later-experiment-mouse-relative-features-and-accuracy-cutoff-november-15-2026).
 
 ## How the cutoff is selected
 
@@ -63,6 +80,19 @@ The existing test mice were inspected before this experiment was conceived. Resu
 ## Verification
 
 Tests cover known-score cutoff selection and its recall/false-alarm tradeoff, deterministic ties and equality handling, configuration/input validation, unchanged probability metrics, mouse separation through the nested fitting layers, invariance of threshold/model choice to reserved-test label changes, saved-model replay, class probability below 0.5, and report display of the selected cutoff/comparison. An additional regression test flips the labels of an excluded development fold and requires its own generated probabilities and model-choice audit to remain exactly unchanged, checking exclusion from search and calibration as well as fitting. Tests use synthetic data; they verify software behavior rather than biological label accuracy.
+
+## Final run: November 15, 2026
+
+The final full build `final-2026-11-15` selected logistic regression, C=1, using 20 of 56 features. Its development-selected cutoff was **0.5057318949923271**, maximizing F2 on 120 one-mouse-at-a-time development probabilities.
+
+| Test cohort: 36 days from f3, f6, f11 | Default 0.5 | Selected 0.505732 |
+| --- | --- | --- |
+| Estrus detected | 8/9 | 8/9 |
+| False alarms | 0/27 | 0/27 |
+| Accuracy | 97.2% | 97.2% |
+| Average precision | 0.980 | 0.980 |
+
+The cutoff is close to 0.5, so both rules give the same decisions; F3 day 10 is the only miss. The [versioned final record](results/final-2026-11-15.json) preserves the exact cutoff, configuration, hashes, and comparison.
 
 ## First full experiment: November 11, 2026
 

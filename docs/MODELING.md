@@ -8,14 +8,14 @@ The model combines valid submitted CSVs and excludes reference features whenever
 
 All three submitted families include full-recording or future context, so the current team model performs retrospective classification. The reference baseline uses only the target day's signal. Per-feature requirements are carried from contributors' JSON notes into the saved model and report.
 
-The workflow reserves three mice, compares logistic regression, random forest, and RBF SVM on the other ten, selects the combination with highest validation average precision, calibrates it, and evaluates it on the reserved mice. All days from a mouse stay together. Exact settings, leakage controls, feature assessments, and limitations are explained in [methods](METHODS.md).
+The workflow reserves three mice, compares logistic regression, random forest, and RBF SVM on the other ten, selects the combination with highest validation average precision, and evaluates it on the reserved mice. Calibration is configurable; the final configuration uses none. All days from a mouse stay together. Exact settings, leakage controls, feature assessments, and limitations are explained in [methods](METHODS.md).
 
-The retained final setup adds a decision cutoff selected by F2 on excluded-mouse development probabilities. Mouse Baseline and LA CBT Relationship features are excluded. Use the explicit final configuration:
+The final setup adds a mouse-relative copy of every feature and a decision cutoff selected by F2 on one-mouse-at-a-time development probabilities from one fixed model. Mouse Baseline and LA CBT Relationship features are excluded. Use the explicit final configuration:
 
 ```bash
-python run.py model --config config/threshold-f2.json --save-details
-python run.py model --config config/threshold-f2.json --quick
-python run.py model --config config/threshold-f2.json --baseline --save-details
+python run.py model --config config/mouse-relative-fixed-cutoff.json --save-details
+python run.py model --config config/mouse-relative-fixed-cutoff.json --quick
+python run.py model --config config/mouse-relative-fixed-cutoff.json --baseline --save-details
 ```
 
 The last command is a reference-only comparison, not the final contributor model; `--quick` is a reduced trial, not the recorded final search. For the historical fixed-0.5 run:
@@ -24,11 +24,22 @@ The last command is a reference-only comparison, not the final contributor model
 python run.py model --config "Model Building/config.json" --save-details
 ```
 
-The final configuration repeats model selection and calibration within fitting folds to obtain mouse-disjoint development predictions, selects a cutoff by F2, and freezes it before test prediction. The report compares it with 0.5 on the same model. Omitting `--config` still selects the historical fixed-0.5 configuration. See [threshold tuning](THRESHOLD_TUNING.md) for the protocol, interpretation limits, and detailed outputs.
+The final configuration refits the chosen model with each development mouse left out to obtain mouse-disjoint development predictions, selects a cutoff by F2, and freezes it before test prediction. The previous final configuration, `config/threshold-f2.json`, repeated model selection and calibration within three grouped folds. The report compares it with 0.5 on the same model. Omitting `--config` still selects the historical fixed-0.5 configuration. See [threshold tuning](THRESHOLD_TUNING.md) for the protocol, interpretation limits, and detailed outputs.
 
 For historical experiment reproduction only, `config/mouse-baseline-f2.json` enables [Mouse Baseline features](features/mouse-baseline.md), and `config/la-cbt-relationship-f2.json` enables [LA–CBT relationship descriptors](features/la-cbt-relationship.md). Both were excluded from the final model; their code, exports, and results remain as research records. They use explicit `feature_owners` lists and do not change the final configuration's original 28 inputs.
 
-The retained result used logistic regression with ten selected features and cutoff 0.367183, AP 0.932, and accuracy 94.4%. Each fresh run selects its cutoff from development data; reuse `model.joblib` to obtain the exact recorded model and cutoff. See [results](RESULTS.md) for provenance and cohort-specific limits.
+The November 15 [mouse-relative experiment](research/mouse-relative-2026-11-15.md) added several opt-in settings. The final configuration uses `mouse_relative_features`, `folds: leave_one_mouse_out`, `model_search: fixed`, and `calibration: false`:
+
+- **`"mouse_relative_features": true`** appends a within-mouse rescaled copy of every feature.
+- **`"objective": "accuracy"`** chooses the cutoff by plain accuracy.
+- **`"folds": "leave_one_mouse_out"`**, inside `threshold_tuning`, chooses the cutoff from one-mouse-at-a-time development predictions.
+- **`"calibration": false`** skips sigmoid calibration, except for SVMs.
+- **`"model_search": "fixed"`**, inside `threshold_tuning`, reuses the development model choice in every cutoff fold instead of searching again.
+- **`"test_mouse_ids": [...]`**, at the top level, names the reserved mice explicitly instead of drawing them with the seed. The all-mice evaluation uses it.
+
+Their configs are listed in the [config index](../config/README.md). [mouse-relative-fixed-cutoff.json](../config/mouse-relative-fixed-cutoff.json) improved accuracy in both evaluations (148 vs 145 of 156 days on all 13 mice; 35 vs 34 of 36 test days). It was adopted as the final model. A saved mouse-relative model needs `mouse_id` and should receive every available day for each mouse at prediction time, because the copies depend on that mouse's other days.
+
+The final run `final-2026-11-15` used logistic regression, C=1, with 20 selected features (10 original, 10 mouse-relative) and cutoff 0.505732: AP 0.980, accuracy 97.2%. The previous final run scored AP 0.932 and accuracy 94.4%. Each fresh run selects its cutoff from development data; reuse `model.joblib` to obtain the exact recorded model and cutoff. See [results](RESULTS.md) for provenance and cohort-specific limits.
 
 ## Output files
 

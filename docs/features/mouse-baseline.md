@@ -1,6 +1,6 @@
 # Mouse Baseline feature experiment
 
-**Status:** excluded from the final model, as confirmed November 13, 2026. This page preserves the experiment's definitions and reproduction instructions. Use [config/threshold-f2.json](../../config/threshold-f2.json) for the retained final setup; see [the comparison](../RESULTS.md#feature-experiments-excluded-from-the-final-model).
+**Status:** excluded from the final model, as confirmed November 13, 2026. This page preserves the experiment's definitions and reproduction instructions. Use [config/threshold-f2.json](../../config/threshold-f2.json) for the retained final setup; see [the comparison](../RESULTS.md#feature-and-cutoff-experiments).
 
 The new `Mouse Baseline Feature Engineering/` folder contains a separately named experiment. It leaves Matthew's, Vivian's, Alisha's, and Brandon's code/notebooks/exports unchanged. The [extractor](../../Mouse%20Baseline%20Feature%20Engineering/features.py) exports four `mouse_baseline__` features; it does not read labels, mouse-stage assignments, probabilities, or model results.
 

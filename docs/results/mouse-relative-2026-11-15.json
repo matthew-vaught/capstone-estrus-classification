@@ -1,0 +1,1151 @@
+{
+  "experiment": "mouse-relative features and accuracy cutoff objective",
+  "date": "2026-11-15",
+  "status": "Not adopted as final at recording time. The fixed-model leave-one-mouse-out cutoff with mouse-relative features (config/mouse-relative-fixed-cutoff.json) improved accuracy in both evaluations: 148/156 vs 145/156 on all 13 mice, and 35/36 vs 34/36 on the standard split. Adoption is a team decision.",
+  "evaluation_scope": "Same 36-day reserved cohort (f3, f6, f11) inspected in earlier experiments; exploratory comparison, not independent validation.",
+  "code_state": "Runs used the working tree that added mouse_relative_features and the accuracy objective, on top of commit 9d25c74 (uncommitted at run time).",
+  "arms": [
+    {
+      "run": "threshold-f2-rerun-2026-11-15",
+      "description": "Original 28 features, F2 cutoff (current final; rerun on this machine)",
+      "config": "config/threshold-f2.json",
+      "config_sha256": "eddee5562b998ee3d9ac18c58a99433af2c985d9a2ecf925b539cb11bbd3f09e",
+      "config_used": {
+        "seed": 190,
+        "test_mice": 3,
+        "cv_folds": 3,
+        "trees": 100,
+        "jobs": 1,
+        "feature_percentiles": [
+          35,
+          70
+        ],
+        "regularization": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "quick_regularization": [
+          1.0
+        ],
+        "forest_max_depth": [
+          3,
+          null
+        ],
+        "forest_min_samples_leaf": 3,
+        "permutation_repeats": 3,
+        "threshold_tuning": {
+          "enabled": true,
+          "objective": "f2"
+        }
+      },
+      "family": "logistic",
+      "settings": "{'model__C': 1.0}",
+      "feature_set": "Top 35% of features",
+      "n_available": 28,
+      "n_selected": 10,
+      "selected_features": [
+        "matthew__circadian_la_amplitude_next_day_delta",
+        "matthew__cbt_ultradian_amplitude_h0_12",
+        "matthew__cbt_fraction_above_37_2_h6_12",
+        "matthew__la_fraction_above_15_h6_12",
+        "vivian__adj_range",
+        "alisha__dtw_shift_whole_temp",
+        "alisha__dtw_shift_seg3_temp",
+        "alisha__dtw_shift_seg4_temp",
+        "alisha__dtw_shift_seg3_act",
+        "alisha__dtw_shift_seg5_act"
+      ],
+      "development_model_selection_ap": 0.9917582417582418,
+      "development_selected_cutoff": 0.3671828157086433,
+      "test_at_development_cutoff": {
+        "average_precision": 0.9320987654320989,
+        "accuracy": 0.9444444444444444,
+        "balanced_accuracy": 0.8888888888888888,
+        "precision": 1.0,
+        "recall": 0.7777777777777778,
+        "specificity": 1.0,
+        "f2": 0.813953488372093,
+        "true_positive": 7.0,
+        "false_negative": 2.0,
+        "true_negative": 27.0,
+        "false_positive": 0.0,
+        "brier": 0.06810046365646888,
+        "log_loss": 0.23440826862232925
+      },
+      "test_at_0_5": {
+        "average_precision": 0.9320987654320989,
+        "accuracy": 0.8888888888888888,
+        "balanced_accuracy": 0.7777777777777778,
+        "precision": 1.0,
+        "recall": 0.5555555555555556,
+        "specificity": 1.0,
+        "f2": 0.6097560975609756,
+        "true_positive": 5.0,
+        "false_negative": 4.0,
+        "true_negative": 27.0,
+        "false_positive": 0.0,
+        "brier": 0.06810046365646888,
+        "log_loss": 0.23440826862232925
+      },
+      "test_errors_at_development_cutoff": [
+        {
+          "mouse_id": "f3",
+          "day_index": 10,
+          "is_estrus": 1,
+          "p_estrus": 0.05315684407357739
+        },
+        {
+          "mouse_id": "f11",
+          "day_index": 10,
+          "is_estrus": 1,
+          "p_estrus": 0.3375348461361519
+        }
+      ],
+      "predictions_sha256": "2789908bfd377e5d52aecc21a37c895a815c895a8681259cfbe529657da7f9d7",
+      "model_sha256": "a5b03a7462ae7a98afe1e0cd37884ac625114af4f68b02bb96bc53b58e088238",
+      "versions": {
+        "numpy": "2.5.4",
+        "pandas": "3.1.0",
+        "scipy": "1.18.1",
+        "scikit-learn": "1.9.1",
+        "matplotlib": "3.11.2",
+        "PyWavelets": "1.10.0",
+        "joblib": "1.6.0"
+      }
+    },
+    {
+      "run": "original-accuracy-2026-11-15",
+      "description": "Original 28 features, accuracy cutoff",
+      "config": "config/threshold-accuracy.json",
+      "config_sha256": "7aeba8d7060dfac3d84205608112d363f7091218fdf13373904bebb7f9e8a13d",
+      "config_used": {
+        "seed": 190,
+        "test_mice": 3,
+        "cv_folds": 3,
+        "trees": 100,
+        "jobs": 1,
+        "feature_percentiles": [
+          35,
+          70
+        ],
+        "regularization": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "quick_regularization": [
+          1.0
+        ],
+        "forest_max_depth": [
+          3,
+          null
+        ],
+        "forest_min_samples_leaf": 3,
+        "permutation_repeats": 3,
+        "threshold_tuning": {
+          "enabled": true,
+          "objective": "accuracy"
+        }
+      },
+      "family": "logistic",
+      "settings": "{'model__C': 1.0}",
+      "feature_set": "Top 35% of features",
+      "n_available": 28,
+      "n_selected": 10,
+      "selected_features": [
+        "matthew__circadian_la_amplitude_next_day_delta",
+        "matthew__cbt_ultradian_amplitude_h0_12",
+        "matthew__cbt_fraction_above_37_2_h6_12",
+        "matthew__la_fraction_above_15_h6_12",
+        "vivian__adj_range",
+        "alisha__dtw_shift_whole_temp",
+        "alisha__dtw_shift_seg3_temp",
+        "alisha__dtw_shift_seg4_temp",
+        "alisha__dtw_shift_seg3_act",
+        "alisha__dtw_shift_seg5_act"
+      ],
+      "development_model_selection_ap": 0.9917582417582418,
+      "development_selected_cutoff": 0.6882469591991579,
+      "test_at_development_cutoff": {
+        "average_precision": 0.9320987654320989,
+        "accuracy": 0.8888888888888888,
+        "balanced_accuracy": 0.7777777777777778,
+        "precision": 1.0,
+        "recall": 0.5555555555555556,
+        "specificity": 1.0,
+        "f2": 0.6097560975609756,
+        "true_positive": 5.0,
+        "false_negative": 4.0,
+        "true_negative": 27.0,
+        "false_positive": 0.0,
+        "brier": 0.06810046365646888,
+        "log_loss": 0.23440826862232925
+      },
+      "test_at_0_5": {
+        "average_precision": 0.9320987654320989,
+        "accuracy": 0.8888888888888888,
+        "balanced_accuracy": 0.7777777777777778,
+        "precision": 1.0,
+        "recall": 0.5555555555555556,
+        "specificity": 1.0,
+        "f2": 0.6097560975609756,
+        "true_positive": 5.0,
+        "false_negative": 4.0,
+        "true_negative": 27.0,
+        "false_positive": 0.0,
+        "brier": 0.06810046365646888,
+        "log_loss": 0.23440826862232925
+      },
+      "test_errors_at_development_cutoff": [
+        {
+          "mouse_id": "f3",
+          "day_index": 2,
+          "is_estrus": 1,
+          "p_estrus": 0.4470471170675758
+        },
+        {
+          "mouse_id": "f3",
+          "day_index": 10,
+          "is_estrus": 1,
+          "p_estrus": 0.05315684407357739
+        },
+        {
+          "mouse_id": "f11",
+          "day_index": 6,
+          "is_estrus": 1,
+          "p_estrus": 0.43534678905421964
+        },
+        {
+          "mouse_id": "f11",
+          "day_index": 10,
+          "is_estrus": 1,
+          "p_estrus": 0.3375348461361519
+        }
+      ],
+      "predictions_sha256": "a3509829c053223e58e36a2fcdc99a2ced604823046424086df73cf98528ab81",
+      "model_sha256": "a3a5d053f1156bc43473b4803bb6cec5f2f66e58ea6c0a716e9537370b0beaa0",
+      "versions": {
+        "numpy": "2.5.4",
+        "pandas": "3.1.0",
+        "scipy": "1.18.1",
+        "scikit-learn": "1.9.1",
+        "matplotlib": "3.11.2",
+        "PyWavelets": "1.10.0",
+        "joblib": "1.6.0"
+      }
+    },
+    {
+      "run": "mouse-relative-f2-2026-11-15",
+      "description": "Original 28 + 28 mouse-relative copies, F2 cutoff",
+      "config": "config/mouse-relative-f2.json",
+      "config_sha256": "f535c4e6323e07e639090cc1bae850a424b8457b55f963ab616067afc86bccb4",
+      "config_used": {
+        "seed": 190,
+        "test_mice": 3,
+        "cv_folds": 3,
+        "trees": 100,
+        "jobs": 1,
+        "feature_percentiles": [
+          35,
+          70
+        ],
+        "regularization": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "quick_regularization": [
+          1.0
+        ],
+        "forest_max_depth": [
+          3,
+          null
+        ],
+        "forest_min_samples_leaf": 3,
+        "permutation_repeats": 3,
+        "threshold_tuning": {
+          "enabled": true,
+          "objective": "f2"
+        },
+        "mouse_relative_features": true,
+        "feature_owners": [
+          "Matthew",
+          "Vivian",
+          "Alisha"
+        ]
+      },
+      "family": "logistic",
+      "settings": "{'model__C': 1.0}",
+      "feature_set": "Top 35% of features",
+      "n_available": 56,
+      "n_selected": 20,
+      "selected_features": [
+        "matthew__circadian_la_amplitude_next_day_delta",
+        "matthew__cbt_ultradian_amplitude_h0_12",
+        "matthew__cbt_fraction_above_37_2_h6_12",
+        "matthew__la_fraction_above_15_h6_12",
+        "vivian__adj_range",
+        "alisha__dtw_shift_whole_temp",
+        "alisha__dtw_shift_seg3_temp",
+        "alisha__dtw_shift_seg4_temp",
+        "alisha__dtw_shift_seg3_act",
+        "alisha__dtw_shift_seg5_act",
+        "matthew__circadian_la_amplitude_next_day_delta__mouse_rel",
+        "matthew__cbt_ultradian_amplitude_h0_12__mouse_rel",
+        "matthew__cbt_fraction_above_37_2_h6_12__mouse_rel",
+        "matthew__la_fraction_above_15_h6_12__mouse_rel",
+        "vivian__adj_mean_h6_12__mouse_rel",
+        "vivian__adj_range__mouse_rel",
+        "alisha__dtw_shift_whole_temp__mouse_rel",
+        "alisha__dtw_shift_seg3_temp__mouse_rel",
+        "alisha__dtw_shift_seg4_temp__mouse_rel",
+        "alisha__dtw_shift_seg5_act__mouse_rel"
+      ],
+      "development_model_selection_ap": 0.9955484330484333,
+      "development_selected_cutoff": 0.07166999068710006,
+      "test_at_development_cutoff": {
+        "average_precision": 0.9797979797979799,
+        "accuracy": 0.8888888888888888,
+        "balanced_accuracy": 0.9259259259259259,
+        "precision": 0.6923076923076923,
+        "recall": 1.0,
+        "specificity": 0.8518518518518519,
+        "f2": 0.9183673469387755,
+        "true_positive": 9.0,
+        "false_negative": 0.0,
+        "true_negative": 23.0,
+        "false_positive": 4.0,
+        "brier": 0.052184932199856475,
+        "log_loss": 0.17469671730223946
+      },
+      "test_at_0_5": {
+        "average_precision": 0.9797979797979799,
+        "accuracy": 0.9166666666666666,
+        "balanced_accuracy": 0.8333333333333333,
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "specificity": 1.0,
+        "f2": 0.7142857142857143,
+        "true_positive": 6.0,
+        "false_negative": 3.0,
+        "true_negative": 27.0,
+        "false_positive": 0.0,
+        "brier": 0.052184932199856475,
+        "log_loss": 0.17469671730223946
+      },
+      "test_errors_at_development_cutoff": [
+        {
+          "mouse_id": "f6",
+          "day_index": 12,
+          "is_estrus": 0,
+          "p_estrus": 0.287256180685365
+        },
+        {
+          "mouse_id": "f6",
+          "day_index": 13,
+          "is_estrus": 0,
+          "p_estrus": 0.08231737167046893
+        },
+        {
+          "mouse_id": "f11",
+          "day_index": 4,
+          "is_estrus": 0,
+          "p_estrus": 0.10274413065799806
+        },
+        {
+          "mouse_id": "f11",
+          "day_index": 5,
+          "is_estrus": 0,
+          "p_estrus": 0.15474805977509626
+        }
+      ],
+      "predictions_sha256": "e4f6608306866cf86cee87d9b7db597c49c93b29df95282a9047b62fb619034f",
+      "model_sha256": "e9304417f8a5030c1173ad16794307ab9a0e0a9ad0340477ff11e75747d94ad5",
+      "versions": {
+        "numpy": "2.5.4",
+        "pandas": "3.1.0",
+        "scipy": "1.18.1",
+        "scikit-learn": "1.9.1",
+        "matplotlib": "3.11.2",
+        "PyWavelets": "1.10.0",
+        "joblib": "1.6.0"
+      }
+    },
+    {
+      "run": "mouse-relative-accuracy-2026-11-15",
+      "description": "Original 28 + 28 mouse-relative copies, accuracy cutoff",
+      "config": "config/mouse-relative-accuracy.json",
+      "config_sha256": "dcb7ace786124cfc60d2ac6f1044fece461ed979fd0c776e318345b692b24aa6",
+      "config_used": {
+        "seed": 190,
+        "test_mice": 3,
+        "cv_folds": 3,
+        "trees": 100,
+        "jobs": 1,
+        "feature_percentiles": [
+          35,
+          70
+        ],
+        "regularization": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "quick_regularization": [
+          1.0
+        ],
+        "forest_max_depth": [
+          3,
+          null
+        ],
+        "forest_min_samples_leaf": 3,
+        "permutation_repeats": 3,
+        "threshold_tuning": {
+          "enabled": true,
+          "objective": "accuracy"
+        },
+        "mouse_relative_features": true,
+        "feature_owners": [
+          "Matthew",
+          "Vivian",
+          "Alisha"
+        ]
+      },
+      "family": "logistic",
+      "settings": "{'model__C': 1.0}",
+      "feature_set": "Top 35% of features",
+      "n_available": 56,
+      "n_selected": 20,
+      "selected_features": [
+        "matthew__circadian_la_amplitude_next_day_delta",
+        "matthew__cbt_ultradian_amplitude_h0_12",
+        "matthew__cbt_fraction_above_37_2_h6_12",
+        "matthew__la_fraction_above_15_h6_12",
+        "vivian__adj_range",
+        "alisha__dtw_shift_whole_temp",
+        "alisha__dtw_shift_seg3_temp",
+        "alisha__dtw_shift_seg4_temp",
+        "alisha__dtw_shift_seg3_act",
+        "alisha__dtw_shift_seg5_act",
+        "matthew__circadian_la_amplitude_next_day_delta__mouse_rel",
+        "matthew__cbt_ultradian_amplitude_h0_12__mouse_rel",
+        "matthew__cbt_fraction_above_37_2_h6_12__mouse_rel",
+        "matthew__la_fraction_above_15_h6_12__mouse_rel",
+        "vivian__adj_mean_h6_12__mouse_rel",
+        "vivian__adj_range__mouse_rel",
+        "alisha__dtw_shift_whole_temp__mouse_rel",
+        "alisha__dtw_shift_seg3_temp__mouse_rel",
+        "alisha__dtw_shift_seg4_temp__mouse_rel",
+        "alisha__dtw_shift_seg5_act__mouse_rel"
+      ],
+      "development_model_selection_ap": 0.9955484330484333,
+      "development_selected_cutoff": 0.8408839714586471,
+      "test_at_development_cutoff": {
+        "average_precision": 0.9797979797979799,
+        "accuracy": 0.8333333333333334,
+        "balanced_accuracy": 0.6666666666666666,
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "specificity": 1.0,
+        "f2": 0.38461538461538464,
+        "true_positive": 3.0,
+        "false_negative": 6.0,
+        "true_negative": 27.0,
+        "false_positive": 0.0,
+        "brier": 0.052184932199856475,
+        "log_loss": 0.17469671730223946
+      },
+      "test_at_0_5": {
+        "average_precision": 0.9797979797979799,
+        "accuracy": 0.9166666666666666,
+        "balanced_accuracy": 0.8333333333333333,
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "specificity": 1.0,
+        "f2": 0.7142857142857143,
+        "true_positive": 6.0,
+        "false_negative": 3.0,
+        "true_negative": 27.0,
+        "false_positive": 0.0,
+        "brier": 0.052184932199856475,
+        "log_loss": 0.17469671730223946
+      },
+      "test_errors_at_development_cutoff": [
+        {
+          "mouse_id": "f3",
+          "day_index": 2,
+          "is_estrus": 1,
+          "p_estrus": 0.6575006791317324
+        },
+        {
+          "mouse_id": "f3",
+          "day_index": 10,
+          "is_estrus": 1,
+          "p_estrus": 0.11168670785308144
+        },
+        {
+          "mouse_id": "f6",
+          "day_index": 10,
+          "is_estrus": 1,
+          "p_estrus": 0.7749935575429925
+        },
+        {
+          "mouse_id": "f11",
+          "day_index": 2,
+          "is_estrus": 1,
+          "p_estrus": 0.8128900602661949
+        },
+        {
+          "mouse_id": "f11",
+          "day_index": 6,
+          "is_estrus": 1,
+          "p_estrus": 0.4587322372150012
+        },
+        {
+          "mouse_id": "f11",
+          "day_index": 10,
+          "is_estrus": 1,
+          "p_estrus": 0.3417404301661241
+        }
+      ],
+      "predictions_sha256": "d4f83fe494f06a0390a6aef65398ee379c6d6463b8192ff9debb3f73f8a7e018",
+      "model_sha256": "10d79f00e620520e586cb9c6972dbf986a23d653129bc2593bc65021ca9ddeb6",
+      "versions": {
+        "numpy": "2.5.4",
+        "pandas": "3.1.0",
+        "scipy": "1.18.1",
+        "scikit-learn": "1.9.1",
+        "matplotlib": "3.11.2",
+        "PyWavelets": "1.10.0",
+        "joblib": "1.6.0"
+      }
+    },
+    {
+      "run": "threshold-lomo-cutoff-2026-11-15",
+      "description": "Original 28 features, F2 cutoff chosen with leave-one-mouse-out development folds, no calibration",
+      "config": "config/threshold-lomo-cutoff.json",
+      "config_sha256": "21cb53376e3ff6bf1192e63ddca5c70928060bd557e090390411050041624656",
+      "config_used": {
+        "seed": 190,
+        "test_mice": 3,
+        "cv_folds": 3,
+        "trees": 100,
+        "jobs": 1,
+        "feature_percentiles": [
+          35,
+          70
+        ],
+        "regularization": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "quick_regularization": [
+          1.0
+        ],
+        "forest_max_depth": [
+          3,
+          null
+        ],
+        "forest_min_samples_leaf": 3,
+        "permutation_repeats": 3,
+        "threshold_tuning": {
+          "enabled": true,
+          "objective": "f2",
+          "folds": "leave_one_mouse_out"
+        },
+        "calibration": false
+      },
+      "family": "logistic",
+      "settings": "{'model__C': 1.0}",
+      "feature_set": "Top 35% of features",
+      "calibrated": false,
+      "n_available": 28,
+      "n_selected": 10,
+      "selected_features": [
+        "matthew__circadian_la_amplitude_next_day_delta",
+        "matthew__cbt_ultradian_amplitude_h0_12",
+        "matthew__cbt_fraction_above_37_2_h6_12",
+        "matthew__la_fraction_above_15_h6_12",
+        "vivian__adj_range",
+        "alisha__dtw_shift_whole_temp",
+        "alisha__dtw_shift_seg3_temp",
+        "alisha__dtw_shift_seg4_temp",
+        "alisha__dtw_shift_seg3_act",
+        "alisha__dtw_shift_seg5_act"
+      ],
+      "development_model_selection_ap": 0.9917582417582418,
+      "development_selected_cutoff": 0.5,
+      "development_fold_models": [
+        "logistic {'model__C': 0.1}",
+        "logistic {'model__C': 1.0}",
+        "logistic {'model__C': 10.0}"
+      ],
+      "test_at_development_cutoff": {
+        "average_precision": 0.9320987654320989,
+        "accuracy": 0.9166666666666666,
+        "balanced_accuracy": 0.9074074074074074,
+        "precision": 0.8,
+        "recall": 0.8888888888888888,
+        "specificity": 0.9259259259259259,
+        "f2": 0.8695652173913043,
+        "true_positive": 8.0,
+        "false_negative": 1.0,
+        "true_negative": 25.0,
+        "false_positive": 2.0,
+        "brier": 0.06460883219872898,
+        "log_loss": 0.21971959679474862
+      },
+      "test_at_0_5": {
+        "average_precision": 0.9320987654320989,
+        "accuracy": 0.9166666666666666,
+        "balanced_accuracy": 0.9074074074074074,
+        "precision": 0.8,
+        "recall": 0.8888888888888888,
+        "specificity": 0.9259259259259259,
+        "f2": 0.8695652173913043,
+        "true_positive": 8.0,
+        "false_negative": 1.0,
+        "true_negative": 25.0,
+        "false_positive": 2.0,
+        "brier": 0.06460883219872898,
+        "log_loss": 0.21971959679474862
+      },
+      "test_errors_at_development_cutoff": [
+        {
+          "mouse_id": "f3",
+          "day_index": 10,
+          "is_estrus": 1,
+          "p_estrus": 0.08093390662697336
+        },
+        {
+          "mouse_id": "f11",
+          "day_index": 4,
+          "is_estrus": 0,
+          "p_estrus": 0.5102477866433697
+        },
+        {
+          "mouse_id": "f11",
+          "day_index": 5,
+          "is_estrus": 0,
+          "p_estrus": 0.554959389889352
+        }
+      ],
+      "predictions_sha256": "5fe0f5b62b7980ecd601f3bceeaba9c0ecbccd1ca40cc011f36ddac29b81817b",
+      "model_sha256": "4851f4091959aeea81b5a70eddf363659a70f645275eeca68255a2592c20dbc4",
+      "versions": {
+        "numpy": "2.5.4",
+        "pandas": "3.1.0",
+        "scipy": "1.18.1",
+        "scikit-learn": "1.9.1",
+        "matplotlib": "3.11.2",
+        "PyWavelets": "1.10.0",
+        "joblib": "1.6.0"
+      }
+    },
+    {
+      "run": "mouse-relative-lomo-cutoff-2026-11-15",
+      "description": "Original 28 + mouse-relative copies, F2 cutoff chosen with leave-one-mouse-out development folds, no calibration",
+      "config": "config/mouse-relative-lomo-cutoff.json",
+      "config_sha256": "399bd4f94d63c51857ac825953e9358b84a6403388e3da429e8c2c1aa82f9995",
+      "config_used": {
+        "seed": 190,
+        "test_mice": 3,
+        "cv_folds": 3,
+        "trees": 100,
+        "jobs": 1,
+        "feature_percentiles": [
+          35,
+          70
+        ],
+        "regularization": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "quick_regularization": [
+          1.0
+        ],
+        "forest_max_depth": [
+          3,
+          null
+        ],
+        "forest_min_samples_leaf": 3,
+        "permutation_repeats": 3,
+        "threshold_tuning": {
+          "enabled": true,
+          "objective": "f2",
+          "folds": "leave_one_mouse_out"
+        },
+        "mouse_relative_features": true,
+        "feature_owners": [
+          "Matthew",
+          "Vivian",
+          "Alisha"
+        ],
+        "calibration": false
+      },
+      "family": "logistic",
+      "settings": "{'model__C': 1.0}",
+      "feature_set": "Top 35% of features",
+      "calibrated": false,
+      "n_available": 56,
+      "n_selected": 20,
+      "selected_features": [
+        "matthew__circadian_la_amplitude_next_day_delta",
+        "matthew__cbt_ultradian_amplitude_h0_12",
+        "matthew__cbt_fraction_above_37_2_h6_12",
+        "matthew__la_fraction_above_15_h6_12",
+        "vivian__adj_range",
+        "alisha__dtw_shift_whole_temp",
+        "alisha__dtw_shift_seg3_temp",
+        "alisha__dtw_shift_seg4_temp",
+        "alisha__dtw_shift_seg3_act",
+        "alisha__dtw_shift_seg5_act",
+        "matthew__circadian_la_amplitude_next_day_delta__mouse_rel",
+        "matthew__cbt_ultradian_amplitude_h0_12__mouse_rel",
+        "matthew__cbt_fraction_above_37_2_h6_12__mouse_rel",
+        "matthew__la_fraction_above_15_h6_12__mouse_rel",
+        "vivian__adj_mean_h6_12__mouse_rel",
+        "vivian__adj_range__mouse_rel",
+        "alisha__dtw_shift_whole_temp__mouse_rel",
+        "alisha__dtw_shift_seg3_temp__mouse_rel",
+        "alisha__dtw_shift_seg4_temp__mouse_rel",
+        "alisha__dtw_shift_seg5_act__mouse_rel"
+      ],
+      "development_model_selection_ap": 0.9955484330484333,
+      "development_selected_cutoff": 0.40030374557522497,
+      "development_fold_models": [
+        "logistic {'model__C': 0.1}",
+        "logistic {'model__C': 1.0}",
+        "logistic {'model__C': 10.0}",
+        "random_forest {'model__max_depth': 3}",
+        "rbf_svm {'model__C': 10.0}"
+      ],
+      "test_at_development_cutoff": {
+        "average_precision": 0.9797979797979799,
+        "accuracy": 0.9444444444444444,
+        "balanced_accuracy": 0.9259259259259258,
+        "precision": 0.8888888888888888,
+        "recall": 0.8888888888888888,
+        "specificity": 0.9629629629629629,
+        "f2": 0.8888888888888888,
+        "true_positive": 8.0,
+        "false_negative": 1.0,
+        "true_negative": 26.0,
+        "false_positive": 1.0,
+        "brier": 0.038059798419649404,
+        "log_loss": 0.13012783367551647
+      },
+      "test_at_0_5": {
+        "average_precision": 0.9797979797979799,
+        "accuracy": 0.9722222222222222,
+        "balanced_accuracy": 0.9444444444444444,
+        "precision": 1.0,
+        "recall": 0.8888888888888888,
+        "specificity": 1.0,
+        "f2": 0.9090909090909091,
+        "true_positive": 8.0,
+        "false_negative": 1.0,
+        "true_negative": 27.0,
+        "false_positive": 0.0,
+        "brier": 0.038059798419649404,
+        "log_loss": 0.13012783367551647
+      },
+      "test_errors_at_development_cutoff": [
+        {
+          "mouse_id": "f3",
+          "day_index": 10,
+          "is_estrus": 1,
+          "p_estrus": 0.13180585091825803
+        },
+        {
+          "mouse_id": "f6",
+          "day_index": 12,
+          "is_estrus": 0,
+          "p_estrus": 0.43386976445504993
+        }
+      ],
+      "predictions_sha256": "b9bfa4a4364f9ef615233ca1698e94f60176cce32665b1481574524289662e57",
+      "model_sha256": "b4ef2ccd88c09a5037c465dd50417a101e5c073f65406d52e92d22be2c5cb608",
+      "versions": {
+        "numpy": "2.5.4",
+        "pandas": "3.1.0",
+        "scipy": "1.18.1",
+        "scikit-learn": "1.9.1",
+        "matplotlib": "3.11.2",
+        "PyWavelets": "1.10.0",
+        "joblib": "1.6.0"
+      }
+    },
+    {
+      "run": "mouse-relative-fixed-cutoff-2026-11-15",
+      "description": "Original 28 + mouse-relative copies, F2 cutoff from leave-one-mouse-out folds refitting one fixed development model, no calibration",
+      "config": "config/mouse-relative-fixed-cutoff.json",
+      "config_sha256": "a8c877c50dd0d2e9e18f0f81e0ccd7da20be8a45c5564f12a77d28a9bb68f4c9",
+      "config_used": {
+        "seed": 190,
+        "test_mice": 3,
+        "cv_folds": 3,
+        "trees": 100,
+        "jobs": 1,
+        "feature_percentiles": [
+          35,
+          70
+        ],
+        "regularization": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "quick_regularization": [
+          1.0
+        ],
+        "forest_max_depth": [
+          3,
+          null
+        ],
+        "forest_min_samples_leaf": 3,
+        "permutation_repeats": 3,
+        "threshold_tuning": {
+          "enabled": true,
+          "objective": "f2",
+          "folds": "leave_one_mouse_out",
+          "model_search": "fixed"
+        },
+        "mouse_relative_features": true,
+        "feature_owners": [
+          "Matthew",
+          "Vivian",
+          "Alisha"
+        ],
+        "calibration": false
+      },
+      "family": "logistic",
+      "settings": "{'model__C': 1.0}",
+      "feature_set": "Top 35% of features",
+      "calibrated": false,
+      "n_available": 56,
+      "n_selected": 20,
+      "selected_features": [
+        "matthew__circadian_la_amplitude_next_day_delta",
+        "matthew__cbt_ultradian_amplitude_h0_12",
+        "matthew__cbt_fraction_above_37_2_h6_12",
+        "matthew__la_fraction_above_15_h6_12",
+        "vivian__adj_range",
+        "alisha__dtw_shift_whole_temp",
+        "alisha__dtw_shift_seg3_temp",
+        "alisha__dtw_shift_seg4_temp",
+        "alisha__dtw_shift_seg3_act",
+        "alisha__dtw_shift_seg5_act",
+        "matthew__circadian_la_amplitude_next_day_delta__mouse_rel",
+        "matthew__cbt_ultradian_amplitude_h0_12__mouse_rel",
+        "matthew__cbt_fraction_above_37_2_h6_12__mouse_rel",
+        "matthew__la_fraction_above_15_h6_12__mouse_rel",
+        "vivian__adj_mean_h6_12__mouse_rel",
+        "vivian__adj_range__mouse_rel",
+        "alisha__dtw_shift_whole_temp__mouse_rel",
+        "alisha__dtw_shift_seg3_temp__mouse_rel",
+        "alisha__dtw_shift_seg4_temp__mouse_rel",
+        "alisha__dtw_shift_seg5_act__mouse_rel"
+      ],
+      "development_model_selection_ap": 0.9955484330484333,
+      "development_selected_cutoff": 0.5057318949923271,
+      "development_fold_models": [
+        "logistic {'model__C': 1.0}"
+      ],
+      "test_at_development_cutoff": {
+        "average_precision": 0.9797979797979799,
+        "accuracy": 0.9722222222222222,
+        "balanced_accuracy": 0.9444444444444444,
+        "precision": 1.0,
+        "recall": 0.8888888888888888,
+        "specificity": 1.0,
+        "f2": 0.9090909090909091,
+        "true_positive": 8.0,
+        "false_negative": 1.0,
+        "true_negative": 27.0,
+        "false_positive": 0.0,
+        "brier": 0.038059798419649404,
+        "log_loss": 0.13012783367551647
+      },
+      "test_at_0_5": {
+        "average_precision": 0.9797979797979799,
+        "accuracy": 0.9722222222222222,
+        "balanced_accuracy": 0.9444444444444444,
+        "precision": 1.0,
+        "recall": 0.8888888888888888,
+        "specificity": 1.0,
+        "f2": 0.9090909090909091,
+        "true_positive": 8.0,
+        "false_negative": 1.0,
+        "true_negative": 27.0,
+        "false_positive": 0.0,
+        "brier": 0.038059798419649404,
+        "log_loss": 0.13012783367551647
+      },
+      "test_errors_at_development_cutoff": [
+        {
+          "mouse_id": "f3",
+          "day_index": 10,
+          "is_estrus": 1,
+          "p_estrus": 0.13180585091825803
+        }
+      ],
+      "predictions_sha256": "a578e3297b4b9bd4bdf80d5c3fb27b5150e61edd57a6daf94eb97a90ba952d08",
+      "model_sha256": "8c9baee4e01a37b825557b8aef1ca8ce208ed6752e806e206ddc941ac6e39187",
+      "versions": {
+        "numpy": "2.5.4",
+        "pandas": "3.1.0",
+        "scipy": "1.18.1",
+        "scikit-learn": "1.9.1",
+        "matplotlib": "3.11.2",
+        "PyWavelets": "1.10.0",
+        "joblib": "1.6.0"
+      }
+    }
+  ],
+  "nested_leave_one_mouse_out": {
+    "script": "docs/research/nested_lomo_score_norm_2026-11-15.py",
+    "model": "fixed logistic regression, C=1, top 35%, class_weight balanced, no calibration",
+    "protocol": "Each of 13 mice scored by a model fitted on the other 12; cutoff chosen on inner leave-one-mouse-out predictions of those 12 only.",
+    "arms": [
+      {
+        "features": "original 28",
+        "decision_score": "probability",
+        "objective": "f2",
+        "accuracy": 0.9487179487179487,
+        "correct": 148,
+        "estrus_detected": 37,
+        "false_alarms": 6,
+        "AP_of_score": 0.9683293720097437,
+        "cutoff_min": 0.37242715766825707,
+        "cutoff_max": 0.6127518282452724
+      },
+      {
+        "features": "original 28",
+        "decision_score": "probability",
+        "objective": "balanced_accuracy",
+        "accuracy": 0.9487179487179487,
+        "correct": 148,
+        "estrus_detected": 37,
+        "false_alarms": 6,
+        "AP_of_score": 0.9683293720097437,
+        "cutoff_min": 0.37242715766825707,
+        "cutoff_max": 0.6290485144722935
+      },
+      {
+        "features": "original 28",
+        "decision_score": "mouse_z",
+        "objective": "f2",
+        "accuracy": 0.9358974358974359,
+        "correct": 146,
+        "estrus_detected": 37,
+        "false_alarms": 8,
+        "AP_of_score": 0.9820256287348792,
+        "cutoff_min": 0.28888176695629,
+        "cutoff_max": 0.6310480063601933
+      },
+      {
+        "features": "original 28",
+        "decision_score": "mouse_z",
+        "objective": "balanced_accuracy",
+        "accuracy": 0.9423076923076923,
+        "correct": 147,
+        "estrus_detected": 37,
+        "false_alarms": 7,
+        "AP_of_score": 0.9820256287348792,
+        "cutoff_min": 0.3485455766144112,
+        "cutoff_max": 0.7504972354493891
+      },
+      {
+        "features": "+ mouse-relative",
+        "decision_score": "probability",
+        "objective": "f2",
+        "accuracy": 0.9743589743589743,
+        "correct": 152,
+        "estrus_detected": 38,
+        "false_alarms": 3,
+        "AP_of_score": 0.986698333071889,
+        "cutoff_min": 0.3477229670015209,
+        "cutoff_max": 0.5730961383992517
+      },
+      {
+        "features": "+ mouse-relative",
+        "decision_score": "probability",
+        "objective": "balanced_accuracy",
+        "accuracy": 0.9743589743589743,
+        "correct": 152,
+        "estrus_detected": 38,
+        "false_alarms": 3,
+        "AP_of_score": 0.986698333071889,
+        "cutoff_min": 0.3477229670015209,
+        "cutoff_max": 0.5730961383992517
+      },
+      {
+        "features": "+ mouse-relative",
+        "decision_score": "mouse_z",
+        "objective": "f2",
+        "accuracy": 0.9487179487179487,
+        "correct": 148,
+        "estrus_detected": 38,
+        "false_alarms": 7,
+        "AP_of_score": 0.9913632769820062,
+        "cutoff_min": 0.3246809613261743,
+        "cutoff_max": 0.6473872260305122
+      },
+      {
+        "features": "+ mouse-relative",
+        "decision_score": "mouse_z",
+        "objective": "balanced_accuracy",
+        "accuracy": 0.967948717948718,
+        "correct": 151,
+        "estrus_detected": 38,
+        "false_alarms": 4,
+        "AP_of_score": 0.9913632769820062,
+        "cutoff_min": 0.37149077202934233,
+        "cutoff_max": 0.6473872260305122
+      }
+    ]
+  },
+  "all_mice_full_pipeline": {
+    "script": "docs/research/all_mice_pipeline_2026-11-15.py",
+    "protocol": "Project evaluate() run 13 times per config with test_mouse_ids=[mouse]; all selection, cutoff choice, and fitting use the other 12 mice. Primary metric declared before running: pooled accuracy over 156 days.",
+    "note": "The per-fold-search arm config/mouse-relative-lomo-cutoff.json was stopped after 2 of 13 mice at the user's request (runtime) and is not reported.",
+    "arms": {
+      "threshold-f2": {
+        "config": "config/threshold-f2.json",
+        "days": 156,
+        "correct": 145,
+        "accuracy": 0.9294871794871795,
+        "estrus_detected": 33,
+        "estrus_days": 39,
+        "false_alarms": 5,
+        "pooled_ap": 0.9552052243128349,
+        "cutoff_range": [
+          0.11639008078148652,
+          0.46376210298826104
+        ],
+        "errors_by_mouse": {
+          "f1": 1,
+          "f2": 1,
+          "f3": 1,
+          "f4": 0,
+          "f5": 1,
+          "f6": 1,
+          "f7": 0,
+          "f8": 1,
+          "f9": 0,
+          "f10": 0,
+          "f11": 3,
+          "f12": 1,
+          "f13": 1
+        },
+        "chosen_model_by_mouse": {
+          "f1": "random_forest {'model__max_depth': 3}",
+          "f2": "logistic {'model__C': 10.0}",
+          "f3": "logistic {'model__C': 0.1}",
+          "f4": "logistic {'model__C': 0.1}",
+          "f5": "logistic {'model__C': 1.0}",
+          "f6": "logistic {'model__C': 1.0}",
+          "f7": "logistic {'model__C': 1.0}",
+          "f8": "logistic {'model__C': 1.0}",
+          "f9": "logistic {'model__C': 1.0}",
+          "f10": "logistic {'model__C': 1.0}",
+          "f11": "random_forest {'model__max_depth': None}",
+          "f12": "logistic {'model__C': 0.1}",
+          "f13": "logistic {'model__C': 0.1}"
+        }
+      },
+      "mouse-relative-fixed-cutoff": {
+        "config": "config/mouse-relative-fixed-cutoff.json",
+        "days": 156,
+        "correct": 148,
+        "accuracy": 0.9487179487179487,
+        "estrus_detected": 37,
+        "estrus_days": 39,
+        "false_alarms": 6,
+        "pooled_ap": 0.9681264303875169,
+        "cutoff_range": [
+          0.27090296076007814,
+          0.552228012248237
+        ],
+        "errors_by_mouse": {
+          "f1": 0,
+          "f2": 1,
+          "f3": 1,
+          "f4": 0,
+          "f5": 1,
+          "f6": 1,
+          "f7": 0,
+          "f8": 1,
+          "f9": 0,
+          "f10": 0,
+          "f11": 3,
+          "f12": 0,
+          "f13": 0
+        },
+        "chosen_model_by_mouse": {
+          "f1": "logistic {'model__C': 0.1}",
+          "f2": "logistic {'model__C': 1.0}",
+          "f3": "logistic {'model__C': 10.0}",
+          "f4": "logistic {'model__C': 1.0}",
+          "f5": "logistic {'model__C': 0.1}",
+          "f6": "logistic {'model__C': 1.0}",
+          "f7": "logistic {'model__C': 0.1}",
+          "f8": "logistic {'model__C': 0.1}",
+          "f9": "logistic {'model__C': 1.0}",
+          "f10": "logistic {'model__C': 0.1}",
+          "f11": "random_forest {'model__max_depth': 3}",
+          "f12": "logistic {'model__C': 10.0}",
+          "f13": "logistic {'model__C': 0.1}"
+        }
+      },
+      "threshold-fixed-cutoff": {
+        "config": "config/threshold-fixed-cutoff.json",
+        "days": 156,
+        "correct": 145,
+        "accuracy": 0.9294871794871795,
+        "estrus_detected": 37,
+        "estrus_days": 39,
+        "false_alarms": 9,
+        "pooled_ap": 0.9442966042611496,
+        "cutoff_range": [
+          0.3072417027417027,
+          0.7635433009304714
+        ],
+        "errors_by_mouse": {
+          "f1": 1,
+          "f2": 1,
+          "f3": 1,
+          "f4": 0,
+          "f5": 1,
+          "f6": 1,
+          "f7": 0,
+          "f8": 1,
+          "f9": 0,
+          "f10": 0,
+          "f11": 4,
+          "f12": 1,
+          "f13": 0
+        },
+        "chosen_model_by_mouse": {
+          "f1": "random_forest {'model__max_depth': 3}",
+          "f2": "logistic {'model__C': 10.0}",
+          "f3": "logistic {'model__C': 0.1}",
+          "f4": "logistic {'model__C': 0.1}",
+          "f5": "logistic {'model__C': 1.0}",
+          "f6": "logistic {'model__C': 1.0}",
+          "f7": "logistic {'model__C': 1.0}",
+          "f8": "logistic {'model__C': 1.0}",
+          "f9": "logistic {'model__C': 1.0}",
+          "f10": "logistic {'model__C': 1.0}",
+          "f11": "random_forest {'model__max_depth': None}",
+          "f12": "logistic {'model__C': 0.1}",
+          "f13": "logistic {'model__C': 0.1}"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,989 @@
+{
+  "purpose": "Final model adopted November 15, 2026: original 28 features plus mouse-relative copies, F2 cutoff chosen one development mouse at a time with one fixed model, no calibration. Same reserved split as the previous final setup (f3, f6, f11).",
+  "command": "python run.py all --config config/mouse-relative-fixed-cutoff.json --save-details --output \"Model Building/results/final-2026-11-15\"",
+  "created_utc": "2026-11-16T06:20:16.875198+00:00",
+  "git_commit": "9d25c74d6a8b1c47b2f51ca46549bf1c1e3a76ed",
+  "git_dirty": true,
+  "code_state_note": "Run on the uncommitted working tree that adds mouse_relative_features, calibration, threshold_tuning.folds/model_search, and test_mouse_ids on top of the recorded commit; source hashes below identify it.",
+  "final_model": {
+    "family": "logistic",
+    "feature_set": "Top 35% of features",
+    "validation_ap": 0.9955484330484333,
+    "test_ap": 0.9797979797979799,
+    "selected_features": [
+      "matthew__circadian_la_amplitude_next_day_delta",
+      "matthew__cbt_ultradian_amplitude_h0_12",
+      "matthew__cbt_fraction_above_37_2_h6_12",
+      "matthew__la_fraction_above_15_h6_12",
+      "vivian__adj_range",
+      "alisha__dtw_shift_whole_temp",
+      "alisha__dtw_shift_seg3_temp",
+      "alisha__dtw_shift_seg4_temp",
+      "alisha__dtw_shift_seg3_act",
+      "alisha__dtw_shift_seg5_act",
+      "matthew__circadian_la_amplitude_next_day_delta__mouse_rel",
+      "matthew__cbt_ultradian_amplitude_h0_12__mouse_rel",
+      "matthew__cbt_fraction_above_37_2_h6_12__mouse_rel",
+      "matthew__la_fraction_above_15_h6_12__mouse_rel",
+      "vivian__adj_mean_h6_12__mouse_rel",
+      "vivian__adj_range__mouse_rel",
+      "alisha__dtw_shift_whole_temp__mouse_rel",
+      "alisha__dtw_shift_seg3_temp__mouse_rel",
+      "alisha__dtw_shift_seg4_temp__mouse_rel",
+      "alisha__dtw_shift_seg5_act__mouse_rel"
+    ],
+    "n_features": 20,
+    "n_available": 56,
+    "training_mice": [
+      "f1",
+      "f10",
+      "f12",
+      "f13",
+      "f2",
+      "f4",
+      "f5",
+      "f7",
+      "f8",
+      "f9"
+    ],
+    "test_mice": [
+      "f11",
+      "f3",
+      "f6"
+    ],
+    "threshold": 0.5057318949923271,
+    "threshold_tuning": {
+      "enabled": true,
+      "objective": "f2",
+      "folds": [
+        {
+          "fold": 0,
+          "fitting_mice": [
+            "f10",
+            "f12",
+            "f13",
+            "f2",
+            "f4",
+            "f5",
+            "f7",
+            "f8",
+            "f9"
+          ],
+          "validation_mice": [
+            "f1"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f10",
+                "f12",
+                "f2",
+                "f4",
+                "f7",
+                "f8"
+              ],
+              "validation_mice": [
+                "f13",
+                "f5",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f10",
+                "f13",
+                "f2",
+                "f5",
+                "f7",
+                "f9"
+              ],
+              "validation_mice": [
+                "f12",
+                "f4",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f12",
+                "f13",
+                "f4",
+                "f5",
+                "f8",
+                "f9"
+              ],
+              "validation_mice": [
+                "f10",
+                "f2",
+                "f7"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 35% of features",
+          "settings": "{'model__C': 1.0}",
+          "calibrated": false
+        },
+        {
+          "fold": 1,
+          "fitting_mice": [
+            "f1",
+            "f12",
+            "f13",
+            "f2",
+            "f4",
+            "f5",
+            "f7",
+            "f8",
+            "f9"
+          ],
+          "validation_mice": [
+            "f10"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f1",
+                "f12",
+                "f2",
+                "f4",
+                "f7",
+                "f8"
+              ],
+              "validation_mice": [
+                "f13",
+                "f5",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f13",
+                "f2",
+                "f5",
+                "f7",
+                "f9"
+              ],
+              "validation_mice": [
+                "f12",
+                "f4",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f12",
+                "f13",
+                "f4",
+                "f5",
+                "f8",
+                "f9"
+              ],
+              "validation_mice": [
+                "f1",
+                "f2",
+                "f7"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 35% of features",
+          "settings": "{'model__C': 1.0}",
+          "calibrated": false
+        },
+        {
+          "fold": 2,
+          "fitting_mice": [
+            "f1",
+            "f10",
+            "f13",
+            "f2",
+            "f4",
+            "f5",
+            "f7",
+            "f8",
+            "f9"
+          ],
+          "validation_mice": [
+            "f12"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f1",
+                "f10",
+                "f2",
+                "f4",
+                "f7",
+                "f8"
+              ],
+              "validation_mice": [
+                "f13",
+                "f5",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f13",
+                "f2",
+                "f5",
+                "f7",
+                "f9"
+              ],
+              "validation_mice": [
+                "f10",
+                "f4",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f10",
+                "f13",
+                "f4",
+                "f5",
+                "f8",
+                "f9"
+              ],
+              "validation_mice": [
+                "f1",
+                "f2",
+                "f7"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 35% of features",
+          "settings": "{'model__C': 1.0}",
+          "calibrated": false
+        },
+        {
+          "fold": 3,
+          "fitting_mice": [
+            "f1",
+            "f10",
+            "f12",
+            "f2",
+            "f4",
+            "f5",
+            "f7",
+            "f8",
+            "f9"
+          ],
+          "validation_mice": [
+            "f13"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f1",
+                "f10",
+                "f2",
+                "f4",
+                "f7",
+                "f8"
+              ],
+              "validation_mice": [
+                "f12",
+                "f5",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f12",
+                "f2",
+                "f5",
+                "f7",
+                "f9"
+              ],
+              "validation_mice": [
+                "f10",
+                "f4",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f10",
+                "f12",
+                "f4",
+                "f5",
+                "f8",
+                "f9"
+              ],
+              "validation_mice": [
+                "f1",
+                "f2",
+                "f7"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 35% of features",
+          "settings": "{'model__C': 1.0}",
+          "calibrated": false
+        },
+        {
+          "fold": 4,
+          "fitting_mice": [
+            "f1",
+            "f10",
+            "f12",
+            "f13",
+            "f4",
+            "f5",
+            "f7",
+            "f8",
+            "f9"
+          ],
+          "validation_mice": [
+            "f2"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f1",
+                "f10",
+                "f13",
+                "f4",
+                "f7",
+                "f8"
+              ],
+              "validation_mice": [
+                "f12",
+                "f5",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f12",
+                "f13",
+                "f5",
+                "f7",
+                "f9"
+              ],
+              "validation_mice": [
+                "f10",
+                "f4",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f10",
+                "f12",
+                "f4",
+                "f5",
+                "f8",
+                "f9"
+              ],
+              "validation_mice": [
+                "f1",
+                "f13",
+                "f7"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 35% of features",
+          "settings": "{'model__C': 1.0}",
+          "calibrated": false
+        },
+        {
+          "fold": 5,
+          "fitting_mice": [
+            "f1",
+            "f10",
+            "f12",
+            "f13",
+            "f2",
+            "f5",
+            "f7",
+            "f8",
+            "f9"
+          ],
+          "validation_mice": [
+            "f4"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f1",
+                "f10",
+                "f13",
+                "f2",
+                "f7",
+                "f8"
+              ],
+              "validation_mice": [
+                "f12",
+                "f5",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f12",
+                "f13",
+                "f5",
+                "f7",
+                "f9"
+              ],
+              "validation_mice": [
+                "f10",
+                "f2",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f10",
+                "f12",
+                "f2",
+                "f5",
+                "f8",
+                "f9"
+              ],
+              "validation_mice": [
+                "f1",
+                "f13",
+                "f7"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 35% of features",
+          "settings": "{'model__C': 1.0}",
+          "calibrated": false
+        },
+        {
+          "fold": 6,
+          "fitting_mice": [
+            "f1",
+            "f10",
+            "f12",
+            "f13",
+            "f2",
+            "f4",
+            "f7",
+            "f8",
+            "f9"
+          ],
+          "validation_mice": [
+            "f5"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f1",
+                "f10",
+                "f13",
+                "f2",
+                "f7",
+                "f8"
+              ],
+              "validation_mice": [
+                "f12",
+                "f4",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f12",
+                "f13",
+                "f4",
+                "f7",
+                "f9"
+              ],
+              "validation_mice": [
+                "f10",
+                "f2",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f10",
+                "f12",
+                "f2",
+                "f4",
+                "f8",
+                "f9"
+              ],
+              "validation_mice": [
+                "f1",
+                "f13",
+                "f7"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 35% of features",
+          "settings": "{'model__C': 1.0}",
+          "calibrated": false
+        },
+        {
+          "fold": 7,
+          "fitting_mice": [
+            "f1",
+            "f10",
+            "f12",
+            "f13",
+            "f2",
+            "f4",
+            "f5",
+            "f8",
+            "f9"
+          ],
+          "validation_mice": [
+            "f7"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f1",
+                "f10",
+                "f13",
+                "f2",
+                "f5",
+                "f8"
+              ],
+              "validation_mice": [
+                "f12",
+                "f4",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f12",
+                "f13",
+                "f4",
+                "f5",
+                "f9"
+              ],
+              "validation_mice": [
+                "f10",
+                "f2",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f10",
+                "f12",
+                "f2",
+                "f4",
+                "f8",
+                "f9"
+              ],
+              "validation_mice": [
+                "f1",
+                "f13",
+                "f5"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 35% of features",
+          "settings": "{'model__C': 1.0}",
+          "calibrated": false
+        },
+        {
+          "fold": 8,
+          "fitting_mice": [
+            "f1",
+            "f10",
+            "f12",
+            "f13",
+            "f2",
+            "f4",
+            "f5",
+            "f7",
+            "f9"
+          ],
+          "validation_mice": [
+            "f8"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f1",
+                "f10",
+                "f13",
+                "f2",
+                "f5",
+                "f7"
+              ],
+              "validation_mice": [
+                "f12",
+                "f4",
+                "f9"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f12",
+                "f13",
+                "f4",
+                "f5",
+                "f9"
+              ],
+              "validation_mice": [
+                "f10",
+                "f2",
+                "f7"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f10",
+                "f12",
+                "f2",
+                "f4",
+                "f7",
+                "f9"
+              ],
+              "validation_mice": [
+                "f1",
+                "f13",
+                "f5"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 35% of features",
+          "settings": "{'model__C': 1.0}",
+          "calibrated": false
+        },
+        {
+          "fold": 9,
+          "fitting_mice": [
+            "f1",
+            "f10",
+            "f12",
+            "f13",
+            "f2",
+            "f4",
+            "f5",
+            "f7",
+            "f8"
+          ],
+          "validation_mice": [
+            "f9"
+          ],
+          "inner_validation": [
+            {
+              "fitting_mice": [
+                "f1",
+                "f10",
+                "f13",
+                "f2",
+                "f5",
+                "f7"
+              ],
+              "validation_mice": [
+                "f12",
+                "f4",
+                "f8"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f1",
+                "f12",
+                "f13",
+                "f4",
+                "f5",
+                "f8"
+              ],
+              "validation_mice": [
+                "f10",
+                "f2",
+                "f7"
+              ]
+            },
+            {
+              "fitting_mice": [
+                "f10",
+                "f12",
+                "f2",
+                "f4",
+                "f7",
+                "f8"
+              ],
+              "validation_mice": [
+                "f1",
+                "f13",
+                "f5"
+              ]
+            }
+          ],
+          "family": "logistic",
+          "feature_set": "Top 35% of features",
+          "settings": "{'model__C': 1.0}",
+          "calibrated": false
+        }
+      ],
+      "model_search": "fixed",
+      "threshold": 0.5057318949923271,
+      "default_threshold": 0.5,
+      "method": "mouse_grouped_nested_model_selection",
+      "tie_break": "closest_to_0.5_then_higher",
+      "score_scope": "Development scores used to choose the cutoff; not independent performance estimates.",
+      "development_mice": [
+        "f1",
+        "f10",
+        "f12",
+        "f13",
+        "f2",
+        "f4",
+        "f5",
+        "f7",
+        "f8",
+        "f9"
+      ],
+      "default_selection_metrics": {
+        "average_precision": 0.9870220832623502,
+        "accuracy": 0.9666666666666667,
+        "balanced_accuracy": 0.9666666666666667,
+        "precision": 0.90625,
+        "recall": 0.9666666666666667,
+        "specificity": 0.9666666666666667,
+        "f2": 0.9539473684210527,
+        "true_positive": 29,
+        "false_negative": 1,
+        "true_negative": 87,
+        "false_positive": 3,
+        "brier": 0.02557927482199626,
+        "log_loss": 0.08154016457204089
+      },
+      "selected_selection_metrics": {
+        "average_precision": 0.9870220832623502,
+        "accuracy": 0.975,
+        "balanced_accuracy": 0.9722222222222222,
+        "precision": 0.9354838709677419,
+        "recall": 0.9666666666666667,
+        "specificity": 0.9777777777777777,
+        "f2": 0.9602649006622517,
+        "true_positive": 29,
+        "false_negative": 1,
+        "true_negative": 88,
+        "false_positive": 2,
+        "brier": 0.02557927482199626,
+        "log_loss": 0.08154016457204089
+      }
+    },
+    "settings": "{'model__C': 1.0}",
+    "mouse_relative_features": true,
+    "calibrated": false,
+    "feature_source": "contributors",
+    "input_requirements": [
+      "Matthew's wavelet inputs require the complete recording, including future samples. This is retrospective classification; a target day's raw signal alone is insufficient.",
+      "LA change is next-day minus current-day circadian amplitude. Recording day 13 has a missing LA change to avoid the final buffer's endpoint-sensitive amplitude; the model fills this using a median learned from its fitting data. All target days remain included.",
+      "Matthew's 37.2 \u00b0C and 15 counts/minute thresholds were chosen during development exploration and frozen before this run. Validation scores after feature design are exploratory.",
+      "Vivian's activity-adjusted CBT inputs use per-mouse cleaning and activity regression over the complete recording; wavelet inputs also include future samples and buffers. They support retrospective classification, not isolated-day prediction. Extraction uses no labels or other mice; the shared export is uncentered.",
+      "Alisha's DTW inputs compare each day with the same mouse's other 13 recording days, including future days and buffers 1 and 14. They require the complete 14-day recording for retrospective classification; an isolated day's signal is insufficient. These comparisons use no labels or other mice."
+    ]
+  },
+  "comparison": [
+    {
+      "operating_point": "Default",
+      "threshold": 0.5,
+      "average_precision": 0.9797979797979799,
+      "accuracy": 0.9722222222222222,
+      "balanced_accuracy": 0.9444444444444444,
+      "precision": 1.0,
+      "recall": 0.8888888888888888,
+      "specificity": 1.0,
+      "f2": 0.9090909090909091,
+      "true_positive": 8,
+      "false_negative": 1,
+      "true_negative": 27,
+      "false_positive": 0,
+      "brier": 0.038059798419649404,
+      "log_loss": 0.13012783367551647
+    },
+    {
+      "operating_point": "Development-selected",
+      "threshold": 0.5057318949923271,
+      "average_precision": 0.9797979797979799,
+      "accuracy": 0.9722222222222222,
+      "balanced_accuracy": 0.9444444444444444,
+      "precision": 1.0,
+      "recall": 0.8888888888888888,
+      "specificity": 1.0,
+      "f2": 0.9090909090909091,
+      "true_positive": 8,
+      "false_negative": 1,
+      "true_negative": 27,
+      "false_positive": 0,
+      "brier": 0.038059798419649404,
+      "log_loss": 0.13012783367551647
+    }
+  ],
+  "previous_final_comparison": {
+    "record": "docs/results/threshold-f2-2026-11-11.json",
+    "standard_split": {
+      "previous_accuracy": 0.9444444444444444,
+      "final_accuracy": 0.9722222222222222,
+      "previous_test_ap": 0.9320987654320989,
+      "final_test_ap": 0.9797979797979799
+    },
+    "all_mice_full_pipeline": {
+      "threshold-f2": {
+        "correct": 145,
+        "days": 156,
+        "accuracy": 0.9294871794871795,
+        "estrus_detected": 33,
+        "false_alarms": 5,
+        "pooled_ap": 0.9552052243128349,
+        "errors_by_mouse": {
+          "f1": 1,
+          "f2": 1,
+          "f3": 1,
+          "f4": 0,
+          "f5": 1,
+          "f6": 1,
+          "f7": 0,
+          "f8": 1,
+          "f9": 0,
+          "f10": 0,
+          "f11": 3,
+          "f12": 1,
+          "f13": 1
+        }
+      },
+      "mouse-relative-fixed-cutoff": {
+        "correct": 148,
+        "days": 156,
+        "accuracy": 0.9487179487179487,
+        "estrus_detected": 37,
+        "false_alarms": 6,
+        "pooled_ap": 0.9681264303875169,
+        "errors_by_mouse": {
+          "f1": 0,
+          "f2": 1,
+          "f3": 1,
+          "f4": 0,
+          "f5": 1,
+          "f6": 1,
+          "f7": 0,
+          "f8": 1,
+          "f9": 0,
+          "f10": 0,
+          "f11": 3,
+          "f12": 0,
+          "f13": 0
+        }
+      }
+    },
+    "all_mice_script": "docs/research/all_mice_pipeline_2026-11-15.py"
+  },
+  "reproduced_earlier_run": {
+    "reference": "Model Building/results/mouse-relative-fixed-cutoff-2026-11-15",
+    "predictions_identical": true
+  },
+  "config": {
+    "seed": 190,
+    "test_mice": 3,
+    "cv_folds": 3,
+    "trees": 100,
+    "jobs": 1,
+    "feature_percentiles": [
+      35,
+      70
+    ],
+    "regularization": [
+      0.1,
+      1.0,
+      10.0
+    ],
+    "quick_regularization": [
+      1.0
+    ],
+    "forest_max_depth": [
+      3,
+      null
+    ],
+    "forest_min_samples_leaf": 3,
+    "permutation_repeats": 3,
+    "threshold_tuning": {
+      "enabled": true,
+      "objective": "f2",
+      "folds": "leave_one_mouse_out",
+      "model_search": "fixed"
+    },
+    "mouse_relative_features": true,
+    "feature_owners": [
+      "Matthew",
+      "Vivian",
+      "Alisha"
+    ],
+    "calibration": false
+  },
+  "versions": {
+    "numpy": "2.5.4",
+    "pandas": "3.1.0",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "matplotlib": "3.11.2",
+    "PyWavelets": "1.10.0",
+    "joblib": "1.6.0"
+  },
+  "input_sha256": {
+    "data\\inputs\\fem_act.csv": "5398fd74dc21d4fb22af7948057651605e8e8187eb0b796a95a816d98e32447c",
+    "data\\inputs\\fem_temp.csv": "bd66f8633f8773e44a1d765cdaa0c52f927f002d8f02ef5288416c78bc80f68e",
+    "data\\inputs\\male_act.csv": "a57f607eeb27a07e509d61ce01d95055019fb640b9b2347df93b6f1745affce1",
+    "data\\inputs\\male_temp.csv": "e08d98e3069efb754a3cf9474834214052d8ef2c1e7e1a260ba59f10adf130a4",
+    "Matthew Feature Engineering\\outputs\\features.csv": "0d0871c58e3fd0bed7a26db2df94a0207671ec1d6e6de100152d5c5b574d0869",
+    "Vivian Feature Engineering\\outputs\\features.csv": "b64f32574b80dd575b13a65e5f8c7df6d56b6aa0cff1adeee1e5b6144cf6a15e",
+    "Alisha Feature Engineering\\outputs\\features.csv": "3d0e7be16e8f328162420c952789b68963deba29735c9790f076bd86c047068b",
+    "Matthew Feature Engineering\\input_requirements.json": "b55b03e5e120ecac75884b8076eff7423b329222bbcd4731d73a7546771b5060",
+    "Matthew Feature Engineering\\outputs\\feature_metadata.json": "eeae4c6805ab9f7c33110ec17a450481a1da09f0ccd371d322d4765141d8891a",
+    "Vivian Feature Engineering\\input_requirements.json": "b41322dae293807a1272e04114ad85759f7b5356a3004fd40270c81c0c930fef",
+    "Alisha Feature Engineering\\input_requirements.json": "e18d871c1609a2c27919a93702475ff721852b744592bcc0985f1dcca8b7c0f1"
+  },
+  "source_sha256": {
+    "src/estrus/__init__.py": "206c8ecbfbb46fd1b8f4117a75457e98c8ad1368ce5e8b708ba808cb57f53314",
+    "src/estrus/build.py": "4c71147cd0659abf0f7a43eef57ae414ca458093963fd5c929612626a185523c",
+    "src/estrus/cli.py": "e34bffd2b87987228a5bc84adacac03df7399da24a8fb6387c821e065ca5833c",
+    "src/estrus/contracts.py": "0710327b431b6927ff0b482f6a90131d5fa96486494b87b59083a7df9c25d676",
+    "src/estrus/data.py": "07008a6fc2c363a4becb52c2fe9fe9f7cbe42dcf596087103f1c5f1ab9f07947",
+    "src/estrus/features.py": "04ca4a9040f290281dd3c7482a88278767aab9209fb4d9f24e827bb302905749",
+    "src/estrus/modeling.py": "63dccd420ccadb4318c7c3cd02f52b349fd138b6b138c8c0874ce4c2645cc96a",
+    "src/estrus/reporting.py": "1384bb66dcaa41040cdc593d6e438db98cabad2830389b6d55c31b9e2ef87051",
+    "src/estrus/results.py": "9677a1981ae9aa2f1decbfab77774399bbe00c770d241391fcf490f0257bfa46",
+    "src/estrus/synthetic.py": "813799803d988f4ffaaad3b79449ea9d8abf1ccfa3ea0ea9a1abf96864d22454"
+  },
+  "artifact_sha256": {
+    "report.html": "d91d70694830fe88a976d6afd195e59370b41ebe576e639dc30f6b9e04ca0c56",
+    "predictions.csv": "8bde6144a59ec4d097820747c6c645e7dce56338bf6d31b304d3d2ab62f4ae72",
+    "model.joblib": "8c9baee4e01a37b825557b8aef1ca8ce208ed6752e806e206ddc941ac6e39187"
+  },
+  "remaining_false_negatives": [
+    {
+      "mouse_id": "f3",
+      "day_index": 10
+    }
+  ],
+  "remaining_false_positives": [],
+  "limitations": [
+    "Development scores select the cutoff and are not independent evaluation estimates; the fixed model choice saw all development labels, so cutoff-selection scores are slightly optimistic.",
+    "The three test mice were inspected in earlier experiments; the configuration was developed over several rounds on this dataset.",
+    "Gains over the previous final setup are small: one of 36 test days and three of 156 days in the all-mice evaluation.",
+    "Labels are provisional paper-alignment proxies (days 2, 6, 10); features and mouse-relative copies need complete recordings (retrospective)."
+  ]
+}

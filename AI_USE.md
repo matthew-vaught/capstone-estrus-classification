@@ -1693,3 +1693,170 @@ Provenance note: the activity regression, wavelet band amplitudes, six `vivian__
 - The Claude conversation (S05) is documented by phase with selected verbatim prompts, not turn by turn. Exact prompt text for the remaining turns, exact model versions, and per-turn timestamps are not recorded.
 - `AGENTS.md` instructs Codex only and does not capture Claude conversations, so S05 and any other non-Codex assistance must be added manually.
 - The user's own rewriting of Claude-drafted Methods and Reasoning text is not recorded, so the split between AI-drafted and user-written wording is not established.
+## Additional conversation: S10 (Claude Code, mouse-relative experiment)
+
+This section was added manually by Claude Code at the user's request to document the changes. `AGENTS.md` instructs Codex only. Tool: **Claude Code (Anthropic), model Claude Opus 5.5 (`claude-opus-5-5`)**, running in the user's VS Code on Windows. Client date November 15, 2026; exact turn timestamps unavailable. Prompt IDs continue from the last Codex ID (P069). The user turns below are quoted verbatim and form a complete record of this conversation. Claude executed all code, tests, and model runs directly in the repository environment.
+
+### S10 prompt index
+
+| ID | Request and resulting use | Verification |
+| --- | --- | --- |
+| [P070](#p070-look-for-further-accuracy-improvements) | Review the model and propose improvements; exploratory all-mice benchmark | Benchmark executed; no repository changes |
+| [P071](#p071-clarify-what-would-be-added) | Plain-language summary of the two proposed changes | Explanation only |
+| [P072](#p072-ask-where-the-code-would-go) | Identify folders/files for the changes | Read-only inspection |
+| [P073](#p073-implement-and-document-the-changes) | Implement mouse-relative features and accuracy cutoff option; run 2×2 experiment; document | Tests and four full model runs; results below |
+| [P074](#p074-confirm-whether-accuracy-improved) | Confirm whether accuracy improved | Explanation only |
+| [P075](#p075-try-the-next-accuracy-idea) | Test per-mouse score normalization and a leave-one-mouse-out cutoff protocol; add pipeline options; document | Nested all-mice script, tests, two full model runs |
+| [P076](#p076-ask-whether-anything-was-added) | Clarify what was added | Explanation only |
+| [P077](#p077-explain-the-simplified-model) | Explain "simplified model" | Explanation only |
+| [P078](#p078-acknowledge) | Acknowledge; offer next options | None |
+| [P079](#p079-try-the-fix) | Fixed-model cutoff option, explicit test mice, all-mice full-pipeline evaluation; document | Tests, all-mice runs, two standard-split runs |
+| [P080](#p080-ask-about-runtime) | Report run progress and explain runtime | Progress check |
+| [P081](#p081-limit-runtime) | Stop the slowest comparison arm | Process stopped; remaining runs completed |
+| [P082](#p082-adopt-the-better-model-and-refresh-results) | Make the fix the final model; rebuild report and records; update docs | Full final build, tests, link checks |
+
+### P070: Look for further accuracy improvements
+
+```text
+can you see if there are anyother areas of improvement to this machine learning classification? either more features to add to the model or to make the model itself better. the main goal is to improve accuracy
+```
+
+**Resulting AI assistance:** Read the README, modeling source, configs, results, and the 2026-11-11 research plan. Checked that Alisha's DTW features use no labels or day numbers. Wrote and ran an exploratory leave-one-mouse-out benchmark comparing 9 feature setups × 6 model families on all 13 mice. Each mouse was predicted by a model fitted on the other twelve, with fixed settings and no nested selection. The benchmark is now retained as `docs/research/lomo_benchmark_2026-11-15.py`. It reported that adding mouse-relative copies raised accuracy at 0.5 from 148/156 to 151/156 (AP 0.968 to 0.987), and that model family was not the bottleneck. F3 day 10 was missed in every setup. Claude also recommended choosing the cutoff by accuracy instead of F2; P073 found this harmful.
+
+### P071: Clarify what would be added
+
+```text
+so you are trying to add what to improve accuracy?
+```
+
+**Resulting AI assistance:** Summarized the two proposed changes: mouse-relative feature copies and an accuracy-based cutoff. Explanation only.
+
+### P072: Ask where the code would go
+
+```text
+where would you add this code to? which folders
+```
+
+**Resulting AI assistance:** Proposed implementing both changes in the shared `src/estrus/modeling.py` behind a new config, rather than in a contributor folder, because they transform all contributors' features. No contributor files would change.
+
+### P073: Implement and document the changes
+
+```text
+you can make the changes. main is fine. make sure to document the changes after though
+```
+
+**Resulting AI assistance:**
+
+- **Code.** Added opt-in `mouse_relative_features` (`add_mouse_relative`) and an `accuracy` threshold objective to `src/estrus/modeling.py`. Saved models record the option, and `predict` rebuilds the copies. Added the objective's label and wording to `src/estrus/reporting.py`.
+- **Configs and tests.** Added `config/mouse-relative-accuracy.json`, `config/mouse-relative-f2.json`, and `config/threshold-accuracy.json`. Added three tests in `tests/test_modeling.py`: the accuracy objective, within-mouse isolation of the copies, and saved-model prediction rebuilding the copies.
+- **Experiment.** The first full run (mouse-relative + accuracy) lowered test accuracy. Claude then ran the remaining cells of a 2×2 design and reported all four arms rather than selecting one.
+- **Documentation.** Documented the experiment in `docs/research/mouse-relative-2026-11-15.md`, `docs/results/mouse-relative-2026-11-15.json`, RESULTS, METHODS, MODELING, REPRODUCING, THRESHOLD_TUNING, the docs index, `config/README.md`, and the root README.
+- **Decision.** The final model and its configuration were left unchanged; whether to adopt any change remains the team's decision.
+
+**Verification and limits:**
+
+- **Tests.** `python -m pytest -q` gave 80 passed, 5 failed. The same 5 tests fail on unmodified main in this Windows environment: Windows path separators in hash keys, plus build/report tests. They pass on CI's Linux runner per previous records and were not changed.
+- **Full runs.** Four full runs used `--save-details`, seed 190, and test mice f3/f6/f11. The final F2 configuration's rerun reproduced its recorded result exactly (AP 0.932, accuracy 94.4%).
+- **Results.** Mouse-relative features raised test AP to 0.980. Test accuracy was 88.9% with F2 (9/9 detected, 4 false alarms) and 83.3% with the accuracy cutoff. The original features with the accuracy cutoff gave 88.9%. No arm beat the retained setup's 94.4%.
+- **Limits.** Runs used the uncommitted working tree on top of commit 9d25c74. The test mice had been inspected in earlier experiments, so this is not independent validation.
+
+### P074: Confirm whether accuracy improved
+
+```text
+so you didnt end up improving accuracy?
+```
+
+**Resulting AI assistance:** Confirmed that no tested change beat the retained 94.4% test accuracy. Explained that ranking improved (AP 0.980) and that the accuracy-objective recommendation from P070 was wrong. Proposed per-mouse score normalization as the next idea. Explanation only.
+
+### P075: Try the next accuracy idea
+
+```text
+yea can you try the next one that might improve accuracy
+```
+
+**Resulting AI assistance:**
+
+- **Nested all-mice test.** Wrote `docs/research/nested_lomo_score_norm_2026-11-15.py`, a nested leave-one-mouse-out test over all 13 mice. Eight arms were declared before running: features × decision score (probability or per-mouse z-scored logit) × objective (F2 or balanced accuracy), with a fixed logistic model.
+- **Its findings.** Per-mouse score normalization lowered accuracy in every arm. Mouse-relative features with a leave-one-mouse-out cutoff reached 152/156 (97.4%), versus 148/156 for the original features. The same fixed-model protocol on the standard split gave 35/36.
+- **Pipeline options.** Added `threshold_tuning.folds: leave_one_mouse_out` and top-level `calibration: false` to `src/estrus/modeling.py`, with one new test. SVMs remain calibrated.
+- **Full runs.** Added `config/mouse-relative-lomo-cutoff.json` and the control `config/threshold-lomo-cutoff.json`, and ran both. Mouse-relative with the new protocol gave 94.4% on the test mice (8/9 detected, 1 false alarm), a tie with the retained setup. The control gave 91.7%. The per-fold model search mixed logistic, random forest, and SVM probability scales, which moved the cutoff to 0.400. Restricting the search to logistic regression was not run, because it would be chosen after repeatedly inspecting the same test mice.
+- **Documentation.** Updated the research note, versioned result JSON, RESULTS, THRESHOLD_TUNING, MODELING, REPRODUCING, the docs index, and `config/README.md`. The final model is unchanged.
+
+**Verification and limits:** `pytest` on the modeling/reporting/results tests gave 25 passed and 2 failed. The 2 failures are the existing Windows encoding failures in `tests/test_reporting.py`, also present on unmodified main. Both full runs used `--save-details`, seed 190, and test mice f3/f6/f11 on the uncommitted working tree. The test mice have now been inspected in many experiments; the nested all-mice result is the less reused evidence but used a fixed model rather than the full search.
+
+### P076: Ask whether anything was added
+
+```text
+so did you actually add anything?
+```
+
+**Resulting AI assistance:** Explained that optional code, configs, tests, scripts, and documentation had been added, but nothing that changed the final model or its accuracy. Offered removal or a further attempt. Explanation only.
+
+### P077: Explain the simplified model
+
+```text
+what does using a simplified model mean? like the one you said improved accuracy
+```
+
+**Resulting AI assistance:** Explained that the nested all-mice script fixed one logistic-regression setup instead of running the pipeline's model search. Explained that the full pipeline's per-fold search mixed probability scales when choosing the cutoff. Explanation only.
+
+### P078: Acknowledge
+
+```text
+ok
+```
+
+**Resulting AI assistance:** Offered three options: try the fix, commit as-is, or remove the code. No changes.
+
+### P079: Try the fix
+
+```text
+try the fix
+```
+
+**Resulting AI assistance:**
+
+- **Code.** Added `threshold_tuning.model_search: fixed` to `src/estrus/modeling.py`, which reuses the development model choice in every cutoff fold. Added a top-level `test_mouse_ids` setting for explicit reserved mice. The model search now runs before cutoff tuning; this ordering change is deterministic, and a rerun of `config/threshold-f2.json` reproduced its recorded result. Added one test.
+- **Configs.** Added `config/mouse-relative-fixed-cutoff.json` and the control `config/threshold-fixed-cutoff.json`.
+- **All-mice evaluation.** Wrote `docs/research/all_mice_pipeline_2026-11-15.py`, which runs the full `evaluate()` once per held-out mouse. Arms and the primary metric were declared before running.
+- **Results.** On all 13 mice, the fix with mouse-relative features got 148/156 correct, versus 145/156 for the current final configuration. It was never worse on any mouse. The fix without mouse-relative features also got 145/156. On the standard split, the fix got 35/36 (97.2%) versus 34/36 (94.4%).
+- **Documentation.** Updated the research note, versioned result JSON, RESULTS, THRESHOLD_TUNING, MODELING, REPRODUCING, the docs index, `config/README.md`, and the root README. The final configuration was not changed: adoption is left to the team.
+
+**Verification and limits:** Modeling tests passed: 20, then the new test separately. Runs used the uncommitted working tree on top of commit 9d25c74. The caveats on the fixed setting are documented: its model choice saw all development labels, the gains are about three days of 156, and the configuration was developed over several rounds on this dataset.
+
+### P080: Ask about runtime
+
+```text
+is it still runing? why taking so long?
+```
+
+**Resulting AI assistance:** Reported per-run progress. Explained that arms repeating the model search inside every cutoff fold need up to about 156 searches. Offered to stop the slowest comparison arm.
+
+### P081: Limit runtime
+
+```text
+i dont want it to take 30+ min.
+```
+
+**Resulting AI assistance:** Stopped only the `mouse-relative-lomo-cutoff` all-mice run, after 2 of 13 mice. The fix and current-final arms ran to completion. The stopped arm is recorded as not reported.
+
+### P082: Adopt the better model and refresh results
+
+```text
+you can change it to use the better accuracy model. run any tests and result files to reflect the newest accuracy. i think theres also a html file?
+```
+
+**Resulting AI assistance:**
+
+- **Adoption.** At the user's direction, `config/mouse-relative-fixed-cutoff.json` became the final configuration. `config/threshold-f2.json` was kept unchanged as the previous final setup for reproduction. `Model Building/config.json`, the historical fixed-0.5 default, was left as is.
+- **Final build.** Ran `python run.py all --config config/mouse-relative-fixed-cutoff.json --save-details --output "Model Building/results/final-2026-11-15"`. It produced `report.html` (the HTML report), `predictions.csv`, `model.joblib`, and details. Results: test AP 0.980, cutoff 0.505732, 35/36 correct (97.2%), with F3 day 10 the only miss. Predictions were byte-identical to the earlier run of the same config.
+- **Report wording.** `src/estrus/reporting.py` now describes how development predictions were made for the fixed-model and uncalibrated settings, and explains `__mouse_rel` features. The build was rerun to refresh `report.html`.
+- **Records.** Added the versioned record `docs/results/final-2026-11-15.json`, with metrics, comparison with the previous final, all-mice results, configuration, and input/source/artifact hashes.
+- **Documentation.** Updated the root README, RESULTS (new final section; the previous final kept as history), THRESHOLD_TUNING, METHODS, MODELING, REPRODUCING, FEATURE_CONTRACT, COLLABORATION, the docs index, `config/README.md`, the experiment research note, and the historical research plan's status line.
+
+**Verification and limits:**
+
+- **Tests.** `python -m pytest -q` gave 82 passed and 5 failed. The 5 failures are the same ones that fail on unmodified main on Windows.
+- **Report test.** One reporting test caught that the new report text used the word "calibration", which the report deliberately avoids. The wording was changed to "probability adjustment"; with `PYTHONUTF8=1`, all 5 reporting tests pass. The `test_build.py` symlink failure also occurs on unmodified main.
+- **Rebuild.** The final build was rerun after the wording fix. Its predictions were byte-identical, and the record's `report.html` hash matches the file.
+- **Links.** All local links in the edited docs resolve. The only exceptions are two broken links in older AI_USE.md entries. `report.html` stays in the Git-ignored results folder, per the repository's convention; its hash is in the versioned record. The run used the uncommitted working tree.

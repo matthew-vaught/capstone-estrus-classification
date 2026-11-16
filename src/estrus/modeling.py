@@ -17,7 +17,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (accuracy_score, average_precision_score, balanced_accuracy_score,
                              brier_score_loss, confusion_matrix, fbeta_score, log_loss,
                              precision_score, recall_score)
-from sklearn.model_selection import GridSearchCV, GroupKFold, GroupShuffleSplit, cross_val_score
+from sklearn.model_selection import (GridSearchCV, GroupKFold, GroupShuffleSplit, LeaveOneGroupOut,
+                                     cross_val_score)
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -30,6 +31,39 @@ FAMILIES = {
     RandomForestClassifier: "random_forest",
     SVC: "rbf_svm",
 }
+THRESHOLD_OBJECTIVES = {"f2", "balanced_accuracy", "accuracy"}
+THRESHOLD_FOLDS = {"grouped", "leave_one_mouse_out"}
+MOUSE_RELATIVE_SUFFIX = "__mouse_rel"
+
+
+def mouse_relative_enabled(config):
+    """Mouse-relative copies are opt-in so historical configurations are unchanged."""
+    enabled = config.get("mouse_relative_features", False)
+    if not isinstance(enabled, bool):
+        raise ValueError("mouse_relative_features must be true or false.")
+    return enabled
+
+
+def add_mouse_relative(features: pd.DataFrame) -> pd.DataFrame:
+    """Append a within-mouse robust z-score copy of every feature column.
+
+    Each copy is (value - that mouse's median) / that mouse's interquartile
+    range, computed over all supplied days of the same mouse. It uses no labels
+    and no other animals, so it can run before the mouse-grouped train/test
+    split. It does require the mouse's other days (retrospective setting).
+    A zero IQR gives 0; missing inputs stay missing for the fitted imputer.
+    """
+    if "mouse_id" not in features:
+        raise ValueError("Mouse-relative features need a mouse_id column to group days by animal.")
+    columns = [c for c in features if c not in KEYS]
+    values = features[columns].apply(pd.to_numeric, errors="raise").astype(float)
+    grouped = values.groupby(features["mouse_id"])
+    median = grouped.transform("median")
+    spread = grouped.transform(lambda s: s.quantile(.75) - s.quantile(.25))
+    relative = (values - median) / spread.where(spread > 0)
+    relative = relative.mask(spread.le(0) & values.notna(), 0.)
+    relative.columns = [c + MOUSE_RELATIVE_SUFFIX for c in columns]
+    return pd.concat([features, relative], axis=1)
 
 
 class SelectPercentileAtLeastOne(SelectPercentile):
@@ -55,11 +89,23 @@ def grouped_splits(y, groups, n_splits):
 
 
 def split_mice(y, groups, config):
-    """Fix test mice using IDs and the seed, before selecting any features/models."""
-    n_test = config["test_mice"]
-    if not isinstance(n_test, int) or n_test < 1 or len(np.unique(groups)) - n_test < config["cv_folds"]:
-        raise ValueError("test_mice must leave enough training mice for cv_folds.")
-    train, test = next(GroupShuffleSplit(n_splits=1, test_size=n_test, random_state=config["seed"]).split(np.zeros(len(y)), y, groups))
+    """Fix test mice using IDs and the seed, before selecting any features/models.
+
+    ``test_mouse_ids`` optionally names the test mice explicitly (used by the
+    all-mice evaluation, which holds out each mouse in turn).
+    """
+    explicit = config.get("test_mouse_ids")
+    if explicit is not None:
+        if (not isinstance(explicit, list) or not explicit or not set(explicit) <= set(np.unique(groups))
+                or len(np.unique(groups)) - len(set(explicit)) < config["cv_folds"]):
+            raise ValueError("test_mouse_ids must name existing mice and leave enough training mice for cv_folds.")
+        is_test = np.isin(groups, explicit)
+        train, test = np.flatnonzero(~is_test), np.flatnonzero(is_test)
+    else:
+        n_test = config["test_mice"]
+        if not isinstance(n_test, int) or n_test < 1 or len(np.unique(groups)) - n_test < config["cv_folds"]:
+            raise ValueError("test_mice must leave enough training mice for cv_folds.")
+        train, test = next(GroupShuffleSplit(n_splits=1, test_size=n_test, random_state=config["seed"]).split(np.zeros(len(y)), y, groups))
     if len(np.unique(y[train])) != 2 or len(np.unique(y[test])) != 2:
         raise ValueError("Training and test mice must each contain both classes. Review the labels and split settings.")
     assert not set(groups[train]) & set(groups[test])
@@ -175,9 +221,44 @@ def threshold_settings(config):
     enabled, objective = settings.get("enabled", False), settings.get("objective", "f2")
     if not isinstance(enabled, bool):
         raise ValueError("threshold_tuning.enabled must be true or false.")
-    if objective not in {"f2", "balanced_accuracy"}:
-        raise ValueError("threshold_tuning.objective must be f2 or balanced_accuracy.")
-    return {"enabled": enabled, "objective": objective}
+    if objective not in THRESHOLD_OBJECTIVES:
+        raise ValueError("threshold_tuning.objective must be f2, balanced_accuracy, or accuracy.")
+    folds = settings.get("folds", "grouped")
+    if folds not in THRESHOLD_FOLDS:
+        raise ValueError("threshold_tuning.folds must be grouped or leave_one_mouse_out.")
+    search = settings.get("model_search", "per_fold")
+    if search not in {"per_fold", "fixed"}:
+        raise ValueError("threshold_tuning.model_search must be per_fold or fixed.")
+    return {"enabled": enabled, "objective": objective, "folds": folds, "model_search": search}
+
+
+def calibration_enabled(config):
+    """Sigmoid calibration is the historical default; configurations may switch it off."""
+    enabled = config.get("calibration", True)
+    if not isinstance(enabled, bool):
+        raise ValueError("calibration must be true or false.")
+    return enabled
+
+
+def fit_probability_model(chosen, X, y, cv, config):
+    """Fit the chosen pipeline, adding grouped sigmoid calibration when configured.
+
+    The RBF SVM has no probabilities of its own, so it is always calibrated.
+    Returns (model with predict_proba, fitted pipeline, whether calibrated).
+    """
+    if calibration_enabled(config) or family_of(chosen) == "rbf_svm":
+        model = CalibratedClassifierCV(clone(chosen), method="sigmoid", cv=cv,
+                                       ensemble=False, n_jobs=config["jobs"]).fit(X, y)
+        return model, model.calibrated_classifiers_[0].estimator, True
+    model = clone(chosen).fit(X, y)
+    return model, model, False
+
+
+def threshold_development_folds(y, groups, cv, settings):
+    """Outer development folds for cutoff selection: the shared grouped folds or one mouse at a time."""
+    if settings["folds"] == "grouped":
+        return cv
+    return list(LeaveOneGroupOut().split(np.zeros(len(y)), y, groups))
 
 
 def select_threshold(y, probability, *, objective="f2"):
@@ -191,8 +272,8 @@ def select_threshold(y, probability, *, objective="f2"):
             or not np.isfinite(probability).all()
             or ((probability < 0) | (probability > 1)).any()):
         raise ValueError("Threshold selection needs both binary classes and finite probabilities in [0, 1].")
-    if objective not in {"f2", "balanced_accuracy"}:
-        raise ValueError("Threshold objective must be f2 or balanced_accuracy.")
+    if objective not in THRESHOLD_OBJECTIVES:
+        raise ValueError("Threshold objective must be f2, balanced_accuracy, or accuracy.")
     scores = np.unique(probability)
     candidates = np.unique(np.r_[0., .5, 1., scores[:-1] + np.diff(scores) / 2])
     curve = pd.DataFrame([
@@ -207,38 +288,54 @@ def select_threshold(y, probability, *, objective="f2"):
     return threshold, curve
 
 
-def tune_threshold(X, y, groups, keys, cv, config, destination):
+def tune_threshold(X, y, groups, keys, cv, config, destination, *, chosen=None):
     """Get development predictions excluding each scored mouse from all fitting.
 
-    Model search, imputation, scaling, feature selection, and sigmoid calibration
-    are repeated inside each fitting fold. No reserved test inputs are accepted.
+    Model search, imputation, scaling, feature selection, and (when configured)
+    sigmoid calibration are repeated inside each fitting fold. With
+    ``folds: leave_one_mouse_out`` each development mouse is scored by models fitted
+    on all other development mice, closer to the final model's training size.
+    With ``model_search: fixed``, ``chosen`` (the development-wide model choice)
+    is refitted in every fold instead of searching again, so all development
+    scores share one model family and probability scale. That choice saw every
+    development mouse's labels, so cutoff-selection scores are slightly
+    optimistic; reserved test mice are still never used. No test inputs are accepted.
     """
     settings = threshold_settings(config)
+    if (settings["model_search"] == "fixed") != (chosen is not None):
+        raise ValueError("model_search fixed needs the development model choice, and only then.")
     probability = np.full(len(y), np.nan)
     fold_ids = np.full(len(y), -1, dtype=int)
     audits = []
+    cv = threshold_development_folds(y, groups, cv, settings)
     for fold, (fitting, validation) in enumerate(cv):
         fitting_groups = groups[fitting]
         if len(np.unique(fitting_groups)) < 2:
             raise ValueError("Threshold tuning needs at least two fitting mice in every development fold; increase the development cohort or cv_folds.")
         inner_cv = grouped_splits(y[fitting], fitting_groups,
                                   min(config["cv_folds"], len(np.unique(fitting_groups))))
-        print(f"Threshold tuning: development fold {fold + 1}/{len(cv)}; repeat model search and calibration on fitting mice only...", flush=True)
-        chosen, candidates = compare_models(X.iloc[fitting], y[fitting], inner_cv, config)
-        calibrated = CalibratedClassifierCV(clone(chosen), method="sigmoid", cv=inner_cv,
-                                            ensemble=False, n_jobs=config["jobs"])
-        calibrated.fit(X.iloc[fitting], y[fitting])
-        probability[validation] = calibrated.predict_proba(X.iloc[validation])[:, 1]
+        if chosen is None:
+            print(f"Threshold tuning: development fold {fold + 1}/{len(cv)}; repeat model search and fitting on fitting mice only...", flush=True)
+            fold_model, candidates = compare_models(X.iloc[fitting], y[fitting], inner_cv, config)
+            winner = candidates.loc[candidates.chosen].iloc[0]
+            family, feature_set, model_settings = winner.family, winner.feature_set, winner.settings
+        else:
+            print(f"Threshold tuning: development fold {fold + 1}/{len(cv)}; refit the fixed development model on fitting mice only...", flush=True)
+            fold_model = chosen
+            family, feature_set = family_of(chosen), feature_set_name(chosen.named_steps["select"])
+            model_settings = str({k: v for k, v in chosen.get_params().items()
+                                  if k.startswith("model__") and k[7:] in {"C", "max_depth"}})
+        fitted, _, calibrated = fit_probability_model(fold_model, X.iloc[fitting], y[fitting], inner_cv, config)
+        probability[validation] = fitted.predict_proba(X.iloc[validation])[:, 1]
         fold_ids[validation] = fold
-        winner = candidates.loc[candidates.chosen].iloc[0]
         audits.append({
             "fold": fold, "fitting_mice": sorted(set(fitting_groups)),
             "validation_mice": sorted(set(groups[validation])),
             "inner_validation": [
                 {"fitting_mice": sorted(set(fitting_groups[a])),
                  "validation_mice": sorted(set(fitting_groups[b]))} for a, b in inner_cv],
-            "family": winner.family, "feature_set": winner.feature_set,
-            "settings": winner.settings,
+            "family": family, "feature_set": feature_set,
+            "settings": model_settings, "calibrated": calibrated,
         })
     if not np.isfinite(probability).all():
         raise ValueError("Threshold validation folds must provide a prediction for every development row.")
@@ -249,7 +346,8 @@ def tune_threshold(X, y, groups, keys, cv, config, destination):
     curve.to_csv(destination / "threshold_curve.csv", index=False)
     evidence = {
         **settings, "threshold": threshold, "default_threshold": .5,
-        "method": "mouse_grouped_nested_model_selection_and_calibration",
+        "method": "mouse_grouped_nested_model_selection_and_calibration" if calibration_enabled(config)
+                  else "mouse_grouped_nested_model_selection",
         "tie_break": "closest_to_0.5_then_higher",
         "score_scope": "Development scores used to choose the cutoff; not independent performance estimates.",
         "development_mice": sorted(set(groups)), "folds": audits,
@@ -268,6 +366,10 @@ def evaluate(features, labels, destination: Path, config, *, root: Path | None =
     predictions and metrics; writes the fitted model and technical records.
     """
     threshold_config = threshold_settings(config)
+    mouse_relative = mouse_relative_enabled(config)
+    if mouse_relative:
+        # Label-free and within each mouse; never mixes animals or uses targets.
+        features = add_mouse_relative(features)
     frame = features.merge(labels.dropna(subset=["is_estrus"]), on=KEYS, how="inner", validate="one_to_one")
     frame["is_estrus"] = frame.is_estrus.astype(int)
     columns = [column for column in features if column not in KEYS]
@@ -280,21 +382,20 @@ def evaluate(features, labels, destination: Path, config, *, root: Path | None =
     splits = {"training_mice": sorted(set(groups[train])), "test_mice": sorted(set(groups[test])),
               "validation": [{"train_mice": sorted(set(groups[train][a])), "validation_mice": sorted(set(groups[train][b]))} for a, b in cv]}
     (destination / "splits.json").write_text(json.dumps(splits, indent=2) + "\n")
-    threshold, threshold_evidence = .5, {**threshold_config, "threshold": .5, "method": "fixed"}
-    if threshold_config["enabled"]:
-        threshold, threshold_evidence = tune_threshold(
-            X_train, y_train, groups[train], frame.iloc[train][KEYS], cv, config, destination)
-        print(f"Development-selected cutoff: {threshold:.6f} ({threshold_config['objective']}). Frozen before test prediction.", flush=True)
     print(f"Compare feature sets and models on {len(splits['training_mice'])} training mice; reserve {len(splits['test_mice'])} test mice: {', '.join(splits['test_mice'])}", flush=True)
     chosen, candidates = compare_models(X_train, y_train, cv, config)
     candidates.to_csv(destination / "model_comparison.csv", index=False)
+    threshold, threshold_evidence = .5, {**threshold_config, "threshold": .5, "method": "fixed"}
+    if threshold_config["enabled"]:
+        fixed = chosen if threshold_config["model_search"] == "fixed" else None
+        threshold, threshold_evidence = tune_threshold(
+            X_train, y_train, groups[train], frame.iloc[train][KEYS], cv, config, destination, chosen=fixed)
+        print(f"Development-selected cutoff: {threshold:.6f} ({threshold_config['objective']}). Frozen before test prediction.", flush=True)
     family = family_of(chosen)
-    print(f"Chosen: {family}, {feature_set_name(chosen.named_steps['select'])}. Fitting one model with probability calibration...", flush=True)
-    # One final classifier, with a probability mapping learned from grouped
-    # validation predictions. Its selector is fitted within each training split.
-    model = CalibratedClassifierCV(clone(chosen), method="sigmoid", cv=cv, ensemble=False, n_jobs=config["jobs"])
-    model.fit(X_train, y_train)
-    final_pipeline = model.calibrated_classifiers_[0].estimator
+    print(f"Chosen: {family}, {feature_set_name(chosen.named_steps['select'])}. Fitting the final model...", flush=True)
+    # One final classifier. When calibrated, its probability mapping is learned
+    # from grouped validation predictions; its selector is fitted within each split.
+    model, final_pipeline, calibrated = fit_probability_model(chosen, X_train, y_train, cv, config)
     selected = selected_feature_names(final_pipeline, columns)
     print(f"Assessing {len(columns)} features using training mice only...", flush=True)
     catalog = feature_assessment(X_train, y_train, cv, chosen, final_pipeline, config)
@@ -320,13 +421,15 @@ def evaluate(features, labels, destination: Path, config, *, root: Path | None =
                "test_ap": float(metrics.set_index("metric").loc["average_precision", "estimate"]),
                "selected_features": selected, "n_features": len(selected), "n_available": len(columns),
                "training_mice": splits["training_mice"], "test_mice": splits["test_mice"],
-               "threshold": threshold, "threshold_tuning": threshold_evidence, "settings": winner.settings}
+               "threshold": threshold, "threshold_tuning": threshold_evidence, "settings": winner.settings,
+               "mouse_relative_features": mouse_relative, "calibrated": calibrated}
     summary["feature_source"] = "baseline" if all(name.startswith("baseline__") for name in columns) else "contributors" if not any(name.startswith("baseline__") for name in columns) else "mixed"
     summary["input_requirements"] = requirements
     (destination / "final_model.json").write_text(json.dumps(summary, indent=2) + "\n")
     joblib.dump({"model": model, "feature_columns": columns, "selected_features": selected,
                  "threshold": threshold, "threshold_tuning": threshold_evidence,
-                 "family": family, "label_sources": sorted(frame.label_source.unique()),
+                 "family": family, "mouse_relative_features": mouse_relative, "calibrated": calibrated,
+                 "label_sources": sorted(frame.label_source.unique()),
                  "training_mice": splits["training_mice"], "test_mice": splits["test_mice"], "config": config,
                  "input_requirements": summary["input_requirements"]}, destination / "model.joblib")
     features.to_csv(destination / "feature_matrix.csv", index=False)
@@ -338,6 +441,14 @@ def predict(bundle_path: Path, features: pd.DataFrame) -> pd.DataFrame:
     """Predict assembled mouse-day features using the saved, selected pipeline."""
     bundle = joblib.load(bundle_path)
     columns = bundle["feature_columns"]
+    if bundle.get("mouse_relative_features"):
+        # Rebuild the within-mouse copies from the supplied rows. Supply every
+        # available day for each mouse: the copies depend on that mouse's days.
+        base = [c for c in columns if not c.endswith(MOUSE_RELATIVE_SUFFIX)]
+        missing = set(base + ["mouse_id"]) - set(features)
+        if missing:
+            raise ValueError(f"Model requires its original feature schema plus mouse_id. Missing: {sorted(missing)}.")
+        features = add_mouse_relative(features[[c for c in KEYS if c in features] + base])
     missing = set(columns) - set(features)
     if missing:
         raise ValueError(f"Model requires its original feature schema. Missing: {sorted(missing)}. Rebuild the features, or retrain without that contributor.")

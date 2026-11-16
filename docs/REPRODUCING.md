@@ -19,21 +19,21 @@ For PowerShell, activate with `.\.venv\Scripts\Activate.ps1`. Use the same envir
 
 The root `run.py` delegates to the installed `estrus` package. It can locate the checkout from its own path, so the script also works when invoked from another working directory. Explicit relative `--config`, `--labels`, and `--output` paths are relative to that working directory.
 
-For the retained final setup (original 28 features, F2 threshold tuning, both experimental feature families excluded), run:
+For the final setup (original 28 features plus mouse-relative copies, fixed-model F2 threshold tuning, both experimental feature families excluded), run:
 
 ```bash
-python run.py all --config config/threshold-f2.json --save-details
+python run.py all --config config/mouse-relative-fixed-cutoff.json --save-details
 ```
 
-The explicit configuration is required: omitting `--config` selects the historical fixed-0.5 setup. A model-only final run is `python run.py model --config config/threshold-f2.json --save-details`. See [recorded final results](RESULTS.md#retained-final-setup).
+The explicit configuration is required: omitting `--config` selects the historical fixed-0.5 setup. A model-only final run is `python run.py model --config config/mouse-relative-fixed-cutoff.json --save-details`. See [recorded final results](RESULTS.md#final-setup).
 
 | Command | Behavior and outputs |
 | --- | --- |
 | `python run.py data` | Verify all four input checksums and prepare minute/day tables and label templates in `data/outputs/build/prepared/` |
 | `python run.py features` | Validate and combine supplied contributor CSVs into `data/outputs/build/features.csv`; use reference features if no valid export exists |
 | `python run.py validate` | Check submitted exports without fitting a model |
-| `python run.py model --config config/threshold-f2.json --save-details` | Validate original exports, select/calibrate a model, select its cutoff on development mice, and write final-run results |
-| `python run.py all --config config/threshold-f2.json --save-details` | Run data preparation, feature assembly, and final modeling in order |
+| `python run.py model --config config/mouse-relative-fixed-cutoff.json --save-details` | Validate original exports, add mouse-relative copies, select a model, select its cutoff on development mice, and write final-run results |
+| `python run.py all --config config/mouse-relative-fixed-cutoff.json --save-details` | Run data preparation, feature assembly, and final modeling in order |
 | `python run.py test` | Build and verify the shared pipeline using invented data in a temporary checkout |
 | `python run.py clean` | Remove only `data/outputs/build/`, including synthetic reports stored there |
 
@@ -62,13 +62,13 @@ Consequently, the real-data model can be reproduced from the submitted artifacts
 
 ## Model configuration and variants
 
-The final [configuration](../config/threshold-f2.json) includes the random seed, reserved-mouse count, grouped folds, model grid, and F2 threshold-tuning settings. The historical [default file](../Model%20Building/config.json) retains the original search with fixed cutoff 0.5. Keep other configurations under `config/` and pass their paths explicitly rather than editing model logic. Old minimal configuration files remain supported through defaults.
+The final [configuration](../config/mouse-relative-fixed-cutoff.json) includes the random seed, reserved-mouse count, grouped folds, model grid, mouse-relative features, calibration switch, and F2 threshold-tuning settings. The historical [default file](../Model%20Building/config.json) retains the original search with fixed cutoff 0.5. Keep other configurations under `config/` and pass their paths explicitly rather than editing model logic. Old minimal configuration files remain supported through defaults.
 
 ```bash
-python run.py model --config config/threshold-f2.json --save-details
-python run.py model --config config/threshold-f2.json --baseline --save-details
-python run.py model --config config/threshold-f2.json --quick
-python run.py model --config config/threshold-f2.json --labels /path/to/confirmed_labels.csv --save-details
+python run.py model --config config/mouse-relative-fixed-cutoff.json --save-details
+python run.py model --config config/mouse-relative-fixed-cutoff.json --baseline --save-details
+python run.py model --config config/mouse-relative-fixed-cutoff.json --quick
+python run.py model --config config/mouse-relative-fixed-cutoff.json --labels /path/to/confirmed_labels.csv --save-details
 ```
 
 The last three commands are alternative comparisons/trials, not reproductions of the recorded final result. For new research, copy a configuration under a descriptive name. `--quick` overrides validation folds to two, trees to forty, and the regularization search to the quick grid. Use full mode for the final result. Baseline/team comparisons need matching labels, seed, configuration, and quick/full mode.
@@ -76,6 +76,20 @@ The last three commands are alternative comparisons/trials, not reproductions of
 The retained [decision-threshold procedure](THRESHOLD_TUNING.md) adds nested mouse-grouped development fits to choose a cutoff by F2 and compares it with 0.5. Omitting `threshold_tuning` preserves the historical fixed cutoff. The cutoff is learned anew during training and stored in `model.joblib`; use that saved bundle to reproduce the exact recorded decisions.
 
 For historical research reproduction, `config/mouse-baseline-f2.json` adds the [baseline-relative features](features/mouse-baseline.md), and `config/la-cbt-relationship-f2.json` adds the [paired-signal features](features/la-cbt-relationship.md). Both families are excluded from the final model. Each explicit `feature_owners` list must name valid existing exports; missing requested families stop that experiment. Generating those CSVs alone does not change the final setup.
+
+The November 15 [mouse-relative experiment](research/mouse-relative-2026-11-15.md) is reproduced with seven configs, listed in the [config index](../config/README.md). It adds no new feature export, only configuration settings: `mouse_relative_features`, `calibration`, `test_mouse_ids`, and the `objective`/`folds`/`model_search` values inside `threshold_tuning`. The best arm runs with:
+
+```bash
+python run.py model --config config/mouse-relative-fixed-cutoff.json --save-details
+```
+
+Three scripts reproduce the all-mice comparisons:
+
+- `python docs/research/lomo_benchmark_2026-11-15.py . OUTPUT_DIR` runs the exploratory screen.
+- `python docs/research/nested_lomo_score_norm_2026-11-15.py OUTPUT_DIR` runs the nested fixed-model test.
+- `python docs/research/all_mice_pipeline_2026-11-15.py config/NAME.json OUTPUT_DIR` runs the full pipeline once per held-out mouse. One config per process. Configs that repeat the model search inside every cutoff fold are slow: they run up to about 156 searches.
+
+The final model uses `config/mouse-relative-fixed-cutoff.json`; the other configs reproduce the experiment's arms.
 
 Proxy-label days, canonical keys, and scientific feature definitions are documented in [methods](METHODS.md) and the [contract](FEATURE_CONTRACT.md). Curated labels are supplied separately with `--labels`. Documentation updates do not change the target, split, feature definitions, or historical provenance records.
 

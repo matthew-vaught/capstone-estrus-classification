@@ -2,7 +2,7 @@
 
 Each owner supplies exactly one optional file:
 
-The retained final configuration is [config/threshold-f2.json](../config/threshold-f2.json), using the original 28 supplied features and F2 cutoff tuning. Mouse Baseline and LA CBT Relationship are registered for historical experiment reproduction and excluded from the final model.
+The final configuration is [config/mouse-relative-fixed-cutoff.json](../config/mouse-relative-fixed-cutoff.json). It uses the original 28 supplied features plus a mouse-relative copy of each, computed in the shared model step rather than exported by any contributor, with F2 cutoff tuning. Mouse Baseline and LA CBT Relationship are registered for historical experiment reproduction and excluded from the final model.
 
 Once any valid export is available, model building uses the combined valid contributor exports **without reference features**. If no valid exports exist, it falls back to the reference baseline. `estrus run --baseline` explicitly runs reference features alone for comparison. The report identifies which feature source was used.
 

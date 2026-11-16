@@ -2,14 +2,15 @@
 
 This project evaluates temperature and activity features for retrospective classification of female mouse-days. The root [README](../README.md) provides installation and the shortest path to a report.
 
-**Retained final model:** original 28 features with F2 decision-threshold tuning, using [config/threshold-f2.json](../config/threshold-f2.json). Both experimental feature families are excluded. The [results guide](RESULTS.md) gives the retained scores and the recorded reasons for excluding those experiments.
+**Final model (adopted November 15, 2026):** original 28 features plus mouse-relative copies, with a fixed-model F2 decision cutoff, using [config/mouse-relative-fixed-cutoff.json](../config/mouse-relative-fixed-cutoff.json). Test accuracy 97.2% (35/36); 148/156 across all 13 mice. Both experimental feature families are excluded. The [results guide](RESULTS.md) gives the retained scores and the recorded reasons for excluding those experiments.
 
 | Guide | What it explains |
 | --- | --- |
 | [Reproducing the project](REPRODUCING.md) | Environment, build stages, regeneration, configuration, and synthetic verification |
-| [Results](RESULTS.md) | Retained final result, historical presentation milestone, excluded experiments, and evaluation limits |
+| [Results](RESULTS.md) | Final result, previous final setup, historical presentation milestone, experiments, and evaluation limits |
 | [Historical improvement research plan](research/estrus-improvement-2026-11-11.md) | Original error analysis, literature, and hypotheses before the completed experiments |
-| [Decision-threshold tuning](THRESHOLD_TUNING.md) | Retained development-only cutoff selection, F2 objective, comparison with 0.5, and saved-model behavior |
+| [Mouse-relative features experiment](research/mouse-relative-2026-11-15.md) | November 15 tests of within-mouse feature rescaling and cutoff selection; one configuration improved accuracy on all 13 mice and the test mice and became the final model |
+| [Decision-threshold tuning](THRESHOLD_TUNING.md) | Final development-only cutoff selection, F2 objective, comparison with 0.5, and saved-model behavior |
 | [Data](DATA.md) | Classroom recordings, checksums, provisional labels, and data-retention policy |
 | [Methods](METHODS.md) | Features, grouped evaluation, metrics, and scientific limitations |
 | [Modeling and reports](MODELING.md) | Available models, saved artifacts, and inference |

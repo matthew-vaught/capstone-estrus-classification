@@ -4,7 +4,14 @@ This capstone investigates whether core body temperature (CBT) and locomotor act
 
 The dataset contains 14 days of one-minute recordings from 13 females. Analysis uses recording days 2–13, giving 156 mouse-days. Current submissions provide 28 features: Matthew's four, Alisha's eighteen, and Vivian's six. Brandon's folder contains feature evaluation code. See the [feature overview](docs/README.md#feature-documentation).
 
-**Final setup:** the original 28 features with a decision cutoff selected on development mice by F2. Mouse Baseline and LA–CBT Relationship features are excluded; their experiments are retained for reference.
+**Final setup (adopted November 15, 2026):** the original 28 features plus a **mouse-relative copy** of each, giving 56 inputs. Each copy is the value rescaled against the same mouse's median and IQR. The decision cutoff is selected by F2 on development mice, one mouse at a time, using one fixed model without calibration; see the [config](config/mouse-relative-fixed-cutoff.json) and [rationale](docs/research/mouse-relative-2026-11-15.md).
+
+It replaced the November 13 setup (original 28 features, grouped-fold F2 cutoff) after beating it in both evaluations:
+
+- **All 13 mice, each held out in turn:** 148 vs 145 correct of 156 days.
+- **Reserved test mice:** 35 vs 34 correct of 36 days.
+
+Mouse Baseline and LA–CBT Relationship features remain excluded; their experiments are retained for reference.
 
 **Interpretation:** labels for recording days 2, 6, and 10 are provisional paper-alignment proxies, rather than independently confirmed biological stages. Current contributor features require complete recordings, including future context, and support retrospective classification. The [methods](docs/METHODS.md) explain these limitations.
 
@@ -24,17 +31,17 @@ On Windows PowerShell, activate with `.\.venv\Scripts\Activate.ps1`. Notebook an
 ## Reproduce and review
 
 ```bash
-python run.py all --config config/threshold-f2.json --save-details
-python run.py model --config config/threshold-f2.json --quick  # Trial, not the final search
+python run.py all --config config/mouse-relative-fixed-cutoff.json --save-details
+python run.py model --config config/mouse-relative-fixed-cutoff.json --quick  # Trial, not the final search
 python run.py test  # Complete shared pipeline on invented data
 python -m pytest   # Unit and integration tests
 ```
 
-Use the explicit `--config config/threshold-f2.json` for the final setup. Omitting it selects the historical `Model Building/config.json`, which still uses cutoff 0.5. The four input CSVs and submitted feature exports are included for course submission reproducibility. The build reads those exports without executing or changing contributors' code. Optional extraction commands are in the [reproduction guide](docs/REPRODUCING.md).
+Use the explicit `--config config/mouse-relative-fixed-cutoff.json` for the final setup. Omitting it selects the historical `Model Building/config.json`, which still uses cutoff 0.5. The previous final setup is reproducible with `config/threshold-f2.json`. The four input CSVs and submitted feature exports are included for course submission reproducibility. The build reads those exports without executing or changing contributors' code. Optional extraction commands are in the [reproduction guide](docs/REPRODUCING.md).
 
 Open the printed `Model Building/results/run-.../report.html` path in a browser. Each run also contains readable `predictions.csv`, the evaluated `model.joblib`, and a short run README. `--save-details` retains configuration, hashes, splits, and technical records. The main metric is **average precision**, evaluated on three reserved mice. The [results guide](docs/RESULTS.md) describes the current milestone and how to interpret it.
 
-The retained run achieved **AP 0.932 and accuracy 94.4%**, detecting 7/9 estrus-proxy days with no false alarms. The cutoff was approximately 0.367183; it is learned from development data and saved with the model. See [results and limitations](docs/RESULTS.md) for the small cohort, provisional labels, and exploratory evaluation context.
+The final run `final-2026-11-15` achieved **AP 0.980 and accuracy 97.2% (35/36)**, detecting 8/9 estrus-proxy days with no false alarms. The only miss is F3 day 10. The previous final setup scored AP 0.932 and 94.4%. The cutoff was approximately 0.505732; it is learned from development data and saved with the model. Across all 13 mice, each held out in turn, the final setup scored 148/156 correct (94.9%). See [results and limitations](docs/RESULTS.md) for the small cohort, provisional labels, and exploratory evaluation context.
 
 ## Repository map
 

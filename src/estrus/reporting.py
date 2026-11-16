@@ -102,8 +102,12 @@ def feature_sections(destination, final_model, diagnostics=()):
             groups.append(f'<details class="feature-owner"><summary>{owner}: {message}</summary></details>')
         else:
             groups.append(f'<details class="feature-owner"><summary>{owner}: {len(block)} features, {int(block.used.sum())} used in the final model</summary>{display(block)}</details>')
+    relative = ("<p>Features ending in <code>__mouse_rel</code> are mouse-relative copies: each value minus that mouse's median, "
+                "divided by that mouse's interquartile range, across all of its days. They use no labels and no other mice.</p>"
+                if final_model.get("mouse_relative_features") else "")
     return f'''<h2>Feature selection</h2>
 <p><strong>{final_model['n_features']} of {final_model['n_available']} available features are used by the final model.</strong> The model comparison tests all usable features and the configured reduced subsets. Features are ranked for selection using training data only.</p>
+{relative}
 <h3>Most useful features</h3>
 <p><strong>AP on its own</strong> measures prediction using just that feature. <strong>Contribution</strong> is how much the chosen model's validation AP drops when that feature's values are shuffled. Larger drops suggest more useful information. These are training-validation results; features that share information can hide each other's usefulness.</p>
 {strongest}
@@ -130,7 +134,8 @@ def threshold_section(destination, final_model):
     })
     curve = pd.read_csv(destination / "threshold_curve.csv")
     fig, ax = plt.subplots(figsize=(8, 3.5), layout="constrained")
-    for column, label in [(tuning["objective"], "F2" if tuning["objective"] == "f2" else "Balanced accuracy"),
+    objective_label = {"f2": "F2", "balanced_accuracy": "Balanced accuracy", "accuracy": "Accuracy"}[tuning["objective"]]
+    for column, label in [(tuning["objective"], objective_label),
                           ("recall", "Estrus recall"), ("specificity", "Specificity")]:
         ax.step(curve.threshold, curve[column], where="mid", label=label)
     ax.axvline(final_model["threshold"], color="black", ls="--", label="Selected cutoff")
@@ -139,10 +144,24 @@ def threshold_section(destination, final_model):
            xlim=(0, 1), ylim=(0, 1.03))
     ax.legend(fontsize=8)
     picture = _image(fig, destination / "figures" / "threshold_selection.png")
-    objective = ("F2, which emphasizes estrus recall while still penalizing false alarms"
-                 if tuning["objective"] == "f2" else "balanced accuracy, the mean of sensitivity and specificity")
+    objective = {
+        "f2": "F2, which emphasizes estrus recall while still penalizing false alarms",
+        "balanced_accuracy": "balanced accuracy, the mean of sensitivity and specificity",
+        "accuracy": "accuracy, the fraction of all mouse-days classified correctly",
+    }[tuning["objective"]]
+    folds = ("one development mouse at a time" if tuning.get("folds") == "leave_one_mouse_out"
+             else "in grouped development folds")
+    if tuning.get("model_search") == "fixed":
+        exclusion = ("The model type and settings were chosen once on all development mice; that same model was then refit "
+                     f"without each scored mouse ({folds}) to produce its development prediction.")
+    else:
+        exclusion = f"Development predictions were made {folds}, excluding each scored mouse from model selection and fitting."
+    if final_model.get("calibrated", True):
+        exclusion += " The probability adjustment was also fitted without the scored mouse."
+    else:
+        exclusion += " No probability adjustment was applied."
     return f'''<h2>Decision threshold</h2>
-<p>The cutoff was chosen to maximize {objective} using development mice only. Each scored development mouse was excluded from model selection, fitting, and probability adjustment for its prediction. The cutoff was fixed before calculating test predictions.</p>
+<p>The cutoff was chosen to maximize {objective} using development mice only. {exclusion} The cutoff was fixed before calculating test predictions.</p>
 <p>The table compares two cutoffs on the same final model and the same reserved test mice. Probabilities and average precision are identical; only class decisions change.</p>
 {table.to_html(index=False, border=0)}
 <details><summary>How the cutoff was selected on development mice</summary>

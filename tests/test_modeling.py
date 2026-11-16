@@ -7,7 +7,8 @@ import pytest
 
 from estrus.modeling import (evaluate, grouped_splits, metric_values, predict,
                              selected_feature_names, split_mice, SelectPercentileAtLeastOne,
-                             compare_models, select_threshold, threshold_settings, tune_threshold)
+                             compare_models, select_threshold, threshold_settings, tune_threshold,
+                             add_mouse_relative, mouse_relative_enabled)
 
 
 def synthetic():
@@ -162,6 +163,104 @@ def test_threshold_settings_are_opt_in_and_validated():
     for bad in [True, {"enabled": "false"}, {"objective": "unknown"}]:
         with pytest.raises(ValueError, match="threshold_tuning"):
             threshold_settings({"threshold_tuning": bad})
+
+
+def test_accuracy_objective_selects_the_most_accurate_cutoff():
+    assert threshold_settings({"threshold_tuning": {"enabled": True, "objective": "accuracy"}})["objective"] == "accuracy"
+    y = np.array([0, 0, 0, 0, 1, 1])
+    probabilities = np.array([.1, .2, .3, .7, .6, .9])
+    cutoff, curve = select_threshold(y, probabilities, objective="accuracy")
+    best = metric_values(y, probabilities, threshold=cutoff)["accuracy"]
+    assert best == pytest.approx(curve.accuracy.max())
+    assert best == pytest.approx(5 / 6)
+
+
+def test_mouse_relative_copies_use_only_the_same_mouse():
+    features = pd.DataFrame({
+        "mouse_id": ["a"] * 4 + ["b"] * 4, "day_index": [2, 3, 4, 5] * 2,
+        "owner__x": [1., 2., 3., 4., 10., 20., 30., 40.],
+        "owner__flat": [5., 5., 5., 5., 1., 2., 3., np.nan],
+    })
+    result = add_mouse_relative(features)
+    pd.testing.assert_frame_equal(result[features.columns], features)
+    # Robust z: (value - median) / IQR within each mouse; scale-free across mice.
+    np.testing.assert_allclose(result["owner__x__mouse_rel"].iloc[:4], result["owner__x__mouse_rel"].iloc[4:])
+    np.testing.assert_allclose(result["owner__x__mouse_rel"].iloc[:4], np.array([-1.5, -.5, .5, 1.5]) / 1.5)
+    assert (result["owner__flat__mouse_rel"].iloc[:4] == 0).all()
+    assert np.isnan(result["owner__flat__mouse_rel"].iloc[7])
+    # Changing another mouse cannot change this mouse's copies.
+    altered = features.assign(owner__x=features.owner__x.where(features.mouse_id.eq("a"), 999.))
+    pd.testing.assert_series_equal(add_mouse_relative(altered)["owner__x__mouse_rel"].iloc[:4],
+                                   result["owner__x__mouse_rel"].iloc[:4])
+    assert not mouse_relative_enabled({})
+    with pytest.raises(ValueError, match="mouse_relative_features"):
+        mouse_relative_enabled({"mouse_relative_features": "yes"})
+
+
+def test_mouse_relative_model_saves_and_rebuilds_copies_for_prediction(tmp_path):
+    features, labels = synthetic()
+    settings = {**config(), "mouse_relative_features": True,
+                "threshold_tuning": {"enabled": True, "objective": "accuracy"}}
+    evaluate(features, labels, tmp_path, settings, root=tmp_path)
+    bundle = joblib.load(tmp_path / "model.joblib")
+    assert bundle["mouse_relative_features"]
+    assert len(bundle["feature_columns"]) == 2 * (len(features.columns) - 2)
+    assert json.loads((tmp_path / "final_model.json").read_text())["mouse_relative_features"]
+    # Prediction accepts the original schema and rebuilds the copies itself.
+    rows = predict(tmp_path / "model.joblib", features)
+    matrix = pd.read_csv(tmp_path / "feature_matrix.csv")
+    expected = bundle["model"].predict_proba(matrix[bundle["feature_columns"]])[:, 1]
+    np.testing.assert_allclose(rows.p_estrus, expected)
+    with pytest.raises(ValueError, match="mouse_id"):
+        predict(tmp_path / "model.joblib", features.drop(columns="mouse_id"))
+
+
+def test_leave_one_mouse_out_cutoff_folds_without_calibration(tmp_path):
+    features, labels = synthetic()
+    settings = {**config(), "calibration": False,
+                "threshold_tuning": {"enabled": True, "objective": "f2", "folds": "leave_one_mouse_out"}}
+    train, test = split_mice(labels.is_estrus.to_numpy(), features.mouse_id.to_numpy(), settings)
+    changed = labels.copy()
+    changed.loc[test, "is_estrus"] = 1 - changed.loc[test, "is_estrus"]
+    first, _ = evaluate(features, labels, tmp_path / "first", settings)
+    second, _ = evaluate(features, changed, tmp_path / "second", settings)
+    np.testing.assert_allclose(first.p_estrus, second.p_estrus)
+    evidence = json.loads((tmp_path / "first/threshold_tuning.json").read_text())
+    development = set(features.iloc[train].mouse_id)
+    assert evidence["folds"] and len(evidence["folds"]) == len(development)
+    for fold in evidence["folds"]:
+        assert len(fold["validation_mice"]) == 1
+        assert set(fold["fitting_mice"]) | set(fold["validation_mice"]) == development
+        assert not set(fold["fitting_mice"]) & set(fold["validation_mice"])
+    assert evidence["method"] == "mouse_grouped_nested_model_selection"
+    summary = json.loads((tmp_path / "first/final_model.json").read_text())
+    assert summary["calibrated"] == (summary["family"] == "rbf_svm")
+    replay = predict(tmp_path / "first/model.joblib", first[["mouse_id", "day_index"]].merge(features, on=["mouse_id", "day_index"]))
+    np.testing.assert_allclose(replay.p_estrus, first.p_estrus)
+    for bad in [{"folds": "random"}]:
+        with pytest.raises(ValueError, match="threshold_tuning.folds"):
+            threshold_settings({"threshold_tuning": bad})
+    with pytest.raises(ValueError, match="calibration"):
+        evaluate(features, labels, tmp_path / "bad", {**config(), "calibration": "no"})
+
+
+def test_fixed_model_search_reuses_development_choice_in_every_cutoff_fold(tmp_path):
+    features, labels = synthetic()
+    settings = {**config(), "calibration": False, "test_mouse_ids": ["f1", "f2"],
+                "threshold_tuning": {"enabled": True, "objective": "f2",
+                                     "folds": "leave_one_mouse_out", "model_search": "fixed"}}
+    predictions, _ = evaluate(features, labels, tmp_path, settings)
+    assert set(predictions.mouse_id) == {"f1", "f2"}
+    summary = json.loads((tmp_path / "final_model.json").read_text())
+    evidence = json.loads((tmp_path / "threshold_tuning.json").read_text())
+    assert evidence["model_search"] == "fixed"
+    assert {fold["family"] for fold in evidence["folds"]} == {summary["family"]}
+    assert {fold["feature_set"] for fold in evidence["folds"]} == {summary["feature_set"]}
+    assert all("f1" not in fold["fitting_mice"] + fold["validation_mice"] for fold in evidence["folds"])
+    with pytest.raises(ValueError, match="model_search"):
+        threshold_settings({"threshold_tuning": {"model_search": "sometimes"}})
+    with pytest.raises(ValueError, match="test_mouse_ids"):
+        split_mice(labels.is_estrus.to_numpy(), features.mouse_id.to_numpy(), {**config(), "test_mouse_ids": ["nope"]})
 
 
 def test_prediction_confidence_follows_chosen_class_below_half(tmp_path):

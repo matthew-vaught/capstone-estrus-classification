@@ -34,7 +34,7 @@ The repository includes a PR template and CI that tests infrastructure and valid
 
 ## Results and labels
 
-The retained final model uses the original 28 features with F2 cutoff tuning: `python run.py model --config config/threshold-f2.json --save-details`. Mouse Baseline and LA CBT Relationship were excluded from the final model. Preserve their experiment records without including their exports in the final run. The ordinary configuration still uses fixed cutoff 0.5 when `--config` is omitted; [results](RESULTS.md) records both setups.
+The final model uses the original 28 features plus mouse-relative copies, with a fixed-model F2 cutoff: `python run.py model --config config/mouse-relative-fixed-cutoff.json --save-details`. The previous final setup remains reproducible with `config/threshold-f2.json`. Mouse Baseline and LA CBT Relationship were excluded from the final model. Preserve their experiment records without including their exports in the final run. The ordinary configuration still uses fixed cutoff 0.5 when `--config` is omitted; [results](RESULTS.md) records both setups.
 
 Generated `data/outputs/` and `Model Building/results/` files are ignored. Run outputs should be shared as report attachments or release artifacts if the team wants to preserve a milestone. Contributor `outputs/features.csv` files and existing extraction metadata remain versioned handoffs. Historical exploratory outputs are preserved; new generated artifacts are ignored by default. See the [data policy](DATA.md#version-control-policy).
 
